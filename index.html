@@ -168,6 +168,9 @@ body.hastray{padding-bottom:90px}
 .cgrid .best{color:var(--gold)}
 .cgrid .rm{all:unset;cursor:pointer;color:var(--mist);font-size:12.5px;text-decoration:underline}
 .cmpbox .x{top:10px;right:12px}
+.subtxt{max-width:520px;font-size:14.5px}.subtxt h4{margin:16px 0 6px;font:600 15px/1.2 var(--ui)}
+.subtxt ol{margin:0 0 12px;padding-left:20px}.subtxt li{margin:5px 0}
+.subtxt code{background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:13px;word-break:break-all}
 footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mist);font-size:13px}
 footer p{margin:0 0 6px;max-width:80ch}
 
@@ -207,6 +210,7 @@ footer p{margin:0 0 6px;max-width:80ch}
     <option value="name">Name A to Z</option>
   </select>
   <div class="zoom" title="Slab size"><button type="button" id="zout" aria-label="Smaller slabs">−</button><input id="zoom" type="range" min="100" max="380" step="10" value="190" aria-label="Slab size"><button type="button" id="zin" aria-label="Larger slabs">+</button></div>
+  <button class="iconbtn" id="bell" type="button" aria-label="Get notified about new slabs" title="Get notified about new slabs" hidden>&#128276;</button>
   <button class="iconbtn" id="theme" type="button" aria-label="Switch between dark and light theme" title="Dark / light"></button>
   <button class="filter-btn" id="openFilters" type="button">Filters</button>
   <div class="count" aria-live="polite"><span id="n">0</span><small id="of"></small></div>
@@ -234,8 +238,9 @@ footer p{margin:0 0 6px;max-width:80ch}
   <button class="btn gold" id="cmpgo" type="button" disabled>Compare</button><button class="btn" id="cmpclr" type="button">Clear</button></div>
 <dialog id="lb" aria-label="Slab details"></dialog>
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
+<dialog id="subd" aria-label="Get notified"></dialog>
 
-<script src="data.js?v=397244a1f6"></script>
+<script src="data.js?v=602209e7c2"></script>
 <script>
 (function(){
 "use strict";
@@ -462,6 +467,27 @@ cmpd.addEventListener("click",e=>{
 $("#cmpgo").addEventListener("click",openCmp);
 $("#cmpclr").addEventListener("click",()=>{[...cmp].forEach(c=>toggleCmp(c))});
 $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(b)toggleCmp(+b.dataset.c)});
+
+/* ---------- get notified ---------- */
+(function(){
+  const N=(window.GALLERY&&window.GALLERY.notify)||{},bell=$("#bell"),sd=$("#subd");
+  if(!N.topic&&!N.feed)return;bell.hidden=false;
+  bell.addEventListener("click",()=>{
+    const web="https://ntfy.sh/"+encodeURIComponent(N.topic||"");
+    sd.innerHTML=`<div class="cmpbox"><h3>Get notified</h3><button class="x" type="button" id="subx" aria-label="Close">&times;</button>
+      <div class="subtxt">
+      ${N.topic?`<h4>Phone or desktop alerts (free, no account)</h4>
+        <ol><li>Install the free <b>ntfy</b> app (iPhone, Android) &mdash; or just use the web page.</li>
+        <li>Tap <b>+</b> (Subscribe to topic) and enter <code>${esc(N.topic)}</code> &mdash; leave the server as ntfy.sh.</li>
+        <li>You get a ping whenever new slabs are added to this gallery.</li></ol>
+        <p><a class="btn gold" href="${esc(web)}" target="_blank" rel="noopener">Open the ntfy page</a></p>
+        <p class="note"><b>To stop:</b> open the topic in the app and choose <b>Unsubscribe</b> (or swipe it away / delete it). There is no account to close.</p>`:""}
+      ${N.feed?`<h4>RSS feed</h4><p>Prefer a feed reader? Add this address:<br><code>${esc(new URL(N.feed,location.href).href)}</code></p><p class="note">To stop, remove it from your reader.</p>`:""}
+      </div></div>`;
+    sd.showModal();
+  });
+  sd.addEventListener("click",e=>{if(e.target.id==="subx"||e.target===sd)sd.close()});
+})();
 
 /* ---------- theme ---------- */
 (function(){const b=$("#theme"),root=document.documentElement;
