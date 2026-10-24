@@ -189,6 +189,10 @@ dialog::backdrop{background:rgba(2,10,22,.82)}
 .stiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:4px 0 14px}
 .stile{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:12px}
 .stile b{display:block;font:800 30px/1 var(--display);color:var(--gold)}.stile span{font-size:12px;color:var(--mist)}
+.stabs{display:flex;gap:6px;margin:0 0 14px}.stabs button{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--raise);color:var(--mist);font:600 14px/1 var(--ui);cursor:pointer}
+.stabs button[aria-selected=true]{background:var(--gold);border-color:var(--gold);color:#201505}
+.spane[hidden]{display:none}
+.sbar.nc{cursor:default}.sbar.nc:hover{background:none}
 .stat h4{margin:14px 0 4px;font:600 14px/1.2 var(--ui);color:var(--mist)}
 .stopl{display:flex;gap:8px;flex-wrap:wrap}
 .fbtog{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(2,10,22,.72);border:1px solid var(--line);z-index:2}
@@ -368,7 +372,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=e247c554b3"></script>
+<script src="data.js?v=f090a5233d"></script>
 <script>
 (function(){
 "use strict";
@@ -728,6 +732,12 @@ paintFav();
   const bars=(rows,k)=>{const max=Math.max(1,...rows.map(r=>r[1]));
     return `<div class="sbars">`+rows.map(r=>`<button type="button" class="sbar" data-k="${k}" data-v="${esc(r[2]!==undefined?r[2]:r[0])}" title="Show these slabs"><span class="sl">${esc(r[0])}</span><span class="st"><i style="width:${Math.max(2,r[1]/max*100)}%"></i></span><b>${fmt(r[1])}</b></button>`).join("")+`</div>`};
   const tally=fn=>{const m=new Map();for(const i of DATA)for(const v of fn(i)){if(v!=null&&v!=="")m.set(v,(m.get(v)||0)+1)}return m};
+  function scanHTML(){const s=window.GALLERY&&window.GALLERY.scan;if(!s||!s.checked)return"";
+    const g=Object.entries(s.games||{}),max=Math.max(1,...g.map(x=>x[1])),yg=(s.games&&s.games["Yu-Gi-Oh!"])||0;
+    const tile=(b,l)=>`<div class="stile"><b>${b}</b><span>${l}</span></div>`;
+    return `<div class="stiles">${tile(fmt(s.checked),"certs checked")}${tile(fmt(s.valid),"real slabs read")}${tile(fmt(Object.keys(s.games||{}).filter(k=>k!=="Other").length),"games spotted")}${yg&&s.valid?tile((yg/s.valid*100).toFixed(1)+"%","of slabs are Yu-Gi-Oh!"):""}${yg&&s.checked?tile(fmt(Math.round(yg/s.checked*1000)),"Yu-Gi-Oh! per 1,000 certs"):""}</div><h4>Slabs by game</h4>
+      <div class="sbars">${g.map(([n,c])=>`<div class="sbar nc"><span class="sl">${esc(n)}</span><span class="st"><i style="width:${Math.max(2,c/max*100)}%"></i></span><b>${fmt(c)}</b></div>`).join("")}</div>
+      <p class="note">${s.lo&&s.hi?`Certs ${fmt(s.lo)} to ${fmt(s.hi)}. `:""}${fmt(s.missing)} numbers had no slab behind them (not issued yet). Other games are a best guess from card numbers and set names, so treat them as estimates.</p>`}
   btn.addEventListener("click",()=>{
     const priced=DATA.filter(i=>i.p),tot=priced.reduce((a,i)=>a+i.p,0),gems=DATA.filter(i=>String(i.g)==="10").length;
     const gn=DATA.map(gnum).filter(x=>x>=0),avg=gn.length?gn.reduce((a,b)=>a+b,0)/gn.length:0;
@@ -739,17 +749,23 @@ paintFav();
     const lang=[...tally(i=>[i.l])].sort((a,b)=>b[1]-a[1]);
     const top=[...priced].sort((a,b)=>b.p-a.p).slice(0,5);
     const tile=(b,s)=>`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
+    const sc=scanHTML();
     sd.innerHTML=`<div class="cmpbox stat"><h3>Gallery stats</h3><button class="x" type="button" id="statx" aria-label="Close">&times;</button>
-      <div class="stiles">${tile(fmt(DATA.length),"slabs")}${tile(fmt(uniq),"different cards")}${tile(fmt(gems),"Gem Mint 10s"+(DATA.length?" ("+Math.round(gems/DATA.length*100)+"%)":""))}
+      ${sc?`<div class="stabs" role="tablist"><button type="button" role="tab" aria-selected="true" data-tab="yg">Yu-Gi-Oh!</button><button type="button" role="tab" aria-selected="false" data-tab="sc">Scanner</button></div>`:""}
+      <div class="spane" data-pane="yg"><div class="stiles">${tile(fmt(DATA.length),"slabs")}${tile(fmt(uniq),"different cards")}${tile(fmt(gems),"Gem Mint 10s"+(DATA.length?" ("+Math.round(gems/DATA.length*100)+"%)":""))}
         ${tile(avg?avg.toFixed(1):"\u2014","average grade")}${priced.length?tile(money(tot),"raw value of "+fmt(priced.length)+" priced"):""}</div>
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${money(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
-      <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>`;
+      <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
+      ${sc?`<div class="spane" data-pane="sc" hidden>${sc}</div>`:""}</div>`;
     sd.showModal();
   });
   sd.addEventListener("click",e=>{
     if(e.target.id==="statx"||e.target===sd){sd.close();return}
+    const tb=e.target.closest(".stabs button");
+    if(tb){sd.querySelectorAll(".stabs button").forEach(x=>x.setAttribute("aria-selected",String(x===tb)));
+      sd.querySelectorAll(".spane").forEach(p=>{p.hidden=p.dataset.pane!==tb.dataset.tab});return}
     const o=e.target.closest(".oth");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
     const b=e.target.closest(".sbar");if(!b)return;
     st.q="";st.s="";st.fav=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
