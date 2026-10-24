@@ -91,6 +91,9 @@ main{min-width:0}
 .zoom input{width:120px;accent-color:var(--gold);cursor:pointer}
 .zoom button{all:unset;cursor:pointer;padding:4px 6px;border-radius:6px}.zoom button:hover{color:var(--foil)}
 .cw{position:relative;display:flex}
+.newb{position:absolute;top:9px;right:9px;z-index:2;background:var(--gold);color:#201505;font:800 11px/1 var(--ui);letter-spacing:.09em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.newb.inl{position:static;display:inline-block;vertical-align:middle;margin:0 8px 4px 0;font-size:12px}
+.tiny .newb{top:5px;right:5px;font-size:9px;padding:3px 6px}
 .cmpb{position:absolute;top:8px;left:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--barbg);color:var(--foil);font-size:18px;line-height:1;padding:0;z-index:2;opacity:.75}
 .cmpb:hover,.cmpb.on{opacity:1}.cmpb.on{background:var(--gold);border-color:var(--gold);color:#201505;font-weight:700}
 .tiny .cmpb{width:24px;height:24px;font-size:15px;top:5px;left:5px}
@@ -240,7 +243,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 
-<script src="data.js?v=602209e7c2"></script>
+<script src="data.js?v=dcc2866f39"></script>
 <script>
 (function(){
 "use strict";
@@ -257,6 +260,7 @@ const GROUPS=[
   {k:"e",title:"Anime era",label:v=>v,get:i=>[i.e],order:ERAS,open:true},
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
+  {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
   {k:"y",title:"Release year",label:v=>v,get:i=>[i.y?String(i.y):""],asc:true},
   {k:"f",title:"Finish",hint:"match all",label:v=>v,get:i=>i.t||[],all:true,open:true},
@@ -267,6 +271,7 @@ const GROUPS=[
   {k:"pp",title:"Population",hint:"when collected",label:v=>v,get:i=>i.pp||[]}
 ];
 const PRESETS=[
+  {n:"Just added",set:{nw:["Just added"]},when:()=>DATA.some(i=>i.nw)},
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
   {n:"Duel Monsters originals",set:{e:[ERAS[0]]}},
   {n:"Extended arts",set:{f:["Extended art"]}},
@@ -327,7 +332,7 @@ function presetOn(p){
 function renderGroups(){
   const host=$("#groups");const frag=[];
   host.querySelectorAll("details[data-k]").forEach(d=>{d.open?openG.add(d.dataset.k):openG.delete(d.dataset.k)});
-  frag.push(`<div class="quick"><h2>Quick picks</h2><div class="chips">`+PRESETS.map((p,k)=>
+  frag.push(`<div class="quick"><h2>Quick picks</h2><div class="chips">`+PRESETS.map((p,k)=>p.when&&!p.when()?"":
     `<button type="button" class="chip q" data-p="${k}" aria-pressed="${presetOn(p)}">${esc(p.n)}</button>`).join("")+`</div></div>`);
   for(const g of GROUPS){
     const keys=allOptions[g.k];if(!keys||keys.length<2&&!st[g.k].size)continue;
@@ -347,7 +352,7 @@ const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
-    <div class="case"><img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
+    <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub">${esc(i.v)}</div><div class="sub">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:""}</div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button></div>`;
@@ -387,7 +392,7 @@ function openLB(idx,item){
   const gname=i.gn?i.gn.toUpperCase():"";
   dlg.innerHTML=`<div class="lb" style="position:relative">
     <div class="pic"><img src="${esc(i.im)}" alt="${esc(i.n)} in an ACE slab"></div>
-    <div class="det"><div><h3>${esc(i.n)}</h3></div>
+    <div class="det"><div><h3>${i.nw?`<span class="newb inl">NEW</span>`:""}${esc(i.n)}</h3></div>
       <div class="big"><b>${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
       ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
       <dl><dt>Card number</dt><dd>${esc(i.no)}</dd><dt>Set</dt><dd>${esc(i.s)}</dd>
