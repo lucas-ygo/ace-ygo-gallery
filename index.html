@@ -309,7 +309,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 
-<script src="data.js?v=cc7aa53baf"></script>
+<script src="data.js?v=5ab083d4dd"></script>
 <script>
 (function(){
 "use strict";
@@ -477,7 +477,7 @@ function openLB(idx,item){
       <div class="big"><b>${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
       ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
       <dl><dt>Card number</dt><dd>${esc(i.no)}</dd><dt>Set</dt><dd>${esc(i.s)}</dd>
-      <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card first released</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
+      <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card debut</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
       ${i.p?`<dt>Raw price</dt><dd>${money(i.p)}</dd>`:""}</dl>
