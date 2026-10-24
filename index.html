@@ -40,6 +40,9 @@ h1 em{font-style:normal;color:var(--gold)}
 .eyebrow{margin:0 0 10px;font:600 12px/1 var(--ui);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 .hstats{display:flex;flex-wrap:wrap;gap:6px 26px;margin:16px 0 0}
 .hstats span{font:600 12px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mist);display:flex;align-items:baseline;gap:8px}
+.coffee{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:9px 16px;border-radius:999px;border:1px solid var(--gold-dim);background:var(--raise);color:var(--gold);font:600 14px/1 var(--ui);text-decoration:none}
+.coffee:hover{border-color:var(--gold)}.coffee[hidden]{display:none}
+footer .cof{color:var(--gold)}
 .hstats b{font:800 30px/1 var(--display);letter-spacing:.02em;color:var(--foil)}
 .lede{margin:8px 0 0;color:var(--mist);max-width:62ch}
 .scan{margin:10px 0 0;font-size:13px;line-height:1.45;color:var(--mist);display:flex;gap:8px;align-items:baseline;max-width:62ch}
@@ -258,6 +261,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   <p class="lede">Every ACE-graded Yu-Gi-Oh! slab we can find, with the full art, the grade and a raw price.</p>
   <div class="hstats" id="hstats" hidden></div>
   <p class="scan" id="scan" hidden></p>
+  <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" hidden>&#9749; Buy me a coffee</a>
 </div></header>
 
 <div class="bar"><div class="wrap">
@@ -294,6 +298,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 
 <footer><div class="wrap">
   <p>Unofficial fan project. Not affiliated with ACE Grading or Konami. Slab photos and labels belong to ACE Grading and card art belongs to Konami. Every slab links back to its public ACE cert page.</p>
+  <p id="fcof" hidden>If you enjoy the gallery, you can <a class="cof" id="fcoflink" href="#" target="_blank" rel="noopener noreferrer">buy me a coffee</a>. It helps keep the scanner running.</p>
   <p id="stamp"></p>
 </div></footer>
 
@@ -304,7 +309,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 
-<script src="data.js?v=4234a7ad60"></script>
+<script src="data.js?v=de0b6419fd"></script>
 <script>
 (function(){
 "use strict";
@@ -584,6 +589,9 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   if(!root.dataset.theme)root.dataset.theme="dark";paint();
   b.addEventListener("click",()=>{root.dataset.theme=root.dataset.theme==="light"?"dark":"light";try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint()});})();
 
+/* ---------- support link ---------- */
+(function(){const u=String((window.GALLERY&&window.GALLERY.support)||"");if(!/^https:\/\//i.test(u))return;
+  const a=$("#coffee"),f=$("#fcoflink");if(a){a.href=u;a.hidden=false}if(f){f.href=u;$("#fcof").hidden=false}})();
 /* ---------- header numbers ---------- */
 (function(){const el=$("#hstats");if(!el||!DATA.length)return;
   const gem=DATA.filter(i=>String(i.g)==="10").length,sets=new Set(DATA.map(i=>i.s).filter(Boolean)).size;
