@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ACE Yu-Gi-Oh! slab gallery (unofficial)</title>
 <meta name="description" content="Browse the art on ACE-graded Yu-Gi-Oh! slabs. Filter by grade, era, rarity and set. Unofficial fan project.">
+<meta name="theme-color" content="#06172c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Slab gallery">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!--OG-->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ACE Yu-Gi-Oh! slab gallery (unofficial)">
+<meta property="og:title" content="ACE Yu-Gi-Oh! slab gallery (unofficial)">
+<meta property="og:description" content="Browse the art on ACE-graded Yu-Gi-Oh! slabs. Filter by grade, era, rarity and set.">
+<meta property="og:url" content="https://lucas-ygo.github.io/ace-ygo-gallery/">
+<meta property="og:image" content="https://lucas-ygo.github.io/ace-ygo-gallery/og/site.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!--/OG-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
@@ -42,6 +60,8 @@ h1 em{font-style:normal;color:var(--gold)}
 .hstats span{font:600 12px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mist);display:flex;align-items:baseline;gap:8px}
 .coffee{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:9px 16px;border-radius:999px;border:1px solid var(--gold-dim);background:var(--raise);color:var(--gold);font:600 14px/1 var(--ui);text-decoration:none}
 .coffee:hover{border-color:var(--gold)}.coffee[hidden]{display:none}
+button.coffee{cursor:pointer}
+.hlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.hlinks .coffee{margin-top:0}
 footer .cof{color:var(--gold)}
 .hstats b{font:800 30px/1 var(--display);letter-spacing:.02em;color:var(--foil)}
 .lede{margin:8px 0 0;color:var(--mist);max-width:62ch}
@@ -114,6 +134,10 @@ main{min-width:0}
 .cmpb{position:absolute;top:8px;left:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--barbg);color:var(--foil);font-size:18px;line-height:1;padding:0;z-index:2;opacity:.75}
 .cmpb:hover,.cmpb.on{opacity:1}.cmpb.on{background:var(--gold);border-color:var(--gold);color:#201505;font-weight:700}
 .tiny .cmpb{width:24px;height:24px;font-size:15px;top:5px;left:5px}
+.favb{position:absolute;top:44px;left:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--barbg);color:var(--foil);font-size:16px;line-height:1;padding:0;z-index:2;opacity:.75}
+.favb:hover{opacity:1}.favb.on{opacity:1;color:#e0556b;border-color:#e0556b}
+.tiny .favb{width:24px;height:24px;font-size:13px;top:34px;left:5px}
+#favbtn.on{border-color:#e0556b;color:#e0556b}
 .card{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background:var(--case)}
 .case{position:relative;aspect-ratio:3/4;display:grid;place-items:center;padding:12px;
@@ -144,6 +168,20 @@ dialog::backdrop{background:rgba(2,10,22,.82)}
 .lb .pic img{max-width:100%;max-height:calc(min(92vh,880px) - 44px);object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.5))}
 .lb{height:min(92vh,880px);grid-template-rows:minmax(0,1fr)}
 .lb .pic{min-height:0;overflow:hidden;position:relative}
+.lb .pic img{user-select:none;-webkit-user-drag:none;touch-action:pan-y;cursor:zoom-in;will-change:transform}
+.lb .pic.zoomed{overflow:hidden!important}.lb .pic.zoomed img{cursor:grab}
+.zhint{position:absolute;left:12px;top:10px;font:600 11px/1 var(--ui);letter-spacing:.06em;color:var(--mist);background:rgba(2,10,22,.55);padding:6px 9px;border-radius:999px;pointer-events:none;z-index:2;transition:opacity .2s}
+.zoomed .zhint{opacity:0}
+.sbars{display:flex;flex-direction:column;gap:5px;margin:6px 0 14px}
+.sbar{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(90px,42%) 1fr 34px;gap:10px;align-items:center;cursor:pointer;padding:3px 4px;border-radius:8px;font-size:13px}
+.sbar:hover{background:var(--raise)}.sbar .sl{color:var(--foil);line-height:1.2;overflow-wrap:anywhere}
+.sbar .st{height:8px;border-radius:99px;background:var(--raise);overflow:hidden}.sbar .st i{display:block;height:100%;background:var(--gold);border-radius:99px}
+.sbar b{text-align:right;color:var(--mist);font-weight:600}
+.stiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:4px 0 14px}
+.stile{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stile b{display:block;font:800 30px/1 var(--display);color:var(--gold)}.stile span{font-size:12px;color:var(--mist)}
+.stat h4{margin:14px 0 4px;font:600 14px/1.2 var(--ui);color:var(--mist)}
+.stopl{display:flex;gap:8px;flex-wrap:wrap}
 .fbtog{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(2,10,22,.72);border:1px solid var(--line);z-index:2}
 .fbtog button{border:0;background:none;color:var(--mist);font:700 13px/1 var(--display);padding:8px 16px;border-radius:999px;cursor:pointer;min-height:34px}
 .fbtog button.on{background:var(--gold);color:#1a1200}
@@ -222,10 +260,11 @@ footer p{margin:0 0 6px;max-width:80ch}
   .search{order:1;flex:1 1 100%}.search input,.sort{font-size:16px}
   .sort{order:2;flex:1 1 45%;min-width:0}.filter-btn{order:3;flex:none;padding:10px 16px}
   .zoom{order:4;flex:1 1 150px;min-width:0}.zoom input{flex:1;min-width:0;width:auto}
-  #viewbtn{order:5}#bell{order:6}#theme{order:7}
-  .count{order:8;flex:1 1 100%;margin:0;font-size:19px}.count small{font-size:13px}
-  .iconbtn{padding:11px 13px}
+  #viewbtn{order:5}#favbtn{order:6}#bell{order:7}#theme{order:8}
+  .count{order:9;flex:1 1 100%;margin:0;font-size:19px}.count small{font-size:13px}
+  .iconbtn{padding:11px 11px}
   .cmpb{width:34px;height:34px}.tiny .cmpb{width:34px;height:34px}
+  .favb{width:34px;height:34px;top:50px;font-size:18px}.tiny .favb{width:34px;height:34px;top:44px;font-size:18px}
   .totop{display:grid;place-items:center;position:fixed;right:max(14px,env(safe-area-inset-right));bottom:84px;z-index:25;width:44px;height:44px;border-radius:50%;
     border:1px solid var(--gold-dim);background:var(--barbg);color:var(--gold);font-size:20px;backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,.35)}
   .totop[hidden]{display:none}
@@ -264,7 +303,9 @@ footer p{margin:0 0 6px;max-width:80ch}
   <p class="lede">Every ACE-graded Yu-Gi-Oh! slab we can find, with the full art, the grade and a raw price.</p>
   <div class="hstats" id="hstats" hidden></div>
   <p class="scan" id="scan" hidden></p>
+  <div class="hlinks"><button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
   <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" hidden>&#9749; Buy me a coffee</a>
+  <button class="coffee" id="installbtn" type="button" hidden>&#10133; Install app</button></div>
 </div></header>
 
 <div class="bar"><div class="wrap">
@@ -279,6 +320,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   </select>
   <div class="zoom" title="Slab size"><button type="button" id="zout" aria-label="Smaller slabs">−</button><input id="zoom" type="range" min="100" max="380" step="10" value="190" aria-label="Slab size"><button type="button" id="zin" aria-label="Larger slabs">+</button></div>
   <button class="iconbtn" id="bell" type="button" aria-label="Get notified about new slabs" title="Get notified about new slabs" hidden>&#128276;</button>
+  <button class="iconbtn" id="favbtn" type="button" aria-label="Show only my saved slabs" title="My saved slabs" aria-pressed="false">&#9825;</button>
   <button class="iconbtn" id="viewbtn" type="button" aria-label="Switch between grid and list view" title="Grid / list view" hidden></button>
   <button class="iconbtn" id="theme" type="button" aria-label="Switch between dark and light theme" title="Dark / light"></button>
   <button class="filter-btn" id="openFilters" type="button">Filters</button>
@@ -302,6 +344,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <footer><div class="wrap">
   <p>Unofficial fan project. Not affiliated with ACE Grading or Konami. Slab photos and labels belong to ACE Grading and card art belongs to Konami. Every slab links back to its public ACE cert page.</p>
   <p id="fcof" hidden>If you enjoy the gallery, you can <a class="cof" id="fcoflink" href="#" target="_blank" rel="noopener noreferrer">buy me a coffee</a>. It helps keep the scanner running.</p>
+  <p id="tipapp">Tip: on a phone, use Share &rarr; Add to Home Screen to keep the gallery one tap away. Your saved slabs (&#9825;) stay on your own device.</p>
   <p id="stamp"></p>
 </div></footer>
 
@@ -311,8 +354,9 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="lb" aria-label="Slab details"></dialog>
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
+<dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=d776e72865"></script>
+<script src="data.js?v=fbbfbf943b"></script>
 <script>
 (function(){
 "use strict";
@@ -348,12 +392,14 @@ const PRESETS=[
   {n:"Over \u00a3100",set:{rv:[BANDS[3],BANDS[4]]}},
   {n:"Battered classics",set:{g:["1","2","3"]}}
 ];
-const st={q:"",sort:"add",s:"",c:""};GROUPS.forEach(g=>{st[g.k]=new Set()});
+const st={q:"",sort:"add",s:"",c:"",fav:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
 let view=[],shown=0;const STEP=60;
 
 function gnum(i){const n=parseFloat(i.g);return isNaN(n)?-1:n}
 function matches(i,skip){
+  if(st.fav&&!fav.has(i.c))return false;
+  if(st.only&&!st.only.has(i.c))return false;
   if(st.q){const h=(i.n+" "+i.no+" "+i.s+" "+i.v+" "+i.c).toLowerCase();
     for(const w of st.q.toLowerCase().split(/\s+/)){if(w&&!h.includes(w))return false}}
   if(skip!=="s"&&st.s&&i.s!==st.s)return false;
@@ -417,6 +463,8 @@ function renderGroups(){
 }
 
 /* ---------- grid ---------- */
+let fav=new Set();try{fav=new Set(JSON.parse(localStorage.getItem("fav")||"[]").map(Number))}catch(e){}
+function saveFav(){try{localStorage.setItem("fav",JSON.stringify([...fav]))}catch(e){}}
 const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
@@ -424,7 +472,8 @@ function cardHTML(i,idx){
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:""}</div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
-    <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button></div>`;
+    <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
+    <button type="button" class="favb${fav.has(i.c)?" on":""}" data-c="${i.c}" aria-pressed="${fav.has(i.c)}" aria-label="Save ${esc(i.n)}" title="Save to my list">${fav.has(i.c)?"\u2665":"\u2661"}</button></div>`;
 }
 function renderMore(){
   const grid=$("#grid");const end=Math.min(shown+STEP,view.length);
@@ -452,15 +501,19 @@ function renderActive(){const el=$("#actv"),out=[];
   const ch=(k,v,label,not)=>`<button type="button" class="ac${not?" not":""}" data-k="${k}" data-v="${esc(v)}" title="Remove this filter">${esc(label)}</button>`;
   if(st.q)out.push(ch("q","","Search: \u201c"+st.q+"\u201d"));
   if(st.s)out.push(ch("s","",st.s));
+  if(st.fav)out.push(ch("fav","","\u2665 My saved slabs"));
+  if(st.only)out.push(ch("only","","Shared list ("+st.only.size+")"));
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
-  el.hidden=!out.length;el.innerHTML=out.join("")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
+  el.hidden=!out.length;el.innerHTML=out.join("")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
 $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
-  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else st[k].delete(b.dataset.v);apply(true)});
-function anyActive(){return st.q||st.s||GROUPS.some(g=>st[g.k].size)}
+  if(b.dataset.share){const u=location.href.split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
+    copyText(u).then(()=>{b.textContent="Link copied \u2713"},()=>{b.textContent="Copy failed"});setTimeout(()=>{b.textContent="Copy link to my list"},1800);return}
+  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
+function anyActive(){return st.q||st.s||st.fav||st.only||GROUPS.some(g=>st[g.k].size)}
 function apply(keepScroll){
   view=DATA.filter(i=>matches(i)).sort(sorter());
   $("#grid").innerHTML="";shown=0;renderMore();
-  paintFilt();renderActive();
+  paintFilt();renderActive();paintFav();
   $("#n").textContent=fmt(view.length);$("#of").textContent=" of "+fmt(DATA.length)+" slabs";
   $("#empty").hidden=view.length>0;
   document.querySelectorAll(".clear").forEach(b=>b.classList.toggle("show",!!anyActive()));
@@ -490,12 +543,13 @@ function openLB(idx,item){
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
       ${others.length?`<div class="others"><h4>Other slabs of this card</h4><div class="orow">${others.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.v)} \u00b7 ACE ${esc(o.g)} \u00b7 cert ${esc(o.c)}"><img src="${esc(o.th)}" alt=""><b>${esc(o.g)}</b><small>${esc(o.v)}</small></button>`).join("")}</div></div>`:""}
       <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a>
+        <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
         <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div></div>
     <button class="x" type="button" aria-label="Close" id="lbx">&times;</button></div>
     ${idx>=0?`<button class="navbtn prev" type="button" aria-label="Previous slab" id="lbp">&lsaquo;</button>
     <button class="navbtn next" type="button" aria-label="Next slab" id="lbn">&rsaquo;</button>`:""}`;
-  if(!dlg.open)dlg.showModal();saveHash();
+  if(!dlg.open)dlg.showModal();saveHash();attachZoom();
 }
 function step(d){if(cur<0)return;const n=cur+d;if(n<0||n>=view.length)return;if(n>=shown-3&&shown<view.length)renderMore();openLB(n)}
 function copyText(txt){
@@ -503,13 +557,17 @@ function copyText(txt){
   return new Promise((ok,no)=>{try{const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
     const r=document.execCommand("copy");ta.remove();r?ok():no()}catch(e){no()}});
 }
+const shareURL=c=>{const base=location.href.split("#")[0];
+  try{if(window.GALLERY&&window.GALLERY.share&&/^https?:/.test(location.protocol))return new URL("c/"+c+"/",base).href}catch(e){}
+  return base+"#cert="+c};
 dlg.addEventListener("click",e=>{
+  const lf=e.target.closest("#lbfav");if(lf){toggleFav(+lf.dataset.c);return}
   const sd=e.target.closest(".fbtog button");
-  if(sd){const i=cur>=0?view[cur]:BYC.get(+st.c);if(i){const im=$("#lbimg");im.src=sd.dataset.side==="b"?i.bk:i.im;im.alt=i.n+(sd.dataset.side==="b"?" (back of slab)":" in an ACE slab");sd.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===sd))}return}
+  if(sd){if(dlg._rz)dlg._rz();const i=cur>=0?view[cur]:BYC.get(+st.c);if(i){const im=$("#lbimg");im.src=sd.dataset.side==="b"?i.bk:i.im;im.alt=i.n+(sd.dataset.side==="b"?" (back of slab)":" in an ACE slab");sd.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===sd))}return}
   const o=e.target.closest(".oth");
   if(o){const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
   const cb=e.target.closest("#lbcopy");
-  if(cb){copyText(location.href.split("#")[0]+"#cert="+st.c).then(()=>{cb.textContent="Link copied \u2713"},()=>{cb.textContent="Copy failed"});setTimeout(()=>{cb.textContent="Copy link"},1800);return}
+  if(cb){copyText(shareURL(st.c)).then(()=>{cb.textContent="Link copied \u2713"},()=>{cb.textContent="Copy failed"});setTimeout(()=>{cb.textContent="Copy link"},1800);return}
   const cm=e.target.closest("#lbcmp");
   if(cm){toggleCmp(+cm.dataset.c);cm.textContent=cmp.has(+cm.dataset.c)?"Remove from compare":"Add to compare";return}
   if(e.target.id==="lbx"||e.target===dlg)dlg.close();
@@ -614,6 +672,102 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   function load(){try{fetch("status.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)show(d)}).catch(()=>{})}catch(e){}}
   load();setInterval(load,300000);setInterval(()=>{if(last)show(last)},60000)})();
 
+/* ---------- saved slabs ---------- */
+let favDirty=false;
+function paintFav(){const b=$("#favbtn"),n=[...fav].filter(c=>BYC.has(c)).length;
+  b.innerHTML=(st.fav?"\u2665":"\u2661")+(n?" "+n:"");b.classList.toggle("on",st.fav);b.setAttribute("aria-pressed",String(st.fav));
+  b.title=st.fav?"Show all slabs":"Show only my saved slabs"+(n?" ("+n+")":"")}
+function toggleFav(c){
+  fav.has(c)?fav.delete(c):fav.add(c);saveFav();
+  document.querySelectorAll(".favb").forEach(b=>{const on=fav.has(+b.dataset.c);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);b.textContent=on?"\u2665":"\u2661"});
+  const lf=$("#lbfav");if(lf&&+lf.dataset.c===c)lf.textContent=fav.has(c)?"\u2665 Saved":"\u2661 Save";
+  paintFav();if(st.fav){if(dlg.open)favDirty=true;else apply(true)}
+}
+dlg.addEventListener("close",()=>{if(favDirty){favDirty=false;apply(true)}});
+$("#favbtn").addEventListener("click",()=>{st.fav=!st.fav;apply()});
+paintFav();
+
+/* ---------- stats ---------- */
+(function(){
+  const sd=$("#statd"),btn=$("#statsbtn");if(!btn||!DATA.length)return;btn.hidden=false;
+  const bars=(rows,k)=>{const max=Math.max(1,...rows.map(r=>r[1]));
+    return `<div class="sbars">`+rows.map(r=>`<button type="button" class="sbar" data-k="${k}" data-v="${esc(r[2]!==undefined?r[2]:r[0])}" title="Show these slabs"><span class="sl">${esc(r[0])}</span><span class="st"><i style="width:${Math.max(2,r[1]/max*100)}%"></i></span><b>${fmt(r[1])}</b></button>`).join("")+`</div>`};
+  const tally=fn=>{const m=new Map();for(const i of DATA)for(const v of fn(i)){if(v!=null&&v!=="")m.set(v,(m.get(v)||0)+1)}return m};
+  btn.addEventListener("click",()=>{
+    const priced=DATA.filter(i=>i.p),tot=priced.reduce((a,i)=>a+i.p,0),gems=DATA.filter(i=>String(i.g)==="10").length;
+    const gn=DATA.map(gnum).filter(x=>x>=0),avg=gn.length?gn.reduce((a,b)=>a+b,0)/gn.length:0;
+    const uniq=new Set(DATA.map(i=>i.n+"|"+i.no)).size;
+    const gr=[...tally(i=>[i.g])].sort((a,b)=>(parseFloat(b[0])||0)-(parseFloat(a[0])||0)).map(([v,n])=>["ACE "+v,n,v]);
+    const er=ERAS.map(e=>[e,(tally(i=>[i.e]).get(e)||0)]).filter(r=>r[1]);
+    const sets=[...tally(i=>[i.s])].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,8);
+    const fin=[...tally(i=>i.t||[])].sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const lang=[...tally(i=>[i.l])].sort((a,b)=>b[1]-a[1]);
+    const top=[...priced].sort((a,b)=>b.p-a.p).slice(0,5);
+    const tile=(b,s)=>`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
+    sd.innerHTML=`<div class="cmpbox stat"><h3>Gallery stats</h3><button class="x" type="button" id="statx" aria-label="Close">&times;</button>
+      <div class="stiles">${tile(fmt(DATA.length),"slabs")}${tile(fmt(uniq),"different cards")}${tile(fmt(gems),"Gem Mint 10s"+(DATA.length?" ("+Math.round(gems/DATA.length*100)+"%)":""))}
+        ${tile(avg?avg.toFixed(1):"\u2014","average grade")}${priced.length?tile(money(tot),"raw value of "+fmt(priced.length)+" priced"):""}</div>
+      <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
+      ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
+      ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${money(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
+      <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>`;
+    sd.showModal();
+  });
+  sd.addEventListener("click",e=>{
+    if(e.target.id==="statx"||e.target===sd){sd.close();return}
+    const o=e.target.closest(".oth");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
+    const b=e.target.closest(".sbar");if(!b)return;
+    st.q="";st.s="";st.fav=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
+    if(b.dataset.k==="s")st.s=b.dataset.v;else st[b.dataset.k].add(b.dataset.v);
+    sd.close();apply()});
+})();
+
+/* ---------- zoom inside the slab picture ---------- */
+function attachZoom(){
+  const pic=dlg.querySelector(".pic"),img=$("#lbimg");if(!pic||!img)return;
+  let s=1,tx=0,ty=0;const MAX=5;
+  const paint=()=>{img.style.transform=s===1?"":`translate(${tx}px,${ty}px) scale(${s})`;pic.classList.toggle("zoomed",s>1)};
+  const clamp=()=>{const mx=(s-1)*img.offsetWidth/2,my=(s-1)*img.offsetHeight/2;tx=Math.max(-mx,Math.min(mx,tx));ty=Math.max(-my,Math.min(my,ty))};
+  const centre=()=>{const r=img.getBoundingClientRect(),w=img.offsetWidth,h=img.offsetHeight;return{x:r.left+r.width/2-tx,y:r.top+r.height/2-ty,w,h}};
+  function zoomAt(s2,px,py){s2=Math.max(1,Math.min(MAX,s2));const c=centre(),ox=px-c.x,oy=py-c.y;
+    tx=ox-(s2/s)*(ox-tx);ty=oy-(s2/s)*(oy-ty);s=s2;if(s===1){tx=ty=0}clamp();paint()}
+  dlg._rz=()=>{s=1;tx=ty=0;paint()};
+  const hint=document.createElement("span");hint.className="zhint";hint.textContent=matchMedia("(hover:none)").matches?"Pinch or double-tap to zoom":"Scroll or double-click to zoom";pic.appendChild(hint);
+  img.addEventListener("wheel",e=>{e.preventDefault();zoomAt(s*Math.exp(-e.deltaY*0.0018),e.clientX,e.clientY)},{passive:false});
+  img.addEventListener("dblclick",e=>{e.preventDefault();s>1?(s=1,tx=ty=0,paint()):zoomAt(2.6,e.clientX,e.clientY)});
+  let drag=null;
+  img.addEventListener("mousedown",e=>{if(s<=1||e.button)return;e.preventDefault();drag={x:e.clientX-tx,y:e.clientY-ty};
+    const mv=ev=>{tx=ev.clientX-drag.x;ty=ev.clientY-drag.y;clamp();paint()};
+    const up=()=>{drag=null;removeEventListener("mousemove",mv);removeEventListener("mouseup",up)};
+    addEventListener("mousemove",mv);addEventListener("mouseup",up)});
+  let pd=0,pm=null,last=0,moved=0,tp=null;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY),mid=t=>[(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2];
+  img.addEventListener("touchstart",e=>{
+    if(e.touches.length===2){e.preventDefault();pd=dist(e.touches);pm=mid(e.touches);moved=99}
+    else if(e.touches.length===1){tp={x:e.touches[0].clientX-tx,y:e.touches[0].clientY-ty,sx:e.touches[0].clientX,sy:e.touches[0].clientY};moved=0}
+  },{passive:false});
+  img.addEventListener("touchmove",e=>{
+    if(e.touches.length===2&&pd){e.preventDefault();const d=dist(e.touches),m=mid(e.touches);
+      zoomAt(s*d/pd,m[0],m[1]);tx+=m[0]-pm[0];ty+=m[1]-pm[1];clamp();paint();pd=d;pm=m}
+    else if(e.touches.length===1&&tp){const t=e.touches[0];moved=Math.max(moved,Math.hypot(t.clientX-tp.sx,t.clientY-tp.sy));
+      if(s>1){e.preventDefault();tx=t.clientX-tp.x;ty=t.clientY-tp.y;clamp();paint()}}
+  },{passive:false});
+  img.addEventListener("touchend",e=>{
+    if(e.touches.length<2)pd=0;
+    if(!e.touches.length&&moved<10&&e.changedTouches.length===1){const n=Date.now();
+      if(n-last<320){e.preventDefault();const t=e.changedTouches[0];s>1?(s=1,tx=ty=0,paint()):zoomAt(2.6,t.clientX,t.clientY);last=0}else last=n}
+    if(!e.touches.length)tp=null;
+  },{passive:false});
+}
+
+/* ---------- install as an app ---------- */
+(function(){let ip=null;const b=$("#installbtn");
+  addEventListener("beforeinstallprompt",e=>{e.preventDefault();ip=e;b.hidden=false});
+  b.addEventListener("click",()=>{if(!ip)return;ip.prompt();ip=null;b.hidden=true});
+  addEventListener("appinstalled",()=>{b.hidden=true;const t=$("#tipapp");if(t)t.hidden=true});
+  if(matchMedia("(display-mode:standalone)").matches||navigator.standalone){const t=$("#tipapp");if(t)t.hidden=true}
+  try{if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}})();
+
 /* ---------- events ---------- */
 (function(){const z=$("#zoom"),root=document.documentElement,mob=matchMedia("(max-width:860px)").matches;
   let v,def,lo,hi,stp,key;
@@ -635,6 +789,7 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   paintV();vb.addEventListener("click",()=>{list=!list;try{localStorage.setItem("view",list?"list":"grid")}catch(e){}paintV();refit()});})();
 $("#grid").addEventListener("click",e=>{
   const m=e.target.closest(".cmpb");if(m){toggleCmp(+m.dataset.c);return}
+  const hf=e.target.closest(".favb");if(hf){toggleFav(+hf.dataset.c);return}
   const b=e.target.closest(".card");if(b)openLB(+b.dataset.i)});
 $("#groups").addEventListener("click",e=>{
   const b=e.target.closest(".chip");if(!b)return;
@@ -645,7 +800,7 @@ $("#groups").addEventListener("click",e=>{
 $("#groups").addEventListener("change",e=>{if(e.target.id==="setpick"){st.s=e.target.value;apply(true)}});
 let qt;$("#q").addEventListener("input",e=>{clearTimeout(qt);qt=setTimeout(()=>{st.q=e.target.value.trim();apply()},150)});
 $("#sort").addEventListener("change",e=>{st.sort=e.target.value;apply()});
-function clearAll(){st.q="";st.s="";GROUPS.forEach(g=>st[g.k].clear());$("#q").value="";apply()}
+function clearAll(){st.q="";st.s="";st.fav=false;st.only=null;GROUPS.forEach(g=>st[g.k].clear());$("#q").value="";apply()}
 $("#clear").addEventListener("click",clearAll);$("#clear2").addEventListener("click",clearAll);
 const filt=$("#filters");
 let drawerPushed=false;
@@ -660,12 +815,14 @@ function saveHash(){
   if(st.q)p.set("q",st.q);if(st.sort!=="add")p.set("sort",st.sort);if(st.s)p.set("set",st.s);
   GROUPS.forEach(g=>{if(st[g.k].size)p.set(g.k,[...st[g.k]].join("|"))});
   if(st.c)p.set("cert",st.c);
+  if(st.fav)p.set("saved","1");if(st.only)p.set("list",[...st.only].join("."));
   const h=p.toString();try{history.replaceState(null,"",h?"#"+h:location.pathname+location.search)}catch(e){}
 }
 function loadHash(){
   const p=new URLSearchParams(location.hash.slice(1));
   st.q=p.get("q")||"";st.sort=p.get("sort")||"add";st.s=p.get("set")||"";
   GROUPS.forEach(g=>{(p.get(g.k)||"").split("|").filter(Boolean).forEach(v=>st[g.k].add(v))});
+  st.fav=p.get("saved")==="1";const ls=p.get("list");st.only=ls?new Set(ls.split(".").map(Number).filter(Boolean)):null;
   $("#q").value=st.q;$("#sort").value=st.sort;return p.get("cert")||"";
 }
 
