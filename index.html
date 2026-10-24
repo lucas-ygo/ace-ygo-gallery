@@ -309,7 +309,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 
-<script src="data.js?v=b3d3feee5c"></script>
+<script src="data.js?v=cc7aa53baf"></script>
 <script>
 (function(){
 "use strict";
@@ -323,7 +323,7 @@ const band=p=>!p?BANDS[5]:p<5?BANDS[0]:p<25?BANDS[1]:p<100?BANDS[2]:p<250?BANDS[
 const ERAS=["Duel Monsters (to 2004)", "GX (2005–2007)", "5D's (2008–2010)", "ZEXAL (2011–2013)", "ARC-V (2014–2016)", "VRAINS (2017–2019)", "SEVENS (2020–2021)", "GO RUSH!! (2022–2024)", "2025 onwards"];
 const GROUPS=[
   {k:"g",title:"Grade",cls:"grade",label:v=>"ACE "+v,get:i=>[i.g],sortNum:true,open:true},
-  {k:"e",title:"Anime era",label:v=>v,get:i=>[i.e],order:ERAS,open:true},
+  {k:"e",title:"Anime era",hint:"when the card first came out",label:v=>v,get:i=>[i.e],order:ERAS,open:true},
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
   {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
@@ -339,7 +339,7 @@ const GROUPS=[
 const PRESETS=[
   {n:"Just added",set:{nw:["Just added"]},when:()=>DATA.some(i=>i.nw)},
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
-  {n:"Duel Monsters originals",set:{e:[ERAS[0]]}},
+  {n:"Duel Monsters-era cards",set:{e:[ERAS[0]]}},
   {n:"Extended arts",set:{f:["Extended art"]}},
   {n:"Ultimate rares",set:{f:["Ultimate rare"]}},
   {n:"Over \u00a3100",set:{rv:[BANDS[3],BANDS[4]]}},
@@ -477,7 +477,7 @@ function openLB(idx,item){
       <div class="big"><b>${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
       ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
       <dl><dt>Card number</dt><dd>${esc(i.no)}</dd><dt>Set</dt><dd>${esc(i.s)}</dd>
-      <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd><dt>Finish</dt><dd>${esc(i.v)}</dd>
+      <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card first released</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
       ${i.p?`<dt>Raw price</dt><dd>${money(i.p)}</dd>`:""}</dl>
