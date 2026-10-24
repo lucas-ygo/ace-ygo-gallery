@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ACE Yu-Gi-Oh! slab gallery (unofficial)</title>
-<meta name="description" content="Browse the art on ACE-graded Yu-Gi-Oh! slabs. Filter by grade, era, rarity and set. Unofficial fan project.">
+<meta name="description" content="Browse the art on ACE-graded Yu-Gi-Oh! slabs found so far. Work in progress. Filter by grade, era, rarity and set. Unofficial fan project.">
 <meta name="theme-color" content="#06172c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -17,7 +17,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ACE Yu-Gi-Oh! slab gallery (unofficial)">
 <meta property="og:title" content="ACE Yu-Gi-Oh! slab gallery (unofficial)">
-<meta property="og:description" content="Browse the art on ACE-graded Yu-Gi-Oh! slabs. Filter by grade, era, rarity and set.">
+<meta property="og:description" content="ACE-graded Yu-Gi-Oh! slabs found so far (work in progress). Filter by grade, era, rarity and set.">
 <meta property="og:url" content="https://lucas-ygo.github.io/ace-ygo-gallery/">
 <meta property="og:image" content="https://lucas-ygo.github.io/ace-ygo-gallery/og/site.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -66,6 +66,8 @@ footer .cof{color:var(--gold)}
 .hstats b{font:800 30px/1 var(--display);letter-spacing:.02em;color:var(--foil)}
 .lede{margin:8px 0 0;color:var(--mist);max-width:62ch}
 .scan{margin:10px 0 0;font-size:13px;line-height:1.45;color:var(--mist);display:flex;gap:8px;align-items:baseline;max-width:62ch}
+.wipnote{margin:12px 0 0;max-width:62ch;font-size:13.5px;line-height:1.45;color:var(--mist);padding:8px 12px;border-left:3px solid var(--gold);background:var(--raise);border-radius:0 8px 8px 0}
+.wipnote b{color:var(--gold);font-weight:600}
 .scan[hidden]{display:none}.scan b{color:var(--foil);font-weight:600}
 .dot{width:8px;height:8px;border-radius:50%;background:#4cc38a;flex:none}.dot.stale{background:#e0a64b}
 
@@ -300,11 +302,13 @@ footer p{margin:0 0 6px;max-width:80ch}
 <header class="top"><div class="wrap">
   <p class="eyebrow">Unofficial fan archive</p>
   <h1>ACE <em>Yu-Gi-Oh!</em> slab gallery</h1>
-  <p class="lede">Every ACE-graded Yu-Gi-Oh! slab we can find, with the full art, the grade and a raw price.</p>
+  <p class="lede">ACE-graded Yu-Gi-Oh! slabs we have found so far, with the full art, the grade and a raw price.</p>
+  <p class="wipnote"><b>Work in progress.</b> The scanner is still working back through older certs, so lots of slabs are not here yet. New ones are added as they are found.</p>
   <div class="hstats" id="hstats" hidden></div>
   <p class="scan" id="scan" hidden></p>
   <div class="hlinks"><button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
   <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" hidden>&#9749; Buy me a coffee</a>
+  <a class="coffee" id="igbtn" href="#" target="_blank" rel="noopener noreferrer" hidden>&#128247; Instagram</a>
   <button class="coffee" id="installbtn" type="button" hidden>&#10133; Install app</button></div>
 </div></header>
 
@@ -344,6 +348,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <footer><div class="wrap">
   <p>Unofficial fan project. Not affiliated with ACE Grading or Konami. Slab photos and labels belong to ACE Grading and card art belongs to Konami. Every slab links back to its public ACE cert page.</p>
   <p id="fcof" hidden>If you enjoy the gallery, you can <a class="cof" id="fcoflink" href="#" target="_blank" rel="noopener noreferrer">buy me a coffee</a>. It helps keep the scanner running.</p>
+  <p id="figp" hidden>Follow the project on <a class="cof" id="figlink" href="#" target="_blank" rel="noopener noreferrer">Instagram</a> for highlights and updates.</p>
   <p id="tipapp">Tip: on a phone, use Share &rarr; Add to Home Screen to keep the gallery one tap away. Your saved slabs (&#9825;) stay on your own device.</p>
   <p id="stamp"></p>
 </div></footer>
@@ -356,7 +361,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=ba145fa7ce"></script>
+<script src="data.js?v=36ea97e3e4"></script>
 <script>
 (function(){
 "use strict";
@@ -655,6 +660,9 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
 /* ---------- support link ---------- */
 (function(){const u=String((window.GALLERY&&window.GALLERY.support)||"");if(!/^https:\/\//i.test(u))return;
   const a=$("#coffee"),f=$("#fcoflink");if(a){a.href=u;a.hidden=false}if(f){f.href=u;$("#fcof").hidden=false}})();
+/* ---------- instagram link ---------- */
+(function(){const u=String((window.GALLERY&&window.GALLERY.instagram)||"");if(!/^https:\/\/(www\.)?instagram\.com\//i.test(u))return;
+  const a=$("#igbtn"),f=$("#figlink");if(a){a.href=u;a.hidden=false}if(f){f.href=u;$("#figp").hidden=false}})();
 /* ---------- header numbers ---------- */
 (function(){const el=$("#hstats");if(!el||!DATA.length)return;
   const gem=DATA.filter(i=>String(i.g)==="10").length,sets=new Set(DATA.map(i=>i.s).filter(Boolean)).size;
