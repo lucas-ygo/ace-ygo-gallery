@@ -35,7 +35,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 .iconbtn{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);line-height:1;font-size:16px}
 header.top{padding:28px 0 18px}
-h1{margin:0;font:800 clamp(34px,5vw,54px)/0.95 var(--display);letter-spacing:.01em}
+h1{margin:0;font:800 clamp(40px,7vw,72px)/0.9 var(--display);letter-spacing:.02em;text-transform:uppercase}
+h1 em{font-style:normal;color:var(--gold)}
+.eyebrow{margin:0 0 10px;font:600 12px/1 var(--ui);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.hstats{display:flex;flex-wrap:wrap;gap:6px 26px;margin:16px 0 0}
+.hstats span{font:600 12px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mist);display:flex;align-items:baseline;gap:8px}
+.hstats b{font:800 30px/1 var(--display);letter-spacing:.02em;color:var(--foil)}
 .lede{margin:8px 0 0;color:var(--mist);max-width:62ch}
 .scan{margin:10px 0 0;font-size:13px;line-height:1.45;color:var(--mist);display:flex;gap:8px;align-items:baseline;max-width:62ch}
 .scan[hidden]{display:none}.scan b{color:var(--foil);font-weight:600}
@@ -52,6 +57,11 @@ h1{margin:0;font:800 clamp(34px,5vw,54px)/0.95 var(--display);letter-spacing:.01
 .count small{font:400 14px var(--ui);color:var(--mist);margin-left:4px}
 .filter-btn{display:none;padding:10px 14px;border-radius:10px;border:1px solid var(--gold-dim);background:var(--raise);color:var(--gold);font-weight:600}
 
+.actv{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px}.actv[hidden]{display:none}
+.ac{padding:5px 11px;border-radius:999px;border:1px solid var(--gold-dim);background:var(--raise);color:var(--foil);font-size:13px;line-height:1.3}
+.ac::after{content:" \2715";color:var(--mist);font-size:11px}.ac.not{border-color:#b9645b}.ac:hover{border-color:var(--gold)}
+.acl{background:none;border:0;color:var(--gold);font-weight:600;font-size:13px;padding:5px 8px}
+@media (min-width:861px){.filter-btn{display:inline-block}.layout.nofilters{grid-template-columns:1fr}.layout.nofilters aside#filters{display:none}}
 .layout{display:grid;grid-template-columns:270px 1fr;gap:28px;padding-top:22px;padding-bottom:60px;align-items:start}
 aside#filters{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;padding-right:6px;scrollbar-width:thin}
 .fgroup{padding:0 0 18px;margin:0 0 18px;border-bottom:1px solid var(--line)}
@@ -201,7 +211,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 @media (max-width:860px){
   #viewbtn{display:inline-block}
   .wrap{padding:0 max(14px,env(safe-area-inset-left)) 0 max(14px,env(safe-area-inset-right))}
-  header.top{padding:16px 0 10px}h1{font-size:30px}.lede{font-size:13.5px;line-height:1.4;margin-top:6px}
+  header.top{padding:18px 0 12px}h1{font-size:42px}.lede{font-size:14px;line-height:1.4;margin-top:10px}.hstats{margin-top:14px;gap:6px 20px}.hstats b{font-size:26px}
   .bar .wrap{gap:8px;padding-top:10px;padding-bottom:10px}
   .search{order:1;flex:1 1 100%}.search input,.sort{font-size:16px}
   .sort{order:2;flex:1 1 45%;min-width:0}.filter-btn{order:3;flex:none;padding:10px 16px}
@@ -243,8 +253,10 @@ footer p{margin:0 0 6px;max-width:80ch}
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <h1>ACE Yu-Gi-Oh! slab gallery</h1>
-  <p class="lede">The art on every ACE-graded Yu-Gi-Oh! slab we have found, gathered from public cert pages. Filter by grade, era, finish, sub-grades and more, then tap a slab for the details.</p>
+  <p class="eyebrow">Unofficial fan archive</p>
+  <h1>ACE <em>Yu-Gi-Oh!</em> slab gallery</h1>
+  <p class="lede">Every ACE-graded Yu-Gi-Oh! slab we can find, with the full art, the grade and a raw price.</p>
+  <div class="hstats" id="hstats" hidden></div>
   <p class="scan" id="scan" hidden></p>
 </div></header>
 
@@ -273,6 +285,7 @@ footer p{margin:0 0 6px;max-width:80ch}
     <button class="drawer-done" id="done" type="button">Show slabs</button>
   </aside>
   <main>
+    <div class="actv" id="actv" hidden></div>
     <div class="grid" id="grid"></div>
     <div class="empty" id="empty" hidden>No slabs match these filters.<br><button id="clear2" type="button">Clear all filters</button></div>
     <div id="sentinel"></div>
@@ -421,11 +434,25 @@ function fitText(cards){
 }
 let fitT;function refit(){clearTimeout(fitT);fitT=setTimeout(()=>fitText($("#grid").children),120)}
 addEventListener("resize",refit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(refit);
+const lay=document.querySelector(".layout"),desk=matchMedia("(min-width:861px)");
+let fhide=false;try{fhide=localStorage.getItem("fhide")==="1"}catch(e){}
+function paintFilt(){const fa=GROUPS.reduce((a,g)=>a+st[g.k].size,0)+(st.s?1:0),b=$("#openFilters");
+  lay.classList.toggle("nofilters",fhide&&desk.matches);
+  b.textContent=(desk.matches?(fhide?"Show filters":"Hide filters"):"Filters")+(fa?" \u00b7 "+fa:"");b.setAttribute("aria-expanded",desk.matches?String(!fhide):"false")}
+desk.addEventListener&&desk.addEventListener("change",paintFilt);
+function renderActive(){const el=$("#actv"),out=[];
+  const ch=(k,v,label,not)=>`<button type="button" class="ac${not?" not":""}" data-k="${k}" data-v="${esc(v)}" title="Remove this filter">${esc(label)}</button>`;
+  if(st.q)out.push(ch("q","","Search: \u201c"+st.q+"\u201d"));
+  if(st.s)out.push(ch("s","",st.s));
+  GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
+  el.hidden=!out.length;el.innerHTML=out.join("")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
+$("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
+  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else st[k].delete(b.dataset.v);apply(true)});
 function anyActive(){return st.q||st.s||GROUPS.some(g=>st[g.k].size)}
 function apply(keepScroll){
   view=DATA.filter(i=>matches(i)).sort(sorter());
   $("#grid").innerHTML="";shown=0;renderMore();
-  {const fa=GROUPS.reduce((a,g)=>a+st[g.k].size,0)+(st.s?1:0);$("#openFilters").textContent=fa?"Filters \u00b7 "+fa:"Filters"}
+  paintFilt();renderActive();
   $("#n").textContent=fmt(view.length);$("#of").textContent=" of "+fmt(DATA.length)+" slabs";
   $("#empty").hidden=view.length>0;
   document.querySelectorAll(".clear").forEach(b=>b.classList.toggle("show",!!anyActive()));
@@ -557,6 +584,11 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   if(!root.dataset.theme)root.dataset.theme="dark";paint();
   b.addEventListener("click",()=>{root.dataset.theme=root.dataset.theme==="light"?"dark":"light";try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint()});})();
 
+/* ---------- header numbers ---------- */
+(function(){const el=$("#hstats");if(!el||!DATA.length)return;
+  const gem=DATA.filter(i=>String(i.g)==="10").length,sets=new Set(DATA.map(i=>i.s).filter(Boolean)).size;
+  const bit=(n,l)=>`<span><b>${fmt(n)}</b>${l}</span>`;
+  el.innerHTML=bit(DATA.length,DATA.length===1?"slab":"slabs")+bit(gem,"Gem Mint 10"+(gem===1?"":"s"))+bit(sets,sets===1?"set":"sets");el.hidden=false})();
 /* ---------- scanner status note ---------- */
 (function(){const el=$("#scan");if(!el)return;let last=null;
   const ago=ts=>{const s=Math.max(0,Date.now()/1000-ts);if(s<90)return"just now";const m=Math.round(s/60);if(m<60)return m+" minute"+(m>1?"s":"")+" ago";
@@ -604,7 +636,7 @@ function clearAll(){st.q="";st.s="";GROUPS.forEach(g=>st[g.k].clear());$("#q").v
 $("#clear").addEventListener("click",clearAll);$("#clear2").addEventListener("click",clearAll);
 const filt=$("#filters");
 let drawerPushed=false;
-$("#openFilters").addEventListener("click",()=>{filt.classList.add("open");try{history.pushState({f:1},"");drawerPushed=true}catch(e){}});
+$("#openFilters").addEventListener("click",()=>{if(desk.matches){fhide=!fhide;try{localStorage.setItem("fhide",fhide?"1":"0")}catch(e){}paintFilt();refit();return}filt.classList.add("open");try{history.pushState({f:1},"");drawerPushed=true}catch(e){}});
 $("#done").addEventListener("click",()=>{filt.classList.remove("open");if(drawerPushed){drawerPushed=false;try{history.back()}catch(e){}}});
 addEventListener("popstate",()=>{if(filt.classList.contains("open")){filt.classList.remove("open");drawerPushed=false}});
 new IntersectionObserver(es=>{if(es[0].isIntersecting&&shown<view.length)renderMore()},{rootMargin:"600px"}).observe($("#sentinel"));
