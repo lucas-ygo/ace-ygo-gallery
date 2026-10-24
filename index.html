@@ -148,7 +148,7 @@ main{min-width:0}
 .info{display:flex;justify-content:space-between;gap:8px;padding:10px 12px 12px;align-items:flex-start}
 .info .txt{min-width:0}
 .nm{font-weight:600;font-size:14px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.sub.pr{color:var(--gold);font-weight:600}
+.sub.pr{color:var(--gold);font-weight:600}.sub.pr.none{color:var(--mist);font-weight:500;font-style:italic}
 .sub{color:var(--mist);font-size:12.5px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gr{text-align:center;flex:none;line-height:.9}
 .gr b{display:block;font:800 34px/0.9 var(--display);color:var(--gold)}
@@ -372,7 +372,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=73b133a690"></script>
+<script src="data.js?v=6328cf6715"></script>
 <script>
 (function(){
 "use strict";
@@ -381,7 +381,8 @@ const ORIGIN=1490916;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>n.toLocaleString("en-GB");
-const money=p=>"\u00a3"+(p>=100?fmt(Math.round(p)):p.toFixed(2));
+const money=p=>"\u00a3"+Number(p).toLocaleString("en-GB",{minimumFractionDigits:2,maximumFractionDigits:2});
+const moneyWhole=p=>"\u00a3"+Math.round(p).toLocaleString("en-GB");
 const BANDS=["Under \u00a35","\u00a35 \u2013 \u00a325","\u00a325 \u2013 \u00a3100","\u00a3100 \u2013 \u00a3250","\u00a3250+","No price yet"];
 const band=p=>!p?BANDS[5]:p<5?BANDS[0]:p<25?BANDS[1]:p<100?BANDS[2]:p<250?BANDS[3]:BANDS[4];
 const ERAS=["Duel Monsters (to 2004)", "GX (2005–2007)", "5D's (2008–2010)", "ZEXAL (2011–2013)", "ARC-V (2014–2016)", "VRAINS (2017–2019)", "SEVENS (2020–2021)", "GO RUSH!! (2022–2024)", "2025 onwards"];
@@ -487,7 +488,7 @@ function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
-    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:""}</div>
+    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}</div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
     <button type="button" class="favb${fav.has(i.c)?" on":""}" data-c="${i.c}" aria-pressed="${fav.has(i.c)}" aria-label="Save ${esc(i.n)}" title="Save to my list">${fav.has(i.c)?"\u2665":"\u2661"}</button></div>`;
@@ -554,8 +555,8 @@ function openLB(idx,item){
       <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card debut</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
-      ${i.p?`<dt>Raw price</dt><dd>${money(i.p)}</dd>`:""}</dl>
-      ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:""}
+      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}</dd></dl>
+      ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
@@ -630,7 +631,7 @@ function openCmp(){
     +`<div class="cl">Grade</div>`+(()=>{const g=its.map(gnum),mx=Math.max(...g),diff=g.some(v=>v!==mx);return its.map((i,k)=>`<div class="cc cg${diff&&g[k]===mx?" best":""}">${esc(i.g)}<small>${esc((i.gn||"").toUpperCase())}</small></div>`).join("")})()
     +["Surface","Centering","Edges","Corners"].map((nm,k)=>num(nm,i=>i.sg&&i.sg[k]!=null?i.sg[k]:null)).join("")
     +row("Card number",i=>dash(i.no))+row("Set",i=>dash(i.s))+row("Release year",i=>dash(i.y))+row("Finish",i=>dash(i.v))
-    +row("Edition",i=>dash(i.ed))+row("Language",i=>dash(i.l))+row("Label",i=>dash(i.lb))+row("Raw price",i=>i.p?money(i.p):"\u2014")+row("Cert number",i=>dash(i.c))
+    +row("Edition",i=>dash(i.ed))+row("Language",i=>dash(i.l))+row("Label",i=>dash(i.lb))+row("Raw price",i=>i.p?money(i.p):"TBC")+row("Cert number",i=>dash(i.c))
     +row("",i=>`<a class="btn" href="${esc(i.u)}" target="_blank" rel="noopener">Open on ACE</a>`)
     +`</div></div>`;
   if(!cmpd.open)cmpd.showModal();
@@ -687,7 +688,9 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     const h=Math.round(s/3600);if(h<48)return h+" hour"+(h>1?"s":"")+" ago";const d=Math.round(s/86400);return d+" days ago"};
   function show(d){last=d;const parts=[];
     if(d.find_ts)parts.push(`Last Yu-Gi-Oh! slab found <b>${ago(d.find_ts)}</b>${d.find_name?" ("+esc(d.find_name)+")":""}.`);
-    if(d.scan_ts)parts.push(`Scanner checked in ${ago(d.scan_ts)}${d.scan_cert?", up to cert "+fmt(d.scan_cert):""}.`);
+    if(d.scan_ts)parts.push(`Scanner checked in ${ago(d.scan_ts)}.`);
+    if(d.scan_ts&&d.scan_cert)parts.push(`Newest certs read up to <b>${fmt(d.scan_cert)}</b>.`);
+    if(d.scan_ts&&d.back_pct!=null)parts.push(d.back_pct>0?`Older certs: <b>${d.back_pct<1?"<1":Math.round(d.back_pct)}%</b> of the way back from ${fmt(d.back_from)} to ${fmt(d.back_to)}.`:`Older certs (back to ${fmt(d.back_to)}) come next.`);
     if(!parts.length)return;const fresh=d.scan_ts&&Date.now()/1000-d.scan_ts<2.5*3600;
     el.innerHTML=`<span class="dot${fresh?"":" stale"}" aria-hidden="true"></span><span>${parts.join(" ")}</span>`;el.hidden=false}
   function load(){try{fetch("status.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)show(d)}).catch(()=>{})}catch(e){}}
@@ -753,7 +756,7 @@ paintFav();
     sd.innerHTML=`<div class="cmpbox stat"><h3>Gallery stats</h3><button class="x" type="button" id="statx" aria-label="Close">&times;</button>
       ${sc?`<div class="stabs" role="tablist"><button type="button" role="tab" aria-selected="true" data-tab="yg">Yu-Gi-Oh!</button><button type="button" role="tab" aria-selected="false" data-tab="sc">Scanner</button></div>`:""}
       <div class="spane" data-pane="yg"><div class="stiles">${tile(fmt(DATA.length),"slabs")}${tile(fmt(uniq),"different cards")}${tile(fmt(gems),"Gem Mint 10s"+(DATA.length?" ("+Math.round(gems/DATA.length*100)+"%)":""))}
-        ${tile(avg?avg.toFixed(1):"\u2014","average grade")}${priced.length?tile(money(tot),"raw value of "+fmt(priced.length)+" priced"):""}</div>
+        ${tile(avg?avg.toFixed(1):"\u2014","average grade")}${priced.length?tile(moneyWhole(tot),"raw value of "+fmt(priced.length)+" priced"):""}</div>
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${money(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
