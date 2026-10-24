@@ -235,7 +235,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="lb" aria-label="Slab details"></dialog>
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 
-<script src="data.js?v=cbc22bdbd8"></script>
+<script src="data.js?v=397244a1f6"></script>
 <script>
 (function(){
 "use strict";
@@ -390,7 +390,7 @@ function openLB(idx,item){
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
       ${i.p?`<dt>Raw price</dt><dd>${money(i.p)}</dd>`:""}</dl>
-      ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (TCGplayer market price, converted to GBP). A graded slab can be worth more or less.</p>`:""}
+      ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:""}
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
