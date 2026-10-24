@@ -186,9 +186,10 @@ const DATA=(window.GALLERY&&window.GALLERY.items)||[];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>n.toLocaleString("en-GB");
+const ERAS=["Duel Monsters (to 2004)", "GX (2005–2007)", "5D's (2008–2010)", "ZEXAL (2011–2013)", "ARC-V (2014–2016)", "VRAINS (2017–2019)", "SEVENS (2020–2021)", "GO RUSH!! (2022–2024)", "2025 onwards"];
 const GROUPS=[
   {k:"g",title:"Grade",cls:"grade",label:v=>"ACE "+v,get:i=>[i.g],sortNum:true,open:true},
-  {k:"e",title:"Era",label:v=>v,get:i=>[i.e],asc:true,open:true},
+  {k:"e",title:"Anime era",label:v=>v,get:i=>[i.e],order:ERAS,open:true},
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
   {k:"y",title:"Release year",label:v=>v,get:i=>[i.y?String(i.y):""],asc:true},
@@ -201,7 +202,7 @@ const GROUPS=[
 ];
 const PRESETS=[
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
-  {n:"Vintage originals",set:{e:["2002–2004"]}},
+  {n:"Vintage originals",set:{e:[ERAS[0]]}},
   {n:"Lowest grades",set:{g:["1","2","3"]}},
   {n:"Top of its population",set:{pp:["Top of its population"]}}
 ];
@@ -243,7 +244,8 @@ const allOptions={};
 function buildOptions(){
   for(const g of GROUPS){const m={};for(const i of DATA)for(const v of g.get(i)){if(v!=null&&v!=="")m[v]=(m[v]||0)+1}
     let keys=Object.keys(m);
-    if(g.asc){keys.sort((a,b)=>(parseInt(a)||0)-(parseInt(b)||0))}
+    if(g.order){keys.sort((a,b)=>g.order.indexOf(a)-g.order.indexOf(b))}
+    else if(g.asc){keys.sort((a,b)=>(parseInt(a)||0)-(parseInt(b)||0))}
     else if(g.sortNum){keys.sort((a,b)=>(parseFloat(b)||0)-(parseFloat(a)||0))}
     else keys.sort((a,b)=>m[b]-m[a]||a.localeCompare(b));
     allOptions[g.k]=keys}
