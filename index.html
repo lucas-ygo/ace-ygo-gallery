@@ -560,12 +560,12 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   else{lo=100;hi=380;stp=30;def=190;key="tile"}
   v=def;
   try{const t=parseInt(localStorage.getItem(key));if(t>=lo&&t<=hi)v=t}catch(e){}
-  function set(n){v=Math.max(lo,Math.min(hi,n));z.value=v;
+  function set(n){v=Math.max(lo,Math.min(hi,n));z.value=mob?hi+lo-v:v;
     if(mob){root.style.setProperty("--cols",v);root.classList.remove("tiny")}
     else{root.style.setProperty("--tile",v+"px");root.classList.toggle("tiny",v<150)}
     try{localStorage.setItem(key,v)}catch(e){}}
-  set(v);z.addEventListener("input",()=>{set(+z.value);refit()});
-  $("#zout").addEventListener("click",()=>{set(v-stp);refit()});$("#zin").addEventListener("click",()=>{set(v+stp);refit()});
+  set(v);z.addEventListener("input",()=>{set(mob?hi+lo-+z.value:+z.value);refit()});
+  $("#zout").addEventListener("click",()=>{set(mob?v+stp:v-stp);refit()});$("#zin").addEventListener("click",()=>{set(mob?v-stp:v+stp);refit()});
   z.addEventListener("dblclick",()=>{set(def);refit()});
   const vb=$("#viewbtn"),g=$("#grid");let list=false;
   try{list=localStorage.getItem("view")==="list"}catch(e){}
