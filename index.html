@@ -207,9 +207,10 @@ const GROUPS=[
 ];
 const PRESETS=[
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
-  {n:"Vintage originals",set:{e:[ERAS[0]]}},
-  {n:"Lowest grades",set:{g:["1","2","3"]}},
-  {n:"Top of its population",set:{pp:["Top of its population"]}}
+  {n:"Duel Monsters originals",set:{e:[ERAS[0]]}},
+  {n:"Extended arts",set:{f:["Extended art"]}},
+  {n:"Ultimate rares",set:{f:["Ultimate rare"]}},
+  {n:"Battered classics",set:{g:["1","2","3"]}}
 ];
 const st={q:"",sort:"add",s:"",c:""};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
@@ -282,14 +283,25 @@ function renderGroups(){
 function cardHTML(i,idx){
   return `<button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case"><img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
-    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub">${esc(i.v)}</div></div>
+    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub">${esc(i.v)}</div><div class="sub">Cert ${esc(i.c)}</div></div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>`;
 }
 function renderMore(){
   const grid=$("#grid");const end=Math.min(shown+STEP,view.length);
   let h="";for(let k=shown;k<end;k++)h+=cardHTML(view[k],k);
-  grid.insertAdjacentHTML("beforeend",h);shown=end;
+  const before=grid.children.length;
+  grid.insertAdjacentHTML("beforeend",h);shown=end;fitText([...grid.children].slice(before));
 }
+/* shrink a name (or detail line) a little when it would otherwise be cut off */
+function fitText(cards){
+  for(const c of cards){
+    const nm=c.querySelector(".nm");
+    if(nm){nm.style.fontSize="";let z=14;while(nm.scrollHeight>nm.clientHeight+1&&z>10){z-=.5;nm.style.fontSize=z+"px"}}
+    for(const t of c.querySelectorAll(".sub")){t.style.fontSize="";let z=12.5;while(t.scrollWidth>t.clientWidth+1&&z>10){z-=.5;t.style.fontSize=z+"px"}}
+  }
+}
+let fitT;function refit(){clearTimeout(fitT);fitT=setTimeout(()=>fitText($("#grid").children),120)}
+addEventListener("resize",refit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(refit);
 function anyActive(){return st.q||st.s||GROUPS.some(g=>st[g.k].size)}
 function apply(keepScroll){
   view=DATA.filter(i=>matches(i)).sort(sorter());
@@ -319,8 +331,7 @@ function openLB(idx){
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
-      <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a>
-      <a class="btn" href="${esc(i.im)}" target="_blank" rel="noopener">Full-size image</a></div></div>
+      <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a></div></div>
     <button class="x" type="button" aria-label="Close" id="lbx">&times;</button></div>
     <button class="navbtn prev" type="button" aria-label="Previous slab" id="lbp">&lsaquo;</button>
     <button class="navbtn next" type="button" aria-label="Next slab" id="lbn">&rsaquo;</button>`;
@@ -339,9 +350,9 @@ document.addEventListener("keydown",e=>{if(!dlg.open)return;if(e.key==="ArrowLef
   const def=matchMedia("(max-width:860px)").matches?150:190;let v=def;
   try{const t=parseInt(localStorage.getItem("tile"));if(t>=100&&t<=380)v=t}catch(e){}
   function set(n){v=Math.max(100,Math.min(380,n));z.value=v;root.style.setProperty("--tile",v+"px");root.classList.toggle("tiny",v<150);try{localStorage.setItem("tile",v)}catch(e){}}
-  set(v);z.addEventListener("input",()=>set(+z.value));
-  $("#zout").addEventListener("click",()=>set(v-30));$("#zin").addEventListener("click",()=>set(v+30));
-  z.addEventListener("dblclick",()=>set(def));})();
+  set(v);z.addEventListener("input",()=>{set(+z.value);refit()});
+  $("#zout").addEventListener("click",()=>{set(v-30);refit()});$("#zin").addEventListener("click",()=>{set(v+30);refit()});
+  z.addEventListener("dblclick",()=>{set(def);refit()});})();
 $("#grid").addEventListener("click",e=>{const b=e.target.closest(".card");if(b)openLB(+b.dataset.i)});
 $("#groups").addEventListener("click",e=>{
   const b=e.target.closest(".chip");if(!b)return;
