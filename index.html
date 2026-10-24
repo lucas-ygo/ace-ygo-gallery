@@ -143,7 +143,10 @@ dialog::backdrop{background:rgba(2,10,22,.82)}
   background:radial-gradient(circle at 50% 40%,var(--hi) 0%,var(--case) 66%,var(--raise) 100%)}
 .lb .pic img{max-width:100%;max-height:calc(min(92vh,880px) - 44px);object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.5))}
 .lb{height:min(92vh,880px);grid-template-rows:minmax(0,1fr)}
-.lb .pic{min-height:0;overflow:hidden}
+.lb .pic{min-height:0;overflow:hidden;position:relative}
+.fbtog{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(2,10,22,.72);border:1px solid var(--line);z-index:2}
+.fbtog button{border:0;background:none;color:var(--mist);font:700 13px/1 var(--display);padding:8px 16px;border-radius:999px;cursor:pointer;min-height:34px}
+.fbtog button.on{background:var(--gold);color:#1a1200}
 .lb .det{min-height:0;padding:26px 26px 22px;overflow:auto;display:flex;flex-direction:column;gap:14px}
 .lb h3{margin:0;padding-right:46px;font:800 clamp(28px,4vw,40px)/1 var(--display)}
 .lb .big{display:flex;align-items:baseline;gap:12px}
@@ -309,7 +312,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 
-<script src="data.js?v=5ab083d4dd"></script>
+<script src="data.js?v=d776e72865"></script>
 <script>
 (function(){
 "use strict";
@@ -472,7 +475,7 @@ function openLB(idx,item){
   const others=DATA.filter(x=>x.c!==i.c&&x.no===i.no&&x.n===i.n).sort((a,b)=>gnum(b)-gnum(a)||b.c-a.c).slice(0,12);
   const gname=i.gn?i.gn.toUpperCase():"";
   dlg.innerHTML=`<div class="lb" style="position:relative">
-    <div class="pic"><img src="${esc(i.im)}" alt="${esc(i.n)} in an ACE slab"></div>
+    <div class="pic"><img id="lbimg" src="${esc(i.im)}" alt="${esc(i.n)} in an ACE slab">${i.bk?`<div class="fbtog" role="group" aria-label="Slab side"><button type="button" class="on" data-side="f">Front</button><button type="button" data-side="b">Back</button></div>`:""}</div>
     <div class="det"><div><h3>${i.nw?`<span class="newb inl">NEW</span>`:""}${esc(i.n)}</h3></div>
       <div class="big"><b>${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
       ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
@@ -501,6 +504,8 @@ function copyText(txt){
     const r=document.execCommand("copy");ta.remove();r?ok():no()}catch(e){no()}});
 }
 dlg.addEventListener("click",e=>{
+  const sd=e.target.closest(".fbtog button");
+  if(sd){const i=cur>=0?view[cur]:BYC.get(+st.c);if(i){const im=$("#lbimg");im.src=sd.dataset.side==="b"?i.bk:i.im;im.alt=i.n+(sd.dataset.side==="b"?" (back of slab)":" in an ACE slab");sd.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===sd))}return}
   const o=e.target.closest(".oth");
   if(o){const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
   const cb=e.target.closest("#lbcopy");
