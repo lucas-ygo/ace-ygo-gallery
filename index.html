@@ -172,6 +172,13 @@ dialog::backdrop{background:rgba(2,10,22,.82)}
 .lb .pic{min-height:0;overflow:hidden;position:relative}
 .lb .pic img{user-select:none;-webkit-user-drag:none;touch-action:pan-y;cursor:zoom-in;will-change:transform}
 .lb .pic.zoomed{overflow:hidden!important}.lb .pic.zoomed img{cursor:grab}
+.origin{position:absolute;right:8px;bottom:8px;z-index:2;color:var(--gold);font-size:16px;line-height:1;text-shadow:0 0 8px rgba(214,171,91,.8);pointer-events:none}
+.tiny .origin{font-size:12px;right:5px;bottom:5px}
+.origbn{margin:0;padding:10px 12px;border:1px solid var(--gold-dim);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;background:var(--raise);font-size:13.5px;line-height:1.45;color:var(--foil)}
+.origbn b{color:var(--gold);font-weight:600}
+.spark{position:fixed;top:-30px;z-index:9999;color:var(--gold);pointer-events:none;text-shadow:0 0 10px rgba(214,171,91,.9);animation:spk linear forwards}
+@keyframes spk{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.spark{display:none}}
 .zhint{position:absolute;left:12px;top:10px;font:600 11px/1 var(--ui);letter-spacing:.06em;color:var(--mist);background:rgba(2,10,22,.55);padding:6px 9px;border-radius:999px;pointer-events:none;z-index:2;transition:opacity .2s}
 .zoomed .zhint{opacity:0}
 .sbars{display:flex;flex-direction:column;gap:5px;margin:6px 0 14px}
@@ -366,6 +373,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 (function(){
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
+const ORIGIN=1490916;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>n.toLocaleString("en-GB");
@@ -474,7 +482,7 @@ const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
-    <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
+    <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:""}</div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
@@ -535,6 +543,7 @@ function openLB(idx,item){
   dlg.innerHTML=`<div class="lb" style="position:relative">
     <div class="pic"><img id="lbimg" src="${esc(i.im)}" alt="${esc(i.n)} in an ACE slab">${i.bk?`<div class="fbtog" role="group" aria-label="Slab side"><button type="button" class="on" data-side="f">Front</button><button type="button" data-side="b">Back</button></div>`:""}</div>
     <div class="det"><div><h3>${i.nw?`<span class="newb inl">NEW</span>`:""}${esc(i.n)}</h3></div>
+      ${i.c===ORIGIN?`<p class="origbn"><b>\u2605 Where it all started.</b> Cert ${ORIGIN} is the creator&rsquo;s very first ACE slab, and the first cert this scanner ever read.</p>`:""}
       <div class="big"><b>${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
       ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
       <dl><dt>Card number</dt><dd>${esc(i.no)}</dd><dt>Set</dt><dd>${esc(i.s)}</dd>
@@ -679,6 +688,24 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     el.innerHTML=`<span class="dot${fresh?"":" stale"}" aria-hidden="true"></span><span>${parts.join(" ")}</span>`;el.hidden=false}
   function load(){try{fetch("status.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)show(d)}).catch(()=>{})}catch(e){}}
   load();setInterval(load,300000);setInterval(()=>{if(last)show(last)},60000)})();
+
+/* ---------- easter egg ---------- */
+function celebrate(){
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  for(let k=0;k<34;k++){const s=document.createElement("span");s.className="spark";s.textContent="\u2605";
+    s.style.left=Math.random()*100+"vw";s.style.fontSize=(12+Math.random()*22)+"px";
+    s.style.animationDuration=(2+Math.random()*2.2)+"s";s.style.animationDelay=(Math.random()*.8)+"s";
+    document.body.appendChild(s);setTimeout(()=>s.remove(),5200)}
+}
+function openOrigin(){const i=BYC.get(ORIGIN);if(!i)return;
+  document.querySelectorAll("dialog[open]").forEach(d=>d.close());
+  const k=view.findIndex(x=>x.c===ORIGIN);openLB(k,k<0?i:undefined);celebrate()}
+(function(){const seq=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let n=0;
+  addEventListener("keydown",e=>{const tg=e.target&&e.target.tagName;if(tg==="INPUT"||tg==="TEXTAREA"||tg==="SELECT")return;
+    const k=e.key.length===1?e.key.toLowerCase():e.key;n=(k===seq[n])?n+1:(k===seq[0]?1:0);
+    if(n===seq.length){n=0;openOrigin()}});
+  const eb=document.querySelector(".eyebrow");let taps=0,tt;
+  if(eb)eb.addEventListener("click",()=>{taps++;clearTimeout(tt);tt=setTimeout(()=>{taps=0},900);if(taps>=5){taps=0;openOrigin()}})})();
 
 /* ---------- saved slabs ---------- */
 let favDirty=false;
