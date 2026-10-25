@@ -360,6 +360,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 }
 </style>
 <script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="duel"||t==="light"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<script data-goatcounter="https://lucas-ygo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 <div class="frieze" aria-hidden="true"></div>
@@ -426,12 +427,13 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=52749a1966"></script>
+<script src="data.js?v=4775fd43bb"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest(".sale a");if(a&&window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"click-ebay",title:"eBay listing click",event:true})}catch(x){}});
 const SALES=window.SALES||{};DATA.forEach(i=>{const s=SALES[i.no+"|"+i.g];if(s&&s.length)i.eb=s});
 const ORIGIN=1490916;
 const $=s=>document.querySelector(s);
