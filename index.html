@@ -159,6 +159,9 @@ main{min-width:0}
 .zoom button{all:unset;cursor:pointer;padding:4px 6px;border-radius:6px}.zoom button:hover{color:var(--foil)}
 .cw{position:relative;display:flex;container-type:inline-size}
 .newb{position:absolute;top:9px;right:9px;z-index:2;background:var(--gold);color:var(--ongold);font:800 11px/1 var(--ui);letter-spacing:.09em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.saleb{position:absolute;top:9px;left:9px;z-index:2;background:#1b8a4a;color:#fff;font:800 11px/1 var(--ui);letter-spacing:.05em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.tiny .saleb{top:5px;left:5px;font-size:9px;padding:3px 6px}
+.sale{margin:12px 0}.sale h4{margin:0 0 8px}.sale .btn{display:inline-block;margin:0 8px 8px 0}
 .newb.inl{position:static;display:inline-block;vertical-align:middle;margin:0 8px 4px 0;font-size:12px}
 .tiny .newb{top:5px;right:5px;font-size:9px;padding:3px 6px}
 .cmpb{position:absolute;top:8px;left:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--barbg);color:var(--foil);font-size:18px;line-height:1;padding:0;z-index:2;opacity:.75}
@@ -423,11 +426,13 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=8972cd7ac3"></script>
+<script src="data.js?v=8ae0e5f849"></script>
+<script src="sales.js"></script>
 <script>
 (function(){
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
+const SALES=window.SALES||{};DATA.forEach(i=>{const s=SALES[i.no+"|"+i.g];if(s&&s.length)i.eb=s});
 const ORIGIN=1490916;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -443,6 +448,7 @@ const GROUPS=[
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
   {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
+  {k:"eb",title:"For sale",hint:"on eBay now",label:v=>v,get:i=>i.eb?["On eBay now"]:[],when:()=>DATA.some(i=>i.eb)},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
   {k:"y",title:"Release year",label:v=>v,get:i=>[i.y?String(i.y):""],asc:true},
   {k:"f",title:"Finish",hint:"match all",label:v=>v,get:i=>i.t||[],all:true,open:true},
@@ -536,7 +542,7 @@ const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
-    <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
+    <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}${i.eb?`<span class="saleb" title="Listed on eBay">eBay \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}</div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
@@ -610,6 +616,7 @@ function openLB(idx,item){
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
       ${others.length?`<div class="others"><h4>Other slabs of this card</h4><div class="orow">${others.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.v)} \u00b7 ACE ${esc(o.g)} \u00b7 cert ${esc(o.c)}"><img src="${esc(o.th)}" alt=""><b>${esc(o.g)}</b><small>${esc(o.v)}</small></button>`).join("")}</div></div>`:""}
+      ${i.eb?`<div class="sale"><h4>For sale on eBay</h4>${i.eb.slice(0,3).map(x=>`<a class="btn gold" href="${esc(x.u)}" target="_blank" rel="noopener sponsored">${esc(money(x.p))} \u00b7 View listing</a>`).join("")}<p class="note">Found by card and grade, so a listing may be another slab of this card. Check the photos for cert ${esc(i.c)}.</p></div>`:""}
       <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a>
         <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
