@@ -197,7 +197,8 @@ dialog::backdrop{background:rgba(var(--scrim),.82)}
   background:radial-gradient(circle at 50% 40%,var(--hi) 0%,var(--case) 66%,var(--raise) 100%)}
 .lb .pic img{max-width:100%;max-height:calc(min(92vh,880px) - 44px);object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.5))}
 .lb{height:min(92vh,880px);grid-template-rows:minmax(0,1fr)}
-.lb .pic{min-height:0;overflow:hidden;position:relative}
+.lb .pic{min-height:0;overflow:hidden;position:relative;grid-template-rows:auto minmax(0,1fr) auto;justify-items:center;align-items:center;row-gap:10px;padding:12px 20px 14px}
+.lb .pic img{grid-row:2;max-height:calc(min(92vh,880px) - 130px)}
 .lb .pic img{user-select:none;-webkit-user-drag:none;touch-action:pan-y;cursor:zoom-in;will-change:transform}
 .lb .pic.zoomed{overflow:hidden!important}.lb .pic.zoomed img{cursor:grab}
 .origin{position:absolute;right:8px;bottom:8px;z-index:2;color:var(--gold);font-size:16px;line-height:1;text-shadow:0 0 8px color-mix(in srgb,var(--gold) 80%,transparent);pointer-events:none}
@@ -207,7 +208,7 @@ dialog::backdrop{background:rgba(var(--scrim),.82)}
 .spark{position:fixed;top:-30px;z-index:9999;color:var(--gold);pointer-events:none;text-shadow:0 0 10px color-mix(in srgb,var(--gold) 90%,transparent);animation:spk linear forwards}
 @keyframes spk{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
 @media (prefers-reduced-motion:reduce){.spark{display:none}}
-.zhint{position:absolute;left:12px;top:10px;font:600 11px/1 var(--ui);letter-spacing:.06em;color:var(--mist);background:rgba(var(--scrim),.55);padding:6px 9px;border-radius:999px;pointer-events:none;z-index:2;transition:opacity .2s}
+.zhint{grid-row:1;position:static;align-self:start;font:600 11px/1 var(--ui);letter-spacing:.06em;color:var(--mist);background:rgba(var(--scrim),.55);padding:6px 9px;border-radius:999px;pointer-events:none;z-index:2;transition:opacity .2s}
 .zoomed .zhint{opacity:0}
 .sbars{display:flex;flex-direction:column;gap:5px;margin:6px 0 14px}
 .sbar{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(90px,42%) 1fr 34px;gap:10px;align-items:center;cursor:pointer;padding:3px 4px;border-radius:8px;font-size:13px}
@@ -223,7 +224,7 @@ dialog::backdrop{background:rgba(var(--scrim),.82)}
 .sbar.nc{cursor:default}.sbar.nc:hover{background:none}
 .stat h4{margin:14px 0 4px;font:600 14px/1.2 var(--ui);color:var(--mist)}
 .stopl{display:flex;gap:8px;flex-wrap:wrap}
-.fbtog{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(var(--scrim),.72);border:1px solid var(--line);z-index:2}
+.fbtog{grid-row:3;position:static;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(var(--scrim),.72);border:1px solid var(--line);z-index:2}
 .fbtog button{border:0;background:none;color:var(--mist);font:700 13px/1 var(--display);padding:8px 16px;border-radius:999px;cursor:pointer;min-height:34px}
 .fbtog button.on{background:var(--gold);color:var(--ongold)}
 .lb .det{min-height:0;padding:26px 26px 22px;overflow:auto;display:flex;flex-direction:column;gap:14px}
@@ -422,7 +423,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=84be0ac76b"></script>
+<script src="data.js?v=17b79c6a5d"></script>
 <script>
 (function(){
 "use strict";
