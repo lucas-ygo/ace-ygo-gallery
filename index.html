@@ -423,7 +423,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=51fd4a0c5d"></script>
+<script src="data.js?v=812a2d4609"></script>
 <script>
 (function(){
 "use strict";
@@ -457,7 +457,7 @@ const PRESETS=[
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
   {n:"Duel Monsters-era cards",set:{e:[ERAS[0]]}},
   {n:"Grand master rares",set:{f:["Grand master"]},when:()=>DATA.some(i=>(i.t||[]).includes("Grand master"))},
-  {n:"Over \u00a3100",set:{rv:[BANDS[3],BANDS[4]]}}
+  {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))}
 ];
 const st={q:"",sort:"add",s:"",c:"",fav:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
