@@ -435,7 +435,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=3d18ce0b9e"></script>
+<script src="data.js?v=2e96f372fe"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -676,7 +676,7 @@ function shareCard(i){
       let cx=(W-tot)/2;chips.forEach((t,k)=>{pill(t,k===0,cx+wd[k]/2-8,y);cx+=wd[k]});
       if(i.p&&i.p>=20){x.fillStyle="#a9b8d3";x.font="500 34px "+U;x.fillText("Raw about £"+Math.round(i.p).toLocaleString("en-GB"),W/2,y+86)}
       x.fillStyle="#6f86ad";x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
-      const host=(location.host+location.pathname).replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+      const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
       x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-110);
       x.fillStyle="#52698f";x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-64);
       cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
