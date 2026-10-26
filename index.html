@@ -363,11 +363,11 @@ footer p{margin:0 0 6px;max-width:80ch}
 @media (max-width:860px){
   /* no slider on phones (a swipe that starts on it kept resizing the slabs): the - and + buttons do the same job */
   .sort{flex:1 1 62%}.filter-btn{flex:0 0 auto}
-  .zoom{flex:2.2 1 96px;display:grid;grid-template-columns:1fr 1fr;gap:3px 6px;justify-items:stretch}.zoom input{display:none}
+  .zoom{flex:0 1 84px;display:grid;grid-template-columns:1fr 1fr;gap:3px 6px;justify-items:stretch}.zoom input{display:none}
   .zoom:after{justify-self:center}
   .zoom button{display:grid;place-items:center;width:auto;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--raise);color:var(--foil);font-size:22px;padding:0}
   .zoom:after{content:"Slab size";grid-column:1/-1;font:600 11px/1 var(--ui);color:var(--mist)}
-  .iconbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex:1 1 42px;min-width:0;padding:7px 2px 6px;font-size:18px}
+  .iconbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex:1 1 40px;min-width:0;padding:7px 0 6px;font-size:17px;white-space:nowrap}
   .iconbtn:after{font:600 11px/1 var(--ui);color:var(--mist)}
   #viewbtn{display:flex}#viewbtn:after{content:"Layout"}#favbtn:after{content:"Saved"}#ownbtn:after{content:"Owned"}#bell:after{content:"Alerts"}#theme:after{content:"Theme"}
   .bar .wrap{gap:6px}
@@ -451,7 +451,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=bc72064e0e"></script>
+<script src="data.js?v=e8b6c6109d"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
