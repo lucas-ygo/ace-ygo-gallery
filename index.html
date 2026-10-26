@@ -246,10 +246,10 @@ dt{color:var(--mist)} dd{margin:0;overflow-wrap:anywhere}
 
 .others h4{margin:0 0 8px;font:600 14px/1.2 var(--ui);color:var(--mist)}
 .orow{display:flex;gap:8px;flex-wrap:wrap}
-.oth{position:relative;width:74px;padding:4px 4px 5px;border-radius:10px;border:1px solid var(--line);background:var(--raise);text-align:center}
+.oth{position:relative;width:88px;padding:4px 4px 5px;border-radius:10px;border:1px solid var(--line);background:var(--raise);text-align:center}
 .oth:hover{border-color:var(--gold-dim)}
 .oth img{display:block;width:100%;aspect-ratio:3/4;object-fit:contain}
-.oth b{display:block;font:800 18px/1 var(--display);color:var(--gold);margin-top:3px}
+.oth b{display:block;font:800 16px/1 var(--display);color:var(--gold);margin-top:3px;white-space:nowrap}
 .oth small{display:block;font-size:10px;color:var(--mist);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tray{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 20px);
   padding:8px 10px;border-radius:14px;border:1px solid var(--gold-dim);background:var(--barbg);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -427,7 +427,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=ae865617c1"></script>
+<script src="data.js?v=7c19d29b42"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -831,7 +831,7 @@ paintFav();
         ${tile(avg?avg.toFixed(1):"\u2014","average grade")}${priced.length?tile(moneyWhole(tot),"raw value of "+fmt(priced.length)+" priced"):""}</div>
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
-      ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${money(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
+      ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${moneyWhole(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
       <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
       ${sc?`<div class="spane" data-pane="sc" hidden>${sc}</div>`:""}</div>`;
     sd.showModal();
