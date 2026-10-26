@@ -233,6 +233,7 @@ dialog::backdrop{background:rgba(var(--scrim),.82)}
 .sbar b{text-align:right;color:var(--mist);font-weight:600}
 .stiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:4px 0 14px}
 .stile{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:12px}
+button.stile{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}button.stile:hover,button.stile:focus-visible{border-color:var(--gold);outline:none}
 .stile b{display:block;font:800 30px/1 var(--display);color:var(--gold)}.stile span{font-size:12px;color:var(--mist)}
 .stabs{display:flex;gap:6px;margin:0 0 14px}.stabs button{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--raise);color:var(--mist);font:600 14px/1 var(--ui);cursor:pointer}
 .stabs button[aria-selected=true]{background:var(--gold);border-color:var(--gold);color:var(--ongold)}
@@ -451,7 +452,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=2bb117468f"></script>
+<script src="data.js?v=455edb2b88"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -502,7 +503,7 @@ const PRESETS=[
   {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))},
   {n:"Collabs",set:{co:["Collaboration"]},when:()=>DATA.some(i=>i.co)}
 ];
-const st={q:"",sort:"add",s:"",c:"",fav:false,own:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
+const st={q:"",sort:"add",s:"",c:"",fav:false,own:false,notes:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
 let view=[],shown=0;const STEP=60;
 
@@ -510,6 +511,7 @@ function gnum(i){const n=parseFloat(i.g);return isNaN(n)?-1:n}
 function matches(i,skip){
   if(st.fav&&!fav.has(i.c))return false;
   if(st.own&&!own.has(i.c))return false;
+  if(st.notes&&!notes[i.c])return false;
   if(st.only&&!st.only.has(i.c))return false;
   if(st.q){const h=(i.n+" "+i.no+" "+i.s+" "+i.v+" "+i.c).toLowerCase();
     for(const w of st.q.toLowerCase().split(/\s+/)){if(w&&!h.includes(w))return false}}
@@ -619,6 +621,7 @@ function renderActive(){const el=$("#actv"),out=[];
   if(st.s)out.push(ch("s","",st.s));
   if(st.fav)out.push(ch("fav","","\u2665 My saved slabs"));
   if(st.own)out.push(ch("own","","\u2611 My collection"));
+  if(st.notes)out.push(ch("notes","","\u270e My notes"));
   if(st.only)out.push(ch("only","","Shared list ("+st.only.size+")"));
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
   el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
@@ -626,9 +629,9 @@ $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b
   if(b.dataset.shareown){shareCollection(b);return}
   if(b.dataset.share){const u=location.href.split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
     copyText(u).then(()=>{b.textContent="Link copied \u2713"},()=>{b.textContent="Copy failed"});setTimeout(()=>{b.textContent="Copy link to my list"},1800);return}
-  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="own")st.own=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
+  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="own")st.own=false;else if(k==="notes")st.notes=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
 function ownSum(){const m=DATA.filter(i=>own.has(i.c)),v=m.reduce((a,i)=>a+(i.p||0),0);return '<span class="ownsum">'+fmt(m.length)+" owned"+(v?" \u00b7 about "+moneyWhole(v)+" raw value":"")+'</span><button type="button" class="acl" data-shareown="1">Share image</button>'}
-function anyActive(){return st.q||st.s||st.fav||st.own||st.only||GROUPS.some(g=>st[g.k].size)}
+function anyActive(){return st.q||st.s||st.fav||st.own||st.notes||st.only||GROUPS.some(g=>st[g.k].size)}
 function apply(keepScroll){
   view=DATA.filter(i=>matches(i)).sort(sorter());
   $("#grid").innerHTML="";shown=0;renderMore();
@@ -1033,10 +1036,10 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     ad.showModal()}
   async function openAcct(){
     const mine=DATA.filter(i=>own.has(i.c)),val=mine.reduce((a,i)=>a+(i.p||0),0);
-    const tile=(b,s)=>`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
+    const tile=(b,s,go,n)=>n?`<button type="button" class="stile go" data-go="${go}"><b>${b}</b><span>${s} \u203a</span></button>`:`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
     ad.innerHTML=`<div class="cmpbox stat"><h3>My account</h3><button class="x" type="button" id="acctx" aria-label="Close">&times;</button>
       <p class="note" style="margin-top:0">Signed in as <b>${esc(user.email||"you")}</b>. Your saved slabs, owned slabs, notes and settings sync across your devices.</p>
-      <div class="stiles">${tile(fmt([...fav].filter(c=>BYC.has(c)).length),"saved")}${tile(fmt(mine.length),"owned")}${mine.length&&val?tile(moneyWhole(val),"collection raw value"):""}${tile(fmt(Object.keys(notes).length),"notes")}</div>
+      <div class="stiles">${tile(fmt([...fav].filter(c=>BYC.has(c)).length),"saved","fav",[...fav].filter(c=>BYC.has(c)).length)}${tile(fmt(mine.length),"owned","own",mine.length)}${mine.length&&val?tile(moneyWhole(val),"collection raw value","own",1):""}${tile(fmt(Object.keys(notes).length),"notes","notes",Object.keys(notes).filter(c=>BYC.has(+c)).length)}</div>
       <p id="acctbadge" class="finder" hidden></p><h4>Certs you sent in</h4><div id="acctsub" class="note">Checking...</div>
       <div class="acts" style="margin-top:14px">${mine.length?'<button class="btn" type="button" id="acctshare">Share my collection</button> ':""}<button class="btn" type="button" id="acctout">Sign out</button></div></div>`;
     ad.showModal();
@@ -1051,6 +1054,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   ad.addEventListener("click",async e=>{
     if(e.target.id==="acctx"||e.target.id==="acctx2"||e.target===ad){ad.close();return}
     if(e.target.id==="acctmy"){openAcct();return}
+    const go=e.target.closest("[data-go]");if(go){const k=go.dataset.go;ad.close();st.fav=k==="fav";st.own=k==="own";st.notes=k==="notes";apply();const g=$("#grid");g&&g.scrollIntoView({block:"start"});return}
     if(e.target.id==="acctshare"){shareCollection(e.target);return}
     if(e.target.id==="acctout"){ad.close();try{await fb.au.signOut(fb.auth)}catch(x){}return}
     const b=e.target.closest(".subrow button");if(b){ad.close();const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
@@ -1107,7 +1111,7 @@ paintFav();
       sd.querySelectorAll(".spane").forEach(p=>{p.hidden=p.dataset.pane!==tb.dataset.tab});return}
     const o=e.target.closest(".oth");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
     const b=e.target.closest(".sbar");if(!b)return;
-    st.q="";st.s="";st.fav=false;st.own=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
+    st.q="";st.s="";st.fav=false;st.own=false;st.notes=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
     if(b.dataset.k==="s")st.s=b.dataset.v;else st[b.dataset.k].add(b.dataset.v);
     sd.close();apply()});
 })();
@@ -1191,7 +1195,7 @@ $("#groups").addEventListener("click",e=>{
 $("#groups").addEventListener("change",e=>{if(e.target.id==="setpick"){st.s=e.target.value;apply(true)}});
 let qt;$("#q").addEventListener("input",e=>{clearTimeout(qt);qt=setTimeout(()=>{st.q=e.target.value.trim();apply()},150)});
 $("#sort").addEventListener("change",e=>{st.sort=e.target.value;apply()});
-function clearAll(){st.q="";st.s="";st.fav=false;st.own=false;st.only=null;GROUPS.forEach(g=>st[g.k].clear());$("#q").value="";apply()}
+function clearAll(){st.q="";st.s="";st.fav=false;st.own=false;st.notes=false;st.only=null;GROUPS.forEach(g=>st[g.k].clear());$("#q").value="";apply()}
 $("#clear").addEventListener("click",clearAll);$("#clear2").addEventListener("click",clearAll);
 const filt=$("#filters");
 let drawerPushed=false;
