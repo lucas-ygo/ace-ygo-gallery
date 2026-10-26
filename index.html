@@ -447,7 +447,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=4bf32c7279"></script>
+<script src="data.js?v=5de9a15cc3"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -886,10 +886,11 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
 /* ---------- easter egg ---------- */
 function celebrate(){
   if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const host=document.querySelector("dialog[open]")||document.body;   // an open dialog sits in the top layer, above the page, so the stars must live inside it
   for(let k=0;k<34;k++){const s=document.createElement("span");s.className="spark";s.textContent="\u2605";
     s.style.left=Math.random()*100+"vw";s.style.fontSize=(12+Math.random()*22)+"px";
     s.style.animationDuration=(2+Math.random()*2.2)+"s";s.style.animationDelay=(Math.random()*.8)+"s";
-    document.body.appendChild(s);setTimeout(()=>s.remove(),5200)}
+    host.appendChild(s);setTimeout(()=>s.remove(),5200)}
 }
 function openOrigin(){const i=BYC.get(ORIGIN);if(!i)return;
   document.querySelectorAll("dialog[open]").forEach(d=>d.close());
