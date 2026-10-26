@@ -280,7 +280,7 @@ body.hastray{padding-bottom:90px}
 .leads{margin:14px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--raise);max-width:520px}
 .leads[hidden]{display:none}.leads{margin-top:14px}.leads p{margin:0 0 8px}.leads form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .leads input{width:150px;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:transparent;color:inherit;font:600 15px var(--ui)}
-#leadmsg{font-size:12.5px;color:var(--gold)}
+#leadname{width:230px!important;max-width:100%}.leads .lnote{margin:8px 0 0;font-size:12px;color:var(--mist)}#leadmsg{font-size:12.5px;color:var(--gold)}
 footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mist);font-size:13px}
 footer p{margin:0 0 6px;max-width:80ch}
 
@@ -381,7 +381,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   <a class="coffee" id="igbtn" href="#" target="_blank" rel="noopener noreferrer" hidden>&#128247; Instagram</a>
   <button class="coffee" id="installbtn" type="button" hidden>&#10133; Install app</button></div>
   <div id="leads" class="leads" hidden><p><b>Know an ACE Yu-Gi-Oh! cert we're missing?</b> Spotted one on eBay, Instagram or in your collection? Send the 7-digit cert number and the scanner will check it and its neighbours.</p>
-    <form id="leadf" autocomplete="off"><input id="leadin" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" placeholder="e.g. 1411573" aria-label="ACE cert number"><button class="btn gold" type="submit">Send</button><span id="leadmsg" role="status"></span></form></div>
+    <form id="leadf" autocomplete="off"><input id="leadin" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" placeholder="e.g. 1411573" aria-label="ACE cert number"><input id="leadname" maxlength="24" placeholder="Your name or handle (optional)" aria-label="Your name or handle, optional, so we can credit you" autocomplete="nickname"><button class="btn gold" type="submit">Send</button><span id="leadmsg" role="status"></span></form><p class="lnote">Name is optional. It is only used to credit you if your cert turns up a slab.</p></div>
 </div></header>
 
 <div class="bar"><div class="wrap">
@@ -435,7 +435,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=ab147867d7"></script>
+<script src="data.js?v=ee30e47295"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -971,12 +971,12 @@ $("#stamp").textContent=window.GALLERY&&window.GALLERY.generated?"Last updated "
 })();
 </script>
 <script>
-(function(){var f=document.getElementById("leadf");if(!f)return;var box=document.getElementById("leads");function openLead(e){if(e)e.preventDefault();box.hidden=false;window.scrollTo({top:0,behavior:"smooth"});setTimeout(function(){document.getElementById("leadin").focus()},350)}["leadbtn","leadlink"].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener("click",openLead)});var T="ygo-slab-leads-de80f655be",inp=document.getElementById("leadin"),msg=document.getElementById("leadmsg");
+(function(){var f=document.getElementById("leadf");if(!f)return;var box=document.getElementById("leads");function openLead(e){if(e)e.preventDefault();box.hidden=false;window.scrollTo({top:0,behavior:"smooth"});setTimeout(function(){document.getElementById("leadin").focus()},350)}["leadbtn","leadlink"].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener("click",openLead)});var T="ygo-slab-leads-de80f655be",inp=document.getElementById("leadin"),nm=document.getElementById("leadname"),msg=document.getElementById("leadmsg");try{nm.value=localStorage.getItem("leadname")||""}catch(x){}
 f.addEventListener("submit",function(e){e.preventDefault();var v=(inp.value||"").replace(/\D/g,"");
 if(!/^\d{7}$/.test(v)){msg.textContent="That should be a 7-digit cert number.";return}
 var n=0;try{n=+(localStorage.getItem("leadn")||0);if(n>=10){msg.textContent="Thanks, that's plenty for today!";return}}catch(x){}
 msg.textContent="Sending...";
-fetch("https://ntfy.sh/"+T,{method:"POST",body:v}).then(function(r){if(!r.ok)throw 0;try{localStorage.setItem("leadn",n+1)}catch(x){}
+var who=(nm.value||"").replace(/[^A-Za-z0-9 _.@\-]/g,"").trim().slice(0,24);try{localStorage.setItem("leadname",who)}catch(x){}fetch("https://ntfy.sh/"+T,{method:"POST",body:v+(who?" | "+who:"")}).then(function(r){if(!r.ok)throw 0;try{localStorage.setItem("leadn",n+1)}catch(x){}
 inp.value="";msg.textContent="Thanks! "+v+" is queued. If it's a Yu-Gi-Oh! slab it will appear within the hour.";if(window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"lead-sent",title:"Cert lead sent",event:true})}catch(x){}}).catch(function(){msg.textContent="Couldn't send, please try again later."})})})();
 </script>
 </body>
