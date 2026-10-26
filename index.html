@@ -447,7 +447,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=5de9a15cc3"></script>
+<script src="data.js?v=662bba896d"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -932,7 +932,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   const same=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
   const js=o=>JSON.stringify(o);
   async function hashOf(uid){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(uid));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,16)}catch(e){return""}}
-  function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"Synced":"Sign in with Google";
+  function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"My account \u25be":"Sign in with Google";
     $("#accti").innerHTML=on&&user.photoURL?'<img alt="" referrerpolicy="no-referrer" src="'+user.photoURL.replace(/"/g,"")+'">':GSVG;
     btn.title=on?"Signed in as "+(user.email||user.displayName||"you")+". Tap for your account.":"Sign in with Google to sync your saved slabs across devices"}
   function refresh(){document.querySelectorAll(".favb").forEach(b=>{const o=fav.has(+b.dataset.c);b.classList.toggle("on",o);b.setAttribute("aria-pressed",o);b.textContent=o?"♥":"♡"});
