@@ -175,7 +175,11 @@ main{min-width:0}
 .favb{position:absolute;top:44px;left:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--barbg);color:var(--foil);font-size:16px;line-height:1;padding:0;z-index:2;opacity:.75}
 .favb:hover{opacity:1}.favb.on{opacity:1;color:#e0556b;border-color:#e0556b}
 .tiny .favb{width:24px;height:24px;font-size:13px;top:34px;left:5px}
-#favbtn.on{border-color:#e0556b;color:#e0556b}
+#favbtn.on{border-color:#e0556b;color:#e0556b}#ownbtn.on{border-color:#4caf6e;color:#4caf6e}
+.ownsum{font-size:13px;color:var(--mist);align-self:center;padding:0 6px}
+.mynote{margin:12px 0 4px}.mynote label{display:block;font:600 12px/1 var(--ui);color:var(--mist);margin-bottom:6px}.mynote small{font-weight:400}
+.mynote textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:54px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:14px/1.35 var(--ui)}
+.subrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.subrow button{background:none;border:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline;padding:0;text-align:left}
 .card{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background:var(--case)}
 .case{position:relative;aspect-ratio:3/4;display:grid;place-items:center;padding:12px;
@@ -314,7 +318,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   .search{order:1;flex:1 1 100%}.search input,.sort{font-size:16px}
   .sort{order:2;flex:1 1 45%;min-width:0}.filter-btn{order:3;flex:none;padding:10px 16px}
   .zoom{order:4;flex:1 1 150px;min-width:0}.zoom input{flex:1;min-width:0;width:auto}
-  #viewbtn{order:5}#favbtn{order:6}#bell{order:7}#theme{order:8}
+  #viewbtn{order:5}#favbtn{order:6}#ownbtn{order:6}#bell{order:7}#theme{order:8}
   .count{order:9;flex:1 1 100%;margin:0;font-size:19px}.count small{font-size:13px}
   .iconbtn{padding:11px 11px}
   .cmpb{width:34px;height:34px}.tiny .cmpb{width:34px;height:34px}
@@ -361,7 +365,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   .zoom:after{content:"Slab size";grid-column:1/-1;font:600 11px/1 var(--ui);color:var(--mist)}
   .iconbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex:1 1 42px;min-width:0;padding:7px 2px 6px;font-size:18px}
   .iconbtn:after{font:600 11px/1 var(--ui);color:var(--mist)}
-  #viewbtn{display:flex}#viewbtn:after{content:"Layout"}#favbtn:after{content:"Saved"}#bell:after{content:"Alerts"}#theme:after{content:"Theme"}
+  #viewbtn{display:flex}#viewbtn:after{content:"Layout"}#favbtn:after{content:"Saved"}#ownbtn:after{content:"Owned"}#bell:after{content:"Alerts"}#theme:after{content:"Theme"}
   .bar .wrap{gap:6px}
   .grid .cw>.cmpb,.grid .cw>.favb{width:32px;height:32px;bottom:8px}
   .grid .cw>.cmpb{left:calc(50% - 37px)}.grid .cw>.favb{left:calc(50% + 5px)}
@@ -403,6 +407,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   <div class="zoom" title="Slab size"><button type="button" id="zout" aria-label="Smaller slabs">−</button><input id="zoom" type="range" min="100" max="380" step="10" value="190" aria-label="Slab size"><button type="button" id="zin" aria-label="Larger slabs">+</button></div>
   <button class="iconbtn" id="bell" type="button" aria-label="Get notified about new slabs" title="Get notified about new slabs" hidden>&#128276;</button>
   <button class="iconbtn" id="favbtn" type="button" aria-label="Show only my saved slabs" title="My saved slabs" aria-pressed="false">&#9825;</button>
+  <button class="iconbtn" id="ownbtn" type="button" aria-label="Show only slabs I own" title="My collection" aria-pressed="false">&#9745;</button>
   <button class="iconbtn" id="viewbtn" type="button" aria-label="Switch between grid and list view" title="Grid / list view" hidden></button>
   <button class="iconbtn" id="theme" type="button" aria-label="Switch colour theme" title="Colour theme"></button>
   <button class="filter-btn" id="openFilters" type="button">Filters</button>
@@ -440,8 +445,9 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
+<dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=01684babbf"></script>
+<script src="data.js?v=3c9cb59a68"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -484,13 +490,14 @@ const PRESETS=[
   {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))},
   {n:"Collabs",set:{co:["Collaboration"]},when:()=>DATA.some(i=>i.co)}
 ];
-const st={q:"",sort:"add",s:"",c:"",fav:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
+const st={q:"",sort:"add",s:"",c:"",fav:false,own:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
 let view=[],shown=0;const STEP=60;
 
 function gnum(i){const n=parseFloat(i.g);return isNaN(n)?-1:n}
 function matches(i,skip){
   if(st.fav&&!fav.has(i.c))return false;
+  if(st.own&&!own.has(i.c))return false;
   if(st.only&&!st.only.has(i.c))return false;
   if(st.q){const h=(i.n+" "+i.no+" "+i.s+" "+i.v+" "+i.c).toLowerCase();
     for(const w of st.q.toLowerCase().split(/\s+/)){if(w&&!h.includes(w))return false}}
@@ -558,6 +565,10 @@ function renderGroups(){
 let fav=new Set();try{fav=new Set(JSON.parse(localStorage.getItem("fav")||"[]").map(Number))}catch(e){}
 let syncHook=null;
 function saveFav(){try{localStorage.setItem("fav",JSON.stringify([...fav]))}catch(e){}if(syncHook)syncHook()}
+let own=new Set();try{own=new Set(JSON.parse(localStorage.getItem("own")||"[]").map(Number))}catch(e){}
+let notes={};try{notes=JSON.parse(localStorage.getItem("notes")||"{}")||{}}catch(e){}
+function saveOwn(){try{localStorage.setItem("own",JSON.stringify([...own]))}catch(e){}if(syncHook)syncHook()}
+function saveNotes(){try{localStorage.setItem("notes",JSON.stringify(notes))}catch(e){}if(syncHook)syncHook()}
 const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
@@ -595,18 +606,20 @@ function renderActive(){const el=$("#actv"),out=[];
   if(st.q)out.push(ch("q","","Search: \u201c"+st.q+"\u201d"));
   if(st.s)out.push(ch("s","",st.s));
   if(st.fav)out.push(ch("fav","","\u2665 My saved slabs"));
+  if(st.own)out.push(ch("own","","\u2611 My collection"));
   if(st.only)out.push(ch("only","","Shared list ("+st.only.size+")"));
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
-  el.hidden=!out.length;el.innerHTML=out.join("")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
+  el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
 $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
   if(b.dataset.share){const u=location.href.split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
     copyText(u).then(()=>{b.textContent="Link copied \u2713"},()=>{b.textContent="Copy failed"});setTimeout(()=>{b.textContent="Copy link to my list"},1800);return}
-  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
-function anyActive(){return st.q||st.s||st.fav||st.only||GROUPS.some(g=>st[g.k].size)}
+  const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="own")st.own=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
+function ownSum(){const m=DATA.filter(i=>own.has(i.c)),v=m.reduce((a,i)=>a+(i.p||0),0);return '<span class="ownsum">'+fmt(m.length)+" owned"+(v?" \u00b7 about "+moneyWhole(v)+" raw value":"")+"</span>"}
+function anyActive(){return st.q||st.s||st.fav||st.own||st.only||GROUPS.some(g=>st[g.k].size)}
 function apply(keepScroll){
   view=DATA.filter(i=>matches(i)).sort(sorter());
   $("#grid").innerHTML="";shown=0;renderMore();
-  paintFilt();renderActive();paintFav();
+  paintFilt();renderActive();paintFav();paintOwnBtn();
   $("#n").textContent=fmt(view.length);$("#of").textContent=" of "+fmt(DATA.length)+" slabs";
   $("#empty").hidden=view.length>0;
   document.querySelectorAll(".clear").forEach(b=>b.classList.toggle("show",!!anyActive()));
@@ -638,8 +651,10 @@ function openLB(idx,item){
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
       ${others.length?`<div class="others"><h4>Other slabs of this card</h4><div class="orow">${others.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.v)} \u00b7 ACE ${esc(o.g)} \u00b7 cert ${esc(o.c)}"><img src="${esc(o.th)}" alt=""><b>${esc(o.g)}</b><small>${esc(o.v)}</small></button>`).join("")}</div></div>`:""}
       ${i.eb?`<div class="sale"><h4>For sale on eBay</h4>${i.eb.slice(0,3).map(x=>`<a class="btn gold" href="${esc(x.u)}" target="_blank" rel="noopener sponsored">${esc(money(x.p))} \u00b7 View listing</a>`).join("")}<p class="note">Found by card and grade, so a listing may be another slab of this card. Check the photos for cert ${esc(i.c)}.</p></div>`:""}
+      <div class="mynote"><label for="lbnote">My note <small>(private, only you)</small></label><textarea id="lbnote" maxlength="200" rows="2" placeholder="e.g. bought for \u00a340, want a better grade">${esc(notes[i.c]||"")}</textarea></div>
       <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a>
         <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
+        <button class="btn" type="button" id="lbown" data-c="${i.c}">${own.has(i.c)?"\u2714 Owned":"\u2610 I own this"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
         <button class="btn" type="button" id="lbshare">Share image</button>
         <span id="shpick" hidden><button class="btn shp" type="button" data-s="navy">Gallery style</button> <button class="btn shp" type="button" data-s="duel">Duel style</button></span>
@@ -737,6 +752,7 @@ function shareSlab(btn,style){
   .then(()=>{btn.textContent="Done ✓"},()=>{btn.textContent="Couldn't make image"}).then(()=>setTimeout(()=>{btn.textContent=old;btn.disabled=false},1800))}
 dlg.addEventListener("click",e=>{
   const lf=e.target.closest("#lbfav");if(lf){toggleFav(+lf.dataset.c);return}
+  const lw=e.target.closest("#lbown");if(lw){toggleOwn(+lw.dataset.c);return}
   const sh=e.target.closest("#lbshare");if(sh){const pk=dlg.querySelector("#shpick");pk.hidden=!pk.hidden;return}
   const sp=e.target.closest(".shp");if(sp){shareSlab(sp,sp.dataset.s);return}
   const sd=e.target.closest(".fbtog button");
@@ -839,7 +855,8 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     const m=document.querySelector('meta[name=theme-color]');if(m)m.content=T[i][2];
   }
   paint();
-  b.addEventListener("click",()=>{root.dataset.theme=T[(idx()+1)%T.length][0];try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint()});})();
+  b.addEventListener("click",()=>{root.dataset.theme=T[(idx()+1)%T.length][0];try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint();window.__prefChanged&&window.__prefChanged()});
+  window.__setTheme=n=>{if(!T.some(x=>x[0]===n))return;root.dataset.theme=n;try{localStorage.setItem("theme",n)}catch(e){}paint()}})();
 
 /* ---------- support link ---------- */
 (function(){const u=String((window.GALLERY&&window.GALLERY.support)||"");if(!/^https:\/\//i.test(u))return;
@@ -897,38 +914,81 @@ function toggleFav(c){
 }
 dlg.addEventListener("close",()=>{if(favDirty){favDirty=false;apply(true)}});
 $("#favbtn").addEventListener("click",()=>{st.fav=!st.fav;apply()});
-/* ---------- optional Google sign-in: sync saved slabs across devices (Firebase) ---------- */
+$("#ownbtn").addEventListener("click",()=>{st.own=!st.own;apply()});
+function paintOwnBtn(){const b=$("#ownbtn");if(b){const n=[...own].filter(c=>BYC.has(c)).length;b.innerHTML="\u2611"+(n?" "+n:"");b.classList.toggle("on",!!st.own);b.setAttribute("aria-pressed",String(!!st.own));b.title=st.own?"Show all slabs":"Show only slabs I own"+(n?" ("+n+")":"")}
+  const lo=$("#lbown");if(lo)lo.textContent=own.has(+lo.dataset.c)?"\u2714 Owned":"\u2610 I own this"}
+function paintOwn(){paintOwnBtn();if(st.own){if(dlg.open)favDirty=true;else apply(true)}}
+function toggleOwn(c){own.has(c)?own.delete(c):own.add(c);saveOwn();paintOwn()}
+dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#lbfav")||{dataset:{}}).dataset.c;if(!c)return;clearTimeout(dlg._nt);const v=e.target.value.slice(0,200);
+  dlg._nt=setTimeout(()=>{if(v.trim()){if(!(c in notes)&&Object.keys(notes).length>=150){e.target.value="";alert("You have reached the limit of 150 notes.");return}notes[c]=v}else delete notes[c];saveNotes()},500)});
+/* ---------- optional Google sign-in: sync saved/owned slabs, notes and settings across devices (Firebase) ---------- */
 (function(){
-  const btn=$("#acct");if(!btn)return;const GSVG=$("#accti").innerHTML;
+  const btn=$("#acct");if(!btn)return;const GSVG=$("#accti").innerHTML,ad=$("#acctd");
   const CFG={apiKey:"AIzaSyC92so7oQUI_6ISRMd0UfpQbpP3xjzi7eI",authDomain:"ace-ygo-gallery.firebaseapp.com",projectId:"ace-ygo-gallery",appId:"1:940936261046:web:025643708f624597bf2517"};
   const B="https://www.gstatic.com/firebasejs/13.1.0/";
-  let fb=null,user=null,unsub=null,first=true,tmr=0,busy=false;
+  let fb=null,user=null,unsub=null,first=true,tmr=0,busy=false,applying=false,quiet=0,remotePrefs={},uh="";
   const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}return null};
-  function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"Synced":"Sign in with Google";$("#accti").innerHTML=on&&user.photoURL?'<img alt="" referrerpolicy="no-referrer" src="'+user.photoURL.replace(/"/g,"")+'">':GSVG;
-    btn.title=on?"Signed in as "+(user.email||user.displayName||"you")+". Saved slabs sync across your devices. Tap to sign out.":"Sign in with Google to sync your saved slabs across devices"}
+  const same=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
+  const js=o=>JSON.stringify(o);
+  async function hashOf(uid){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(uid));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,16)}catch(e){return""}}
+  function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"Synced":"Sign in with Google";
+    $("#accti").innerHTML=on&&user.photoURL?'<img alt="" referrerpolicy="no-referrer" src="'+user.photoURL.replace(/"/g,"")+'">':GSVG;
+    btn.title=on?"Signed in as "+(user.email||user.displayName||"you")+". Tap for your account.":"Sign in with Google to sync your saved slabs across devices"}
   function refresh(){document.querySelectorAll(".favb").forEach(b=>{const o=fav.has(+b.dataset.c);b.classList.toggle("on",o);b.setAttribute("aria-pressed",o);b.textContent=o?"♥":"♡"});
-    const lf=$("#lbfav");if(lf)lf.textContent=fav.has(+lf.dataset.c)?"♥ Saved":"♡ Save";paintFav();if(st.fav){if(dlg.open)favDirty=true;else apply(true)}}
-  function setFav(s){fav=s;try{localStorage.setItem("fav",JSON.stringify([...fav]))}catch(e){}refresh()}
+    const lf=$("#lbfav");if(lf)lf.textContent=fav.has(+lf.dataset.c)?"♥ Saved":"♡ Save";paintFav();if(st.fav){if(dlg.open)favDirty=true;else apply(true)}paintOwn()}
+  function setFav(s){fav=s;ls("fav",js([...fav]));refresh()}
+  function setOwn(s){own=s;ls("own",js([...own]));refresh()}
+  function setNotes(o){notes=o;ls("notes",js(notes));const t=$("#lbnote");if(t&&document.activeElement!==t){const c=+($("#lbfav")||{dataset:{}}).dataset.c;t.value=notes[c]||""}}
+  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;return p}
+  function applyPrefs(p){if(!p)return;applying=true;try{
+    if(p.theme&&p.theme!==(ls("theme")||"dark")&&window.__setTheme)window.__setTheme(p.theme);
+    if(p.view&&p.view!==(ls("view")||"grid")&&window.__setView)window.__setView(p.view);
+    const k=window.__sizeKey;if(k&&p[k]&&+p[k]!==+ls(k)&&window.__setSize)window.__setSize(+p[k])}finally{applying=false}}
   async function load(){if(fb)return fb;
     const [a,au,fs]=await Promise.all([import(B+"firebase-app.js"),import(B+"firebase-auth.js"),import(B+"firebase-firestore.js")]);
     const app=a.initializeApp(CFG);fb={au,fs,auth:au.getAuth(app),db:fs.getFirestore(app)};
-    au.onAuthStateChanged(fb.auth,u=>{user=u;paint();unsub&&unsub();unsub=null;if(u){ls("acctuser","1");start()}else ls("acctuser",null)});return fb}
-  function push(){clearTimeout(tmr);tmr=setTimeout(()=>{if(!user||!fb)return;
-    fb.fs.setDoc(fb.fs.doc(fb.db,"users",user.uid),{fav:[...fav],updated:Date.now()}).then(()=>ls("favdirty","0")).catch(()=>{})},700)}
+    au.onAuthStateChanged(fb.auth,u=>{user=u;(async()=>{uh=u?await hashOf(u.uid):"";window.__uh=uh;paint()})();paint();unsub&&unsub();unsub=null;if(u){ls("acctuser","1");start()}else ls("acctuser",null)});return fb}
+  function push(){clearTimeout(tmr);quiet=Date.now()+2500;tmr=setTimeout(()=>{if(!user||!fb)return;
+    const prefs=Object.assign({},remotePrefs,curPrefs());
+    fb.fs.setDoc(fb.fs.doc(fb.db,"users",user.uid),{fav:[...fav],own:[...own],notes,prefs,updated:Date.now()}).then(()=>{remotePrefs=prefs;ls("favdirty","0")}).catch(()=>{})},700)}
   function start(){const {fs,db}=fb,uid=user.uid;first=true;
     unsub=fs.onSnapshot(fs.doc(db,"users",uid),snap=>{
-      const remote=new Set(snap.exists()?(snap.data().fav||[]).map(Number):[]);
+      const d=snap.exists()?snap.data():{};
+      const rf=new Set((d.fav||[]).map(Number)),ro=new Set((d.own||[]).map(Number)),rn=d.notes&&typeof d.notes==="object"?d.notes:{};remotePrefs=d.prefs||{};
       if(first){first=false;
-        const seen=ls("favsync")===uid&&ls("favdirty")!=="1";   // this device already synced and has nothing unsent: trust the cloud copy
-        const merged=seen?remote:new Set([...fav,...remote]);ls("favsync",uid);
-        if(merged.size!==fav.size||[...merged].some(c=>!fav.has(c)))setFav(merged);
-        if(!snap.exists()||merged.size!==remote.size||[...merged].some(c=>!remote.has(c)))push();return}
-      if(snap.metadata.hasPendingWrites)return;
-      if(remote.size!==fav.size||[...remote].some(c=>!fav.has(c)))setFav(remote)},()=>{$("#acctl").textContent="Sync error"});}
+        const trust=ls("favsync")===uid&&ls("favdirty")!=="1";   // this device already synced and has nothing unsent: trust the cloud copy
+        ls("favsync",uid);
+        const mf=trust?rf:new Set([...fav,...rf]),mo=trust?ro:new Set([...own,...ro]),mn=trust?rn:Object.assign({},rn,notes);
+        if(!same(mf,fav))setFav(mf);if(!same(mo,own))setOwn(mo);if(js(mn)!==js(notes))setNotes(mn);
+        applyPrefs(remotePrefs);   // a new device adopts the cloud settings
+        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length)push();return}
+      if(snap.metadata.hasPendingWrites||Date.now()<quiet)return;
+      if(!same(rf,fav))setFav(rf);if(!same(ro,own))setOwn(ro);if(js(rn)!==js(notes))setNotes(rn);applyPrefs(remotePrefs)},()=>{$("#acctl").textContent="Sync error"});}
   syncHook=()=>{ls("favdirty","1");if(user)push()};
+  window.__prefChanged=()=>{if(!applying)syncHook()};
+  async function openAcct(){
+    const mine=DATA.filter(i=>own.has(i.c)),val=mine.reduce((a,i)=>a+(i.p||0),0);
+    const tile=(b,s)=>`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
+    ad.innerHTML=`<div class="cmpbox stat"><h3>My account</h3><button class="x" type="button" id="acctx" aria-label="Close">&times;</button>
+      <p class="note" style="margin-top:0">Signed in as <b>${esc(user.email||"you")}</b>. Your saved slabs, owned slabs, notes and settings sync across your devices.</p>
+      <div class="stiles">${tile(fmt([...fav].filter(c=>BYC.has(c)).length),"saved")}${tile(fmt(mine.length),"owned")}${mine.length&&val?tile(moneyWhole(val),"collection raw value"):""}${tile(fmt(Object.keys(notes).length),"notes")}</div>
+      <h4>Certs you sent in</h4><div id="acctsub" class="note">Checking...</div>
+      <div class="acts" style="margin-top:14px"><button class="btn" type="button" id="acctout">Sign out</button></div></div>`;
+    ad.showModal();
+    let list=[];try{const u=($('script[src*="data.js"]')||{}).src||"";const r=await fetch(u.replace(/data\.js.*$/,"mine.json?t="+Date.now()),{cache:"no-store"});if(r.ok){const j=await r.json();list=j[uh]||[]}}catch(e){}
+    const box=$("#acctsub");if(!box||!ad.open)return;
+    if(!list.length){box.textContent="Nothing yet. Certs you send with the Send a cert box while signed in will be listed here, with what became of them. This list refreshes about every 20 minutes.";return}
+    const T={s:"Slab found",o:"Read, not a Yu-Gi-Oh! slab",x:"No slab at that number",p:"Waiting in the queue"};
+    const n=list.filter(r=>r[1]==="s"||BYC.has(+r[0])).length;
+    box.innerHTML=`<p style="margin:0 0 6px">${fmt(list.length)} sent in, ${fmt(n)} became slabs in the gallery.</p>`+list.slice().reverse().map(r=>{const c=+r[0],it=BYC.get(c);
+      return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>`}).join("")}
+  ad.addEventListener("click",async e=>{
+    if(e.target.id==="acctx"||e.target===ad){ad.close();return}
+    if(e.target.id==="acctout"){ad.close();try{await fb.au.signOut(fb.auth)}catch(x){}return}
+    const b=e.target.closest(".subrow button");if(b){ad.close();const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
   btn.addEventListener("click",async()=>{if(busy)return;busy=true;
     try{const f=await load();
-      if(user){if(confirm("Signed in as "+(user.email||"you")+".\nSign out? Your saved slabs stay on this device."))await f.au.signOut(f.auth)}
+      if(user)await openAcct();
       else await f.au.signInWithPopup(f.auth,new f.au.GoogleAuthProvider())}
     catch(e){const c=e&&e.code||"";if(c!=="auth/popup-closed-by-user"&&c!=="auth/cancelled-popup-request")alert(c==="auth/popup-blocked"?"Your browser blocked the sign-in window. Allow pop-ups for this site and try again.":"Couldn't sign in. Please try again.")}
     finally{busy=false}});
@@ -979,7 +1039,7 @@ paintFav();
       sd.querySelectorAll(".spane").forEach(p=>{p.hidden=p.dataset.pane!==tb.dataset.tab});return}
     const o=e.target.closest(".oth");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
     const b=e.target.closest(".sbar");if(!b)return;
-    st.q="";st.s="";st.fav=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
+    st.q="";st.s="";st.fav=false;st.own=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
     if(b.dataset.k==="s")st.s=b.dataset.v;else st[b.dataset.k].add(b.dataset.v);
     sd.close();apply()});
 })();
@@ -1035,20 +1095,21 @@ function attachZoom(){
   let v,def,lo,hi,stp,key;
   if(mob){lo=1;hi=4;stp=1;def=3;key="cols";z.min=lo;z.max=hi;z.step=1;z.title="Slabs per row"}
   else{lo=100;hi=380;stp=30;def=190;key="tile"}
-  v=def;
+  v=def;let inited=false;
   try{const t=parseInt(localStorage.getItem(key));if(t>=lo&&t<=hi)v=t}catch(e){}
   function set(n){v=Math.max(lo,Math.min(hi,n));z.value=mob?hi+lo-v:v;
     if(mob){root.style.setProperty("--cols",v);root.classList.remove("tiny")}
     else{root.style.setProperty("--tile",v+"px");root.classList.toggle("tiny",v<150)}
-    try{localStorage.setItem(key,v)}catch(e){}}
-  set(v);z.addEventListener("input",()=>{set(mob?hi+lo-+z.value:+z.value);refit()});
+    try{localStorage.setItem(key,v)}catch(e){}if(inited&&window.__prefChanged)window.__prefChanged()}
+  set(v);inited=true;z.addEventListener("input",()=>{set(mob?hi+lo-+z.value:+z.value);refit()});
   $("#zout").addEventListener("click",()=>{set(mob?v+stp:v-stp);refit()});$("#zin").addEventListener("click",()=>{set(mob?v-stp:v+stp);refit()});
   z.addEventListener("dblclick",()=>{set(def);refit()});
   const vb=$("#viewbtn"),g=$("#grid");let list=false;
   try{list=localStorage.getItem("view")==="list"}catch(e){}
   function paintV(){g.classList.toggle("list",list&&mob);root.classList.toggle("listmode",list&&mob);vb.textContent=list?"\u25A6":"\u2630";
     vb.title=list?"Switch to grid view":"Switch to list view";vb.hidden=false}
-  paintV();vb.addEventListener("click",()=>{list=!list;try{localStorage.setItem("view",list?"list":"grid")}catch(e){}paintV();refit()});})();
+  paintV();vb.addEventListener("click",()=>{list=!list;try{localStorage.setItem("view",list?"list":"grid")}catch(e){}paintV();refit();window.__prefChanged&&window.__prefChanged()});
+  window.__setView=l=>{list=l==="list";try{localStorage.setItem("view",l)}catch(e){}paintV();refit()};window.__setSize=n=>{set(n);refit()};window.__sizeKey=key;})();
 $("#grid").addEventListener("click",e=>{
   const m=e.target.closest(".cmpb");if(m){toggleCmp(+m.dataset.c);return}
   const hf=e.target.closest(".favb");if(hf){toggleFav(+hf.dataset.c);return}
@@ -1062,7 +1123,7 @@ $("#groups").addEventListener("click",e=>{
 $("#groups").addEventListener("change",e=>{if(e.target.id==="setpick"){st.s=e.target.value;apply(true)}});
 let qt;$("#q").addEventListener("input",e=>{clearTimeout(qt);qt=setTimeout(()=>{st.q=e.target.value.trim();apply()},150)});
 $("#sort").addEventListener("change",e=>{st.sort=e.target.value;apply()});
-function clearAll(){st.q="";st.s="";st.fav=false;st.only=null;GROUPS.forEach(g=>st[g.k].clear());$("#q").value="";apply()}
+function clearAll(){st.q="";st.s="";st.fav=false;st.own=false;st.only=null;GROUPS.forEach(g=>st[g.k].clear());$("#q").value="";apply()}
 $("#clear").addEventListener("click",clearAll);$("#clear2").addEventListener("click",clearAll);
 const filt=$("#filters");
 let drawerPushed=false;
@@ -1102,7 +1163,7 @@ f.addEventListener("submit",function(e){e.preventDefault();var v=(inp.value||"")
 if(!/^\d{7}$/.test(v)){msg.textContent="That should be a 7-digit cert number.";return}
 var n=0;try{n=+(localStorage.getItem("leadn")||0);if(n>=10){msg.textContent="Thanks, that's plenty for today!";return}}catch(x){}
 msg.textContent="Sending...";
-var who=(nm.value||"").replace(/[^A-Za-z0-9 _.@\-]/g,"").trim().slice(0,24);try{localStorage.setItem("leadname",who)}catch(x){}fetch("https://ntfy.sh/"+T,{method:"POST",body:v+(who?" | "+who:"")}).then(function(r){if(!r.ok)throw 0;try{localStorage.setItem("leadn",n+1)}catch(x){}
+var who=(nm.value||"").replace(/[^A-Za-z0-9 _.@\-]/g,"").trim().slice(0,24);try{localStorage.setItem("leadname",who)}catch(x){}fetch("https://ntfy.sh/"+T,{method:"POST",body:v+((who||window.__uh)?" | "+who:"")+(window.__uh?" | u:"+window.__uh:"")}).then(function(r){if(!r.ok)throw 0;try{localStorage.setItem("leadn",n+1)}catch(x){}
 inp.value="";msg.textContent="Thanks! "+v+" is queued. If it's a Yu-Gi-Oh! slab it will appear within the hour.";if(window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"lead-sent",title:"Cert lead sent",event:true})}catch(x){}}).catch(function(){msg.textContent="Couldn't send, please try again later."})})})();
 </script>
 </body>
