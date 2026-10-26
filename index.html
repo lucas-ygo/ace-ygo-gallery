@@ -435,7 +435,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=2e96f372fe"></script>
+<script src="data.js?v=8f77bbd846"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -635,6 +635,7 @@ function openLB(idx,item){
         <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
         <button class="btn" type="button" id="lbshare">Share image</button>
+        <span id="shpick" hidden><button class="btn shp" type="button" data-s="navy">Gallery style</button> <button class="btn shp" type="button" data-s="duel">Duel style</button></span>
         <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div></div>
     <button class="x" type="button" aria-label="Close" id="lbx">&times;</button></div>
     ${idx>=0?`<button class="navbtn prev" type="button" aria-label="Previous slab" id="lbp">&lsaquo;</button>
@@ -650,11 +651,42 @@ function copyText(txt){
 const shareURL=c=>{const base=location.href.split("#")[0];
   try{if(window.GALLERY&&window.GALLERY.share&&/^https?:/.test(location.protocol))return new URL("c/"+c+"/",base).href}catch(e){}
   return base+"#cert="+c};
-function shareCard(i){
+function drawDuel(x,img,i,W,H){
+  const D="'Big Shoulders Display','Arial Narrow',sans-serif",U="'Hanken Grotesk',Arial,sans-serif";
+  const bg=x.createRadialGradient(W/2,H*.42,60,W/2,H*.42,1250);bg.addColorStop(0,"#3a1a63");bg.addColorStop(.55,"#1a0b33");bg.addColorStop(1,"#07030f");x.fillStyle=bg;x.fillRect(0,0,W,H);
+  x.save();x.translate(W/2,H*.42);for(let k=0;k<28;k++){x.rotate(Math.PI*2/28);x.beginPath();x.moveTo(0,0);x.lineTo(1400,-34);x.lineTo(1400,34);x.closePath();x.fillStyle="rgba(255,196,90,"+(k%2?.05:.025)+")";x.fill()}x.restore();
+  const gold=(y0,y1)=>{const g=x.createLinearGradient(0,y0,0,y1);g.addColorStop(0,"#f6d98a");g.addColorStop(.5,"#b9822c");g.addColorStop(1,"#f0cd7a");return g};
+  const rr=(a,b,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(a,b,w,h,r);else x.rect(a,b,w,h)};
+  const fx=50,fy=70,fw=W-100,fh=H-140;
+  x.save();x.shadowColor="rgba(0,0,0,.7)";x.shadowBlur=50;x.shadowOffsetY=20;rr(fx,fy,fw,fh,34);x.fillStyle="#2b1456";x.fill();x.restore();
+  rr(fx,fy,fw,fh,34);x.lineWidth=14;x.strokeStyle=gold(fy,fy+fh);x.stroke();
+  rr(fx+22,fy+22,fw-44,fh-44,22);x.lineWidth=3;x.strokeStyle="rgba(246,217,138,.55)";x.stroke();
+  x.textAlign="center";x.textBaseline="alphabetic";
+  const np=88,ny=fy+52;x.save();rr(fx+50,ny,fw-100,np+20,14);const ng=x.createLinearGradient(0,ny,0,ny+np);ng.addColorStop(0,"#120826");ng.addColorStop(1,"#2a1550");x.fillStyle=ng;x.fill();x.lineWidth=4;x.strokeStyle=gold(ny,ny+np);x.stroke();x.restore();
+  let fs=84,name=String(i.n||"").toUpperCase();x.font="800 "+fs+"px "+D;while(x.measureText(name).width>fw-190&&fs>40){fs-=4;x.font="800 "+fs+"px "+D}
+  x.fillStyle=gold(ny,ny+np+20);x.fillText(name,W/2,ny+np*.5+fs*.36+8);
+  const ax=fx+90,ay=ny+np+70,aw=fw-180;let maxH=1060,h=maxH,w=img.width*h/img.height;if(w>aw-40){w=aw-40;h=img.height*w/img.width}
+  const bh=h+60;x.save();rr(ax,ay,aw,bh,10);x.fillStyle="#05020c";x.fill();x.lineWidth=8;x.strokeStyle=gold(ay,ay+bh);x.stroke();x.restore();
+  x.save();rr(ax,ay,aw,bh,10);x.clip();const ag=x.createRadialGradient(W/2,ay+bh/2,30,W/2,ay+bh/2,700);ag.addColorStop(0,"#4b2a86");ag.addColorStop(1,"#0d0620");x.fillStyle=ag;x.fillRect(ax,ay,aw,bh);
+  x.shadowColor="rgba(255,200,100,.5)";x.shadowBlur=50;x.drawImage(img,(W-w)/2,ay+30,w,h);x.restore();
+  const ty=ay+bh+34,th=fy+fh-ty-60;
+  x.save();rr(ax,ty,aw,th,10);x.fillStyle="#e8d5a6";x.fill();x.lineWidth=5;x.strokeStyle=gold(ty,ty+th);x.stroke();x.restore();
+  x.fillStyle="#2a1a08";x.font="800 40px "+D;x.fillText("[ ACE "+i.g+(i.gn?" "+String(i.gn).toUpperCase():"")+" SLAB ]",W/2,ty+56);
+  x.font="600 30px "+U;x.fillStyle="#4a3416";const sub=[i.no,i.s].filter(Boolean).join("  ·  ");
+  let sf=30;while(x.measureText(sub).width>aw-60&&sf>18){sf-=2;x.font="600 "+sf+"px "+U}x.fillText(sub,W/2,ty+100);
+  if(i.v){x.font="800 46px "+D;x.fillStyle="#7a4a12";x.fillText(String(i.v).toUpperCase(),W/2,ty+172)}
+  if(i.p&&i.p>=20){x.font="600 30px "+U;x.fillStyle="#4a3416";x.fillText("Raw about \u00a3"+Math.round(i.p).toLocaleString("en-GB"),W/2,ty+224)}
+  x.font="700 34px "+U;x.fillStyle="#2a1a08";x.textAlign="right";x.fillText("GRADE / "+i.g,ax+aw-34,ty+th-26);x.textAlign="left";x.fillText("CERT / "+i.c,ax+34,ty+th-26);x.textAlign="center";
+  x.fillStyle="#d9b46a";x.font="600 24px "+U;try{x.letterSpacing="3px"}catch(e){}
+  const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"");
+  x.fillText(host.toUpperCase()||"ACE YU-GI-OH! SLAB GALLERY",W/2,fy+fh-18+2);try{x.letterSpacing="0px"}catch(e){}
+}
+function shareCard(i,style){
   return Promise.all([document.fonts?document.fonts.load('800 100px "Big Shoulders Display"'):0,document.fonts?document.fonts.load('600 30px "Hanken Grotesk"'):0].map(p=>Promise.resolve(p).catch(()=>0))).then(()=>new Promise((res,rej)=>{
     const img=new Image();img.crossOrigin="anonymous";
     img.onload=()=>{try{
       const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+      if(style==="duel"){drawDuel(x,img,i,W,H);return cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")}
       const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#0f2a52");bg.addColorStop(.5,"#0b1d3a");bg.addColorStop(1,"#071225");x.fillStyle=bg;x.fillRect(0,0,W,H);
       const gl=x.createRadialGradient(W/2,820,40,W/2,820,760);gl.addColorStop(0,"rgba(217,173,91,.22)");gl.addColorStop(1,"rgba(217,173,91,0)");x.fillStyle=gl;x.fillRect(0,0,W,H);
       const GOLD="#d9ad5b",D="'Big Shoulders Display','Arial Narrow',sans-serif",U="'Hanken Grotesk',Arial,sans-serif";
@@ -682,15 +714,16 @@ function shareCard(i){
       cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
     }catch(e){rej(e)}};
     img.onerror=()=>rej(new Error("image"));img.src=i.im})) }
-function shareSlab(btn){
+function shareSlab(btn,style){
   const i=cur>=0?view[cur]:BYC.get(+st.c);if(!i)return;const old=btn.textContent;btn.textContent="Making image...";btn.disabled=true;
-  shareCard(i).then(b=>{const f=new File([b],"ace-slab-"+i.c+".png",{type:"image/png"});
+  shareCard(i,style).then(b=>{const f=new File([b],"ace-slab-"+i.c+".png",{type:"image/png"});
     if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:i.n,text:i.n+" (ACE "+i.g+") on the ACE Yu-Gi-Oh! slab gallery"}).catch(e=>{if(e&&e.name==="AbortError")return});
     const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)})
   .then(()=>{btn.textContent="Done ✓"},()=>{btn.textContent="Couldn't make image"}).then(()=>setTimeout(()=>{btn.textContent=old;btn.disabled=false},1800))}
 dlg.addEventListener("click",e=>{
   const lf=e.target.closest("#lbfav");if(lf){toggleFav(+lf.dataset.c);return}
-  const sh=e.target.closest("#lbshare");if(sh){shareSlab(sh);return}
+  const sh=e.target.closest("#lbshare");if(sh){const pk=dlg.querySelector("#shpick");pk.hidden=!pk.hidden;return}
+  const sp=e.target.closest(".shp");if(sp){shareSlab(sp,sp.dataset.s);return}
   const sd=e.target.closest(".fbtog button");
   if(sd){if(dlg._rz)dlg._rz();const i=cur>=0?view[cur]:BYC.get(+st.c);if(i){const im=$("#lbimg");im.src=sd.dataset.side==="b"?i.bk:i.im;im.alt=i.n+(sd.dataset.side==="b"?" (back of slab)":" in an ACE slab");sd.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===sd))}return}
   const o=e.target.closest(".oth");
