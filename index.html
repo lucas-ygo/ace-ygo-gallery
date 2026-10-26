@@ -434,14 +434,14 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=1c0a62595d"></script>
+<script src="data.js?v=1de318b00a"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest(".sale a");if(a&&window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"click-ebay",title:"eBay listing click",event:true})}catch(x){}});
-const SALES=window.SALES||{};DATA.forEach(i=>{const s=SALES[i.no+"|"+i.g];if(s&&s.length)i.eb=s});
+const SALES=window.SALES||{};DATA.forEach(i=>{const s=SALES[i.no+"|"+i.g];if(s&&s.length)i.eb=s;i.co=/collab/i.test(i.s||"")});
 const ORIGIN=1490916;
 const FIRST=1411573;
 const $=s=>document.querySelector(s);
@@ -458,6 +458,7 @@ const GROUPS=[
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
   {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
+  {k:"co",title:"Collaboration",label:v=>v,get:i=>i.co?["Collaboration"]:[],when:()=>DATA.some(i=>i.co)},
   {k:"eb",title:"For sale",hint:"on eBay now",label:v=>v,get:i=>i.eb?["On eBay now"]:[],when:()=>DATA.some(i=>i.eb)},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
   {k:"y",title:"Release year",label:v=>v,get:i=>[i.y?String(i.y):""],asc:true},
@@ -473,7 +474,8 @@ const PRESETS=[
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
   {n:"Duel Monsters-era cards",set:{e:[ERAS[0]]}},
   {n:"Grand master rares",set:{f:["Grand master"]},when:()=>DATA.some(i=>(i.t||[]).includes("Grand master"))},
-  {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))}
+  {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))},
+  {n:"Collabs",set:{co:["Collaboration"]},when:()=>DATA.some(i=>i.co)}
 ];
 const st={q:"",sort:"add",s:"",c:"",fav:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
