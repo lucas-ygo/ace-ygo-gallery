@@ -435,7 +435,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=5ab979d2d8"></script>
+<script src="data.js?v=3d18ce0b9e"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -634,6 +634,7 @@ function openLB(idx,item){
       <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a>
         <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
+        <button class="btn" type="button" id="lbshare">Share image</button>
         <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div></div>
     <button class="x" type="button" aria-label="Close" id="lbx">&times;</button></div>
     ${idx>=0?`<button class="navbtn prev" type="button" aria-label="Previous slab" id="lbp">&lsaquo;</button>
@@ -649,8 +650,47 @@ function copyText(txt){
 const shareURL=c=>{const base=location.href.split("#")[0];
   try{if(window.GALLERY&&window.GALLERY.share&&/^https?:/.test(location.protocol))return new URL("c/"+c+"/",base).href}catch(e){}
   return base+"#cert="+c};
+function shareCard(i){
+  return Promise.all([document.fonts?document.fonts.load('800 100px "Big Shoulders Display"'):0,document.fonts?document.fonts.load('600 30px "Hanken Grotesk"'):0].map(p=>Promise.resolve(p).catch(()=>0))).then(()=>new Promise((res,rej)=>{
+    const img=new Image();img.crossOrigin="anonymous";
+    img.onload=()=>{try{
+      const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+      const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#0f2a52");bg.addColorStop(.5,"#0b1d3a");bg.addColorStop(1,"#071225");x.fillStyle=bg;x.fillRect(0,0,W,H);
+      const gl=x.createRadialGradient(W/2,820,40,W/2,820,760);gl.addColorStop(0,"rgba(217,173,91,.22)");gl.addColorStop(1,"rgba(217,173,91,0)");x.fillStyle=gl;x.fillRect(0,0,W,H);
+      const GOLD="#d9ad5b",D="'Big Shoulders Display','Arial Narrow',sans-serif",U="'Hanken Grotesk',Arial,sans-serif";
+      x.textAlign="center";x.textBaseline="alphabetic";
+      x.fillStyle=GOLD;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,120);
+      x.fillStyle="#eaf0fb";let fs=124,name=String(i.n||"").toUpperCase();
+      const wrap=(t,f)=>{x.font="800 "+f+"px "+D;const w=t.split(" "),L=[];let c="";w.forEach(k=>{const n=c?c+" "+k:k;if(x.measureText(n).width>W-150&&c){L.push(c);c=k}else c=n});if(c)L.push(c);return L};
+      let L=wrap(name,fs);while(L.length>3&&fs>70){fs-=8;L=wrap(name,fs)}
+      try{x.letterSpacing="0px"}catch(e){}
+      L.forEach((t,k)=>x.fillText(t,W/2,265+k*fs*.95));
+      const hb=265+(L.length-1)*fs*.95+50,avail=H-200-hb-170,maxW=760;let h=Math.min(1100,avail),w=img.width*h/img.height;if(w>maxW){w=maxW;h=img.height*w/img.width}
+      const top=hb+Math.max(0,(avail-h)/2-20);
+      x.save();x.shadowColor="rgba(0,0,0,.65)";x.shadowBlur=60;x.shadowOffsetY=30;x.drawImage(img,(W-w)/2,top,w,h);x.restore();
+      let y=top+h+70;
+      const pill=(t,gold,px,py)=>{x.font="700 32px "+U;const tw=x.measureText(t).width+56;const rx=px-tw/2;x.beginPath();if(x.roundRect)x.roundRect(rx,py-46,tw,68,34);else x.rect(rx,py-46,tw,68);x.fillStyle=gold?GOLD:"#0c2540";x.fill();if(!gold){x.strokeStyle="#1f4678";x.lineWidth=3;x.stroke()}x.fillStyle=gold?"#201505":"#eaf0fb";x.fillText(t,px,py)};
+      const chips=["ACE "+i.g+(i.gn?" "+String(i.gn).toUpperCase():""),String(i.no||""),String(i.s||"")].filter(Boolean);
+      let wd=chips.map(t=>{x.font="700 32px "+U;return x.measureText(t).width+56+16}),tot=wd.reduce((a,b)=>a+b,0)-16;
+      if(tot>W-100){chips.length=2;wd=chips.map(t=>x.measureText(t).width+72);tot=wd.reduce((a,b)=>a+b,0)-16}
+      let cx=(W-tot)/2;chips.forEach((t,k)=>{pill(t,k===0,cx+wd[k]/2-8,y);cx+=wd[k]});
+      if(i.p&&i.p>=20){x.fillStyle="#a9b8d3";x.font="500 34px "+U;x.fillText("Raw about £"+Math.round(i.p).toLocaleString("en-GB"),W/2,y+86)}
+      x.fillStyle="#6f86ad";x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
+      const host=(location.host+location.pathname).replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+      x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-110);
+      x.fillStyle="#52698f";x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-64);
+      cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
+    }catch(e){rej(e)}};
+    img.onerror=()=>rej(new Error("image"));img.src=i.im})) }
+function shareSlab(btn){
+  const i=cur>=0?view[cur]:BYC.get(+st.c);if(!i)return;const old=btn.textContent;btn.textContent="Making image...";btn.disabled=true;
+  shareCard(i).then(b=>{const f=new File([b],"ace-slab-"+i.c+".png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:i.n,text:i.n+" (ACE "+i.g+") on the ACE Yu-Gi-Oh! slab gallery"}).catch(e=>{if(e&&e.name==="AbortError")return});
+    const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)})
+  .then(()=>{btn.textContent="Done ✓"},()=>{btn.textContent="Couldn't make image"}).then(()=>setTimeout(()=>{btn.textContent=old;btn.disabled=false},1800))}
 dlg.addEventListener("click",e=>{
   const lf=e.target.closest("#lbfav");if(lf){toggleFav(+lf.dataset.c);return}
+  const sh=e.target.closest("#lbshare");if(sh){shareSlab(sh);return}
   const sd=e.target.closest(".fbtog button");
   if(sd){if(dlg._rz)dlg._rz();const i=cur>=0?view[cur]:BYC.get(+st.c);if(i){const im=$("#lbimg");im.src=sd.dataset.side==="b"?i.bk:i.im;im.alt=i.n+(sd.dataset.side==="b"?" (back of slab)":" in an ACE slab");sd.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===sd))}return}
   const o=e.target.closest(".oth");
