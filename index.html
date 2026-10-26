@@ -250,7 +250,7 @@ dt{color:var(--mist)} dd{margin:0;overflow-wrap:anywhere}
 .oth:hover{border-color:var(--gold-dim)}
 .oth img{display:block;width:100%;aspect-ratio:3/4;object-fit:contain}
 .oth b{display:block;font:800 16px/1 var(--display);color:var(--gold);margin-top:3px;white-space:nowrap}
-.oth small{display:block;font-size:10px;color:var(--mist);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oth small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;font-size:10.5px;line-height:1.25;margin-top:3px;color:var(--mist);overflow:hidden;text-overflow:ellipsis;word-break:break-word}
 .tray{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 20px);
   padding:8px 10px;border-radius:14px;border:1px solid var(--gold-dim);background:var(--barbg);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .tray[hidden]{display:none}
@@ -427,7 +427,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 
-<script src="data.js?v=7c19d29b42"></script>
+<script src="data.js?v=89d5128988"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
