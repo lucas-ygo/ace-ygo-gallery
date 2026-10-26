@@ -179,6 +179,10 @@ main{min-width:0}
 .ownsum{font-size:13px;color:var(--mist);align-self:center;padding:0 6px}
 .mynote{margin:12px 0 4px}.mynote label{display:block;font:600 12px/1 var(--ui);color:var(--mist);margin-bottom:6px}.mynote small{font-weight:400}
 .mynote textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:54px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:14px/1.35 var(--ui)}
+.finder{display:inline-block;margin:0 0 12px;padding:6px 14px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font:700 13px/1.2 var(--ui);letter-spacing:.06em;text-transform:uppercase}
+.welc{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.welc li{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.4}
+.welc .wi{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(217,173,91,.15);color:var(--gold);display:grid;place-items:center;font-size:15px}
 .subrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.subrow button{background:none;border:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline;padding:0;text-align:left}
 .card{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background:var(--case)}
@@ -447,12 +451,18 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=662bba896d"></script>
+<script src="data.js?v=e7e2a3136f"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
+const MAXA=DATA.reduce((m,i)=>Math.max(m,i.a||0),0);
+let seenBase=null;try{const t=localStorage.getItem("seenA");seenBase=t==null?null:+t}catch(e){}
+if(seenBase==null){seenBase=MAXA;try{localStorage.setItem("seenA",String(MAXA))}catch(e){}}      // first visit: nothing is "new for you" yet
+function isFY(i){return(i.a||0)>seenBase}
+function persistSeen(){try{localStorage.setItem("seenA",String(MAXA))}catch(e){}}
+addEventListener("pagehide",persistSeen);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persistSeen()});
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest(".sale a");if(a&&window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"click-ebay",title:"eBay listing click",event:true})}catch(x){}});
 const SALES=window.SALES||{};DATA.forEach(i=>{const s=SALES[i.no+"|"+i.g];if(s&&s.length)i.eb=s;i.co=/collab/i.test(i.s||"")});
 const ORIGIN=1490916;
@@ -471,6 +481,7 @@ const GROUPS=[
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
   {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
+  {k:"fy",title:"New for you",hint:"since your last visit",label:v=>v,get:i=>isFY(i)?["New since your last visit"]:[],when:()=>DATA.some(isFY)},
   {k:"co",title:"Collaboration",label:v=>v,get:i=>i.co?["Collaboration"]:[],when:()=>DATA.some(i=>i.co)},
   {k:"eb",title:"For sale",hint:"on eBay now",label:v=>v,get:i=>i.eb?["On eBay now"]:[],when:()=>DATA.some(i=>i.eb)},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
@@ -483,6 +494,7 @@ const GROUPS=[
   {k:"pp",title:"Population",hint:"when collected",label:v=>v,get:i=>i.pp||[]}
 ];
 const PRESETS=[
+  {n:"New since your last visit",set:{fy:["New since your last visit"]},when:()=>DATA.some(isFY)},
   {n:"Just added",set:{nw:["Just added"]},when:()=>DATA.some(i=>i.nw)},
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
   {n:"Duel Monsters-era cards",set:{e:[ERAS[0]]}},
@@ -573,7 +585,7 @@ const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
-    <div class="case">${i.nw?`<span class="newb">NEW</span>`:""}${i.eb?`<span class="saleb" title="Listed on eBay">eBay \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
+    <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb" title="Listed on eBay">eBay \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}</div>
     <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
@@ -611,10 +623,11 @@ function renderActive(){const el=$("#actv"),out=[];
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
   el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
 $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
+  if(b.dataset.shareown){shareCollection(b);return}
   if(b.dataset.share){const u=location.href.split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
     copyText(u).then(()=>{b.textContent="Link copied \u2713"},()=>{b.textContent="Copy failed"});setTimeout(()=>{b.textContent="Copy link to my list"},1800);return}
   const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="own")st.own=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
-function ownSum(){const m=DATA.filter(i=>own.has(i.c)),v=m.reduce((a,i)=>a+(i.p||0),0);return '<span class="ownsum">'+fmt(m.length)+" owned"+(v?" \u00b7 about "+moneyWhole(v)+" raw value":"")+"</span>"}
+function ownSum(){const m=DATA.filter(i=>own.has(i.c)),v=m.reduce((a,i)=>a+(i.p||0),0);return '<span class="ownsum">'+fmt(m.length)+" owned"+(v?" \u00b7 about "+moneyWhole(v)+" raw value":"")+'</span><button type="button" class="acl" data-shareown="1">Share image</button>'}
 function anyActive(){return st.q||st.s||st.fav||st.own||st.only||GROUPS.some(g=>st[g.k].size)}
 function apply(keepScroll){
   view=DATA.filter(i=>matches(i)).sort(sorter());
@@ -711,6 +724,41 @@ function drawDuel(x,img,i,W,H){
   x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-52);
   x.fillStyle="#8a7048";x.font="500 20px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-20);try{x.letterSpacing="0px"}catch(e){}
 }
+function collectionCard(){
+  const mine=DATA.filter(i=>own.has(i.c)).sort((a,b)=>(b.p||0)-(a.p||0));
+  if(!mine.length)return Promise.reject(new Error("none"));
+  const show=mine.slice(0,12),val=mine.reduce((a,i)=>a+(i.p||0),0),gems=mine.filter(i=>String(i.g)==="10").length;
+  const fl=f=>document.fonts?document.fonts.load(f).catch(()=>0):0;
+  return Promise.all([fl('800 100px "Big Shoulders Display"'),fl('600 30px "Hanken Grotesk"')]).then(()=>Promise.all(show.map(i=>new Promise(r=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>r(im);im.onerror=()=>r(null);im.src=i.im})))).then(imgs=>new Promise((res,rej)=>{
+    try{
+      const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+      const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#0f2a52");bg.addColorStop(.5,"#0b1d3a");bg.addColorStop(1,"#071225");x.fillStyle=bg;x.fillRect(0,0,W,H);
+      const GOLD="#d9ad5b",D="'Big Shoulders Display','Arial Narrow',sans-serif",U="'Hanken Grotesk',Arial,sans-serif";
+      x.textAlign="center";x.textBaseline="alphabetic";
+      x.fillStyle=GOLD;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,118);try{x.letterSpacing="0px"}catch(e){}
+      x.fillStyle="#eaf0fb";let ts=150;x.font="800 "+ts+"px "+D;while(x.measureText("MY COLLECTION").width>W-120&&ts>60){ts-=6;x.font="800 "+ts+"px "+D}x.fillText("MY COLLECTION",W/2,268);
+      const stats=[[fmt(mine.length),mine.length===1?"SLAB":"SLABS"]];if(val)stats.push([moneyWhole(val),"RAW VALUE"]);if(gems)stats.push([fmt(gems),"GEM MINT 10S"]);
+      const sw=W/stats.length;stats.forEach((s,k)=>{const cx=sw*k+sw/2;x.fillStyle=GOLD;x.font="800 92px "+D;x.fillText(s[0],cx,400);x.fillStyle="#a9b8d3";x.font="600 24px "+U;try{x.letterSpacing="4px"}catch(e){}x.fillText(s[1],cx+2,444);try{x.letterSpacing="0px"}catch(e){}});
+      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gx=520,AW=960,AH=1160,gap=26,asp=.597;let best=null;
+      for(let c=1;c<=4;c++){const cw=(AW-(c-1)*gap)/c,ch=Math.min(cw/asp,560),rows=Math.ceil(n/c),th=rows*ch+(rows-1)*gap;if(th<=AH&&(!best||ch>best.ch))best={c,ch,cw:ch*asp}}
+      if(!best){const c=4,ch=(AH-2*gap)/3;best={c,ch,cw:ch*asp}}
+      const rows=Math.ceil(n/best.c),gh=rows*best.ch+(rows-1)*gap,top=gx+(AH-gh)/2;
+      ok.forEach((p,k)=>{const r=Math.floor(k/best.c),inRow=Math.min(best.c,n-r*best.c),rw=inRow*best.cw+(inRow-1)*gap,cx=(W-rw)/2+(k%best.c)*(best.cw+gap),im=p[1];
+        let w=best.cw,h=im.height*w/im.width;if(h>best.ch){h=best.ch;w=im.width*h/im.height}
+        x.save();x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=28;x.shadowOffsetY=14;x.drawImage(im,cx+(best.cw-w)/2,top+r*(best.ch+gap)+(best.ch-h)/2,w,h);x.restore()});
+      if(mine.length>show.length){x.fillStyle="#a9b8d3";x.font="600 30px "+U;x.fillText("+ "+fmt(mine.length-show.length)+" more slabs",W/2,gx+AH+44)}
+      x.fillStyle="#6f86ad";x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
+      const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+      x.fillText(host.toUpperCase(),W/2,H-100);
+      x.fillStyle="#52698f";x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-56);
+      cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
+    }catch(e){rej(e)}}))}
+function shareCollection(btn){
+  const old=btn.textContent;btn.textContent="Making image...";btn.disabled=true;
+  collectionCard().then(b=>{const f=new File([b],"my-ace-yugioh-collection.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:"My ACE Yu-Gi-Oh! collection"}).catch(e=>{if(e&&e.name==="AbortError")return});
+    const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)})
+  .then(()=>{btn.textContent="Done ✓"},()=>{btn.textContent="Couldn't make image"}).then(()=>setTimeout(()=>{btn.textContent=old;btn.disabled=false},1800))}
 function shareCard(i,style){
   return Promise.all([document.fonts?document.fonts.load('800 100px "Big Shoulders Display"'):0,document.fonts?document.fonts.load('600 30px "Hanken Grotesk"'):0,document.fonts?document.fonts.load("700 100px Cinzel"):0,document.fonts?document.fonts.load("400 40px Hiero","\u{13080}"):0].map(p=>Promise.resolve(p).catch(()=>0))).then(()=>new Promise((res,rej)=>{
     const img=new Image();img.crossOrigin="anonymous";
@@ -951,7 +999,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     au.onAuthStateChanged(fb.auth,u=>{user=u;(async()=>{uh=u?await hashOf(u.uid):"";window.__uh=uh;paint()})();paint();unsub&&unsub();unsub=null;if(u){ls("acctuser","1");start()}else ls("acctuser",null)});return fb}
   function push(){clearTimeout(tmr);quiet=Date.now()+2500;tmr=setTimeout(()=>{if(!user||!fb)return;
     const prefs=Object.assign({},remotePrefs,curPrefs());
-    fb.fs.setDoc(fb.fs.doc(fb.db,"users",user.uid),{fav:[...fav],own:[...own],notes,prefs,updated:Date.now()}).then(()=>{remotePrefs=prefs;ls("favdirty","0")}).catch(()=>{})},700)}
+    fb.fs.setDoc(fb.fs.doc(fb.db,"users",user.uid),{fav:[...fav],own:[...own],notes,prefs,seen:+ls("seenA")||0,updated:Date.now()}).then(()=>{remotePrefs=prefs;ls("favdirty","0")}).catch(()=>{})},700)}
   function start(){const {fs,db}=fb,uid=user.uid;first=true;
     unsub=fs.onSnapshot(fs.doc(db,"users",uid),snap=>{
       const d=snap.exists()?snap.data():{};
@@ -959,32 +1007,51 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
       if(first){first=false;
         const trust=ls("favsync")===uid&&ls("favdirty")!=="1";   // this device already synced and has nothing unsent: trust the cloud copy
         ls("favsync",uid);
+        if(+d.seen>seenBase){seenBase=+d.seen;ls("seenA",String(seenBase));apply(true)}   // slabs you already saw on another device are not "new" here
         const mf=trust?rf:new Set([...fav,...rf]),mo=trust?ro:new Set([...own,...ro]),mn=trust?rn:Object.assign({},rn,notes);
         if(!same(mf,fav))setFav(mf);if(!same(mo,own))setOwn(mo);if(js(mn)!==js(notes))setNotes(mn);
         applyPrefs(remotePrefs);   // a new device adopts the cloud settings
-        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length)push();return}
+        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length)push();
+        if(ls("welcomed")!==uid){ls("welcomed",uid);setTimeout(welcome,400)}
+        return}
       if(snap.metadata.hasPendingWrites||Date.now()<quiet)return;
       if(!same(rf,fav))setFav(rf);if(!same(ro,own))setOwn(ro);if(js(rn)!==js(notes))setNotes(rn);applyPrefs(remotePrefs)},()=>{$("#acctl").textContent="Sync error"});}
   syncHook=()=>{ls("favdirty","1");if(user)push()};
   window.__prefChanged=()=>{if(!applying)syncHook()};
+  function welcome(){
+    if(!user||ad.open||document.querySelector("dialog[open]"))return;
+    const row=(i,t,s)=>`<li><span class="wi">${i}</span><span><b>${t}</b><br>${s}</span></li>`;
+    ad.innerHTML=`<div class="cmpbox stat"><h3>You're signed in \u2713</h3><button class="x" type="button" id="acctx" aria-label="Close">&times;</button>
+      <p class="note" style="margin-top:0">Here's what you've just unlocked:</p>
+      <ul class="welc">${row("\u2665","Saved slabs everywhere","Favourites follow you between your phone and computer.")
+      +row("\u2611","Your collection","Tick slabs you own to see your collection and its raw value, and share it as an image.")
+      +row("\u270e","Private notes","Add a note to any slab. Only you can see it.")
+      +row("\u2699","Synced settings","Your theme, view and tile size carry over to every device.")
+      +row("\u2605","New for you","Slabs added since your last visit get a NEW FOR YOU tag and their own filter.")
+      +row("\u2709","Certs you sent in","Send a cert while signed in and track what became of it. Find slabs to earn a finder badge.")}</ul>
+      <div class="acts" style="margin-top:14px"><button class="btn" type="button" id="acctx2">Got it</button> <button class="btn" type="button" id="acctmy">Open my account</button></div></div>`;
+    ad.showModal()}
   async function openAcct(){
     const mine=DATA.filter(i=>own.has(i.c)),val=mine.reduce((a,i)=>a+(i.p||0),0);
     const tile=(b,s)=>`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
     ad.innerHTML=`<div class="cmpbox stat"><h3>My account</h3><button class="x" type="button" id="acctx" aria-label="Close">&times;</button>
       <p class="note" style="margin-top:0">Signed in as <b>${esc(user.email||"you")}</b>. Your saved slabs, owned slabs, notes and settings sync across your devices.</p>
       <div class="stiles">${tile(fmt([...fav].filter(c=>BYC.has(c)).length),"saved")}${tile(fmt(mine.length),"owned")}${mine.length&&val?tile(moneyWhole(val),"collection raw value"):""}${tile(fmt(Object.keys(notes).length),"notes")}</div>
-      <h4>Certs you sent in</h4><div id="acctsub" class="note">Checking...</div>
-      <div class="acts" style="margin-top:14px"><button class="btn" type="button" id="acctout">Sign out</button></div></div>`;
+      <p id="acctbadge" class="finder" hidden></p><h4>Certs you sent in</h4><div id="acctsub" class="note">Checking...</div>
+      <div class="acts" style="margin-top:14px">${mine.length?'<button class="btn" type="button" id="acctshare">Share my collection</button> ':""}<button class="btn" type="button" id="acctout">Sign out</button></div></div>`;
     ad.showModal();
     let list=[];try{const u=($('script[src*="data.js"]')||{}).src||"";const r=await fetch(u.replace(/data\.js.*$/,"mine.json?t="+Date.now()),{cache:"no-store"});if(r.ok){const j=await r.json();list=j[uh]||[]}}catch(e){}
     const box=$("#acctsub");if(!box||!ad.open)return;
     if(!list.length){box.textContent="Nothing yet. Certs you send with the Send a cert box while signed in will be listed here, with what became of them. This list refreshes about every 20 minutes.";return}
     const T={s:"Slab found",o:"Read, not a Yu-Gi-Oh! slab",x:"No slab at that number",p:"Waiting in the queue"};
     const n=list.filter(r=>r[1]==="s"||BYC.has(+r[0])).length;
+    const bd=$("#acctbadge");if(bd&&n){bd.hidden=false;bd.textContent="\u2605 "+(n>=25?"Slab legend":n>=10?"Slab hunter":n>=3?"Slab finder":"Slab spotter")+" \u00b7 "+n+" found"}
     box.innerHTML=`<p style="margin:0 0 6px">${fmt(list.length)} sent in, ${fmt(n)} became slabs in the gallery.</p>`+list.slice().reverse().map(r=>{const c=+r[0],it=BYC.get(c);
       return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>`}).join("")}
   ad.addEventListener("click",async e=>{
-    if(e.target.id==="acctx"||e.target===ad){ad.close();return}
+    if(e.target.id==="acctx"||e.target.id==="acctx2"||e.target===ad){ad.close();return}
+    if(e.target.id==="acctmy"){openAcct();return}
+    if(e.target.id==="acctshare"){shareCollection(e.target);return}
     if(e.target.id==="acctout"){ad.close();try{await fb.au.signOut(fb.auth)}catch(x){}return}
     const b=e.target.closest(".subrow button");if(b){ad.close();const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
   btn.addEventListener("click",async()=>{if(busy)return;busy=true;
