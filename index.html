@@ -492,7 +492,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=8aec64b8c4"></script>
+<script src="data.js?v=8b45ef4fec"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1273,9 +1273,9 @@ $("#stamp").textContent=window.GALLERY&&window.GALLERY.generated?"Last updated "
 (function(){var f=document.getElementById("leadf");if(!f)return;var box=document.getElementById("leads");function openLead(e){if(e)e.preventDefault();box.hidden=false;window.scrollTo({top:0,behavior:"smooth"});setTimeout(function(){document.getElementById("leadin").focus()},350)}["leadbtn","leadlink"].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener("click",openLead)});var T="ygo-slab-leads-de80f655be",inp=document.getElementById("leadin"),nm=document.getElementById("leadname"),msg=document.getElementById("leadmsg");try{nm.value=localStorage.getItem("leadname")||""}catch(x){}
 f.addEventListener("submit",function(e){e.preventDefault();var v=(inp.value||"").replace(/\D/g,"");
 if(!/^\d{7}$/.test(v)){msg.textContent="That should be a 7-digit cert number.";return}
-var n=0;try{n=+(localStorage.getItem("leadn")||0);if(n>=10){msg.textContent="Thanks, that's plenty for today!";return}}catch(x){}
+var n=0,td=new Date().toISOString().slice(0,10);try{var ld=JSON.parse(localStorage.getItem("leadd")||"{}");n=ld.d===td?+ld.n||0:0;if(n>=10){msg.textContent="Thanks, that's plenty for today!";return}}catch(x){}
 msg.textContent="Sending...";
-var who=(nm.value||"").replace(/[^A-Za-z0-9 _.@\-]/g,"").trim().slice(0,24);try{localStorage.setItem("leadname",who)}catch(x){}fetch("https://ntfy.sh/"+T,{method:"POST",body:v+((who||window.__uh)?" | "+who:"")+(window.__uh?" | u:"+window.__uh:"")}).then(function(r){if(!r.ok)throw 0;try{localStorage.setItem("leadn",n+1)}catch(x){}
+var who=(nm.value||"").replace(/[^A-Za-z0-9 _.@\-]/g,"").trim().slice(0,24);try{localStorage.setItem("leadname",who)}catch(x){}fetch("https://ntfy.sh/"+T,{method:"POST",body:v+((who||window.__uh)?" | "+who:"")+(window.__uh?" | u:"+window.__uh:"")}).then(function(r){if(!r.ok)throw 0;try{localStorage.setItem("leadd",JSON.stringify({d:td,n:n+1}))}catch(x){}
 inp.value="";msg.textContent="Thanks! "+v+" is queued. If it's a Yu-Gi-Oh! slab it will appear within the hour.";if(window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"lead-sent",title:"Cert lead sent",event:true})}catch(x){}}).catch(function(){msg.textContent="Couldn't send, please try again later."})})})();
 </script>
 </body>
