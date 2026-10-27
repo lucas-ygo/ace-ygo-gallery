@@ -63,20 +63,13 @@
   :root[data-theme="5d"] .card:hover .case::before{animation:tune .45s ease-out both}
 }
 @media (hover:none){:root[data-theme="5d"] .card:hover{transform:none}}
-@keyframes tune{0%{opacity:0;transform:translateX(-45%)}18%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateX(45%)}}
+@keyframes tune{0%{opacity:0;transform:scale(.6)}25%{opacity:1}100%{opacity:0;transform:scale(1.35)}}
 :root[data-theme="5d"] :is(.stile,.leads,.cmpbox,.lb){border-radius:8px}
 :root[data-theme="5d"] .case,:root[data-theme="5d"] .card:hover .case,:root[data-theme="5d"] .lb .pic{background:repeating-linear-gradient(115deg,#e8eef6 0 22px,#edf2f8 22px 26px)}
 :root[data-theme="5d"] :is(.case img,.lb .pic img,.cgrid img){filter:drop-shadow(0 6px 10px rgba(22,33,62,.28))}
 :root[data-theme="5d"] .case::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;
-  background:
-    radial-gradient(ellipse 22px 110px at 42% 50%,transparent 0 90%,#2fa84f 91% 100%,transparent 100%),
-    radial-gradient(ellipse 30px 140px at 50% 50%,transparent 0 92%,#2fa84f 93% 100%,transparent 100%),
-    radial-gradient(ellipse 38px 170px at 58% 50%,transparent 0 94%,#2fa84f 95% 100%,transparent 100%)}
+  background:radial-gradient(circle at 50% 50%,transparent 0 39px,rgba(47,168,79,.7) 40px 41px,transparent 42px 63px,rgba(47,168,79,.55) 64px 65px,transparent 66px 87px,rgba(47,168,79,.4) 88px 89px,transparent 90px)}
 :root[data-theme="5d"] .card[data-top]{border-color:#e3a21a}
-:root[data-theme="5d"] .card[data-top] .case::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:
-    radial-gradient(ellipse 62px 84px at 50% 50%,transparent 0 94%,#e3a21a 95% 100%,transparent 100%),
-    radial-gradient(ellipse 84px 112px at 50% 50%,transparent 0 95%,#e3a21a 96% 100%,transparent 100%)}
 :root[data-theme="5d"] :is(.gr b,.lb .big b){display:inline-block;padding:3px 9px 2px;border-radius:6px;color:#fff;background:#c4122f;line-height:1.05}
 :root[data-theme="5d"] .gr b{font-size:28px;min-width:46px}
 :root[data-theme="5d"] .lb .big b{font-size:52px;padding:4px 14px 2px}
@@ -558,7 +551,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=092a4684cb"></script>
+<script src="data.js?v=98623d758c"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
