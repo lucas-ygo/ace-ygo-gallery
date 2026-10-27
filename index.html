@@ -25,7 +25,7 @@
 <!--/OG-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Hanken+Grotesk:wght@400;500;600&family=Anton&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme:dark;
@@ -54,6 +54,46 @@
   --display:"Cinzel","Big Shoulders Display",Georgia,serif;
   --bgx:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9  0 0 0 0 .7  0 0 0 0 .4  0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E"),repeating-linear-gradient(0deg,rgba(232,180,74,.03) 0 1px,transparent 1px 72px);
 }
+/* ---------- Theme 4: Tag Force GX (unofficial concept: colours and type only, no logos or art) ---------- */
+:root[data-theme=gx]{
+  color-scheme:dark;
+  --abyss:#0E1526; --case:#182238; --case-hi:#182238; --raise:#182238; --hi:#223052;
+  --line:#2A3550; --foil:#F5F1E8; --mist:#A9B3C7; --gold:#F4B814; --gold-dim:#46557d;
+  --barbg:#0E1526; --glow:transparent; --ongold:#121826; --ongold2:#121826; --scrim:14,21,38;
+  --display:"Anton","Impact","Arial Narrow",sans-serif;
+  --ui:"Barlow",system-ui,sans-serif;
+  --red:#C8192F; --redt:#FF5C68; --blue:#2E5BEA; --bluet:#7C9BFF;
+}
+:root[data-theme=gx] h1,:root[data-theme=gx] h2{font-weight:400;text-transform:uppercase;letter-spacing:.01em}
+:root[data-theme=gx] h1 em{color:var(--redt)}
+:root[data-theme=gx] .eyebrow{font-weight:700;letter-spacing:.14em;color:var(--bluet)}
+:root[data-theme=gx] :is(.coffee,footer .cof,.wipnote b,.acl,.filter-btn,.chip.q:not([aria-pressed=true]),.subs b.ten,.sub.pr,.stile b,.gr b,.lb .big b,.oth b,.origin,.origbn b,.clear,.empty button,.cgrid .cg,.cgrid .best,#leadmsg,.finder,.subrow button,.totop){color:var(--bluet)}
+:root[data-theme=gx] :is(.gr b,.stile b,.lb .big b,.cgrid .cg){font-weight:400;letter-spacing:.01em}
+:root[data-theme=gx] .stile b{font-size:32px}
+:root[data-theme=gx] :is(.oth b,.fbtog button){font-family:var(--ui);font-weight:700}
+:root[data-theme=gx] .frieze{display:flex;gap:8px;height:12px;padding:0;margin:10px auto 10px 16px;font-size:0;border:0;overflow:visible}
+:root[data-theme=gx] .frieze:before,:root[data-theme=gx] .frieze:after{content:"";flex:0 0 64px;transform:skewX(-18deg)}
+:root[data-theme=gx] .frieze:before{background:var(--red)}
+:root[data-theme=gx] .frieze:after{background:var(--blue)}
+:root[data-theme=gx] .case,:root[data-theme=gx] .lb .pic{background:var(--raise)}
+:root[data-theme=gx] .card:hover .case{background:var(--hi)}
+:root[data-theme=gx] .case img,:root[data-theme=gx] .lb .pic img,:root[data-theme=gx] .cgrid img{filter:none}
+:root[data-theme=gx] :is(.newb,.saleb,.totop,.toast,.gbtn){box-shadow:none}
+:root[data-theme=gx] :is(.origin,.spark){text-shadow:none}
+:root[data-theme=gx] :is(.iconbtn,.search input,.sort,.filter-btn,.clear,.btn,select.setpick,.stabs button,.subs div,.stile,.leads,.leads input,.empty button,.zoom button,.mynote textarea,.oth,.tt,.origbn,.wipnote,.subtxt code,.navbtn,.x,.cmpb,.favb){border-radius:0}
+:root[data-theme=gx] :is(.card,.lb,.cmpbox){border-radius:6px}
+:root[data-theme=gx] .card{position:relative}
+:root[data-theme=gx] .card:before,:root[data-theme=gx] .card:after{content:"";position:absolute;top:0;width:18px;height:6px;z-index:3;transform:skewX(-18deg)}
+:root[data-theme=gx] .card:before{left:10px;background:var(--red)}
+:root[data-theme=gx] .card:after{left:32px;background:var(--blue)}
+:root[data-theme=gx] .btn.gold{background:var(--red);border-color:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+:root[data-theme=gx] .chip[aria-pressed=true],:root[data-theme=gx] .stabs button[aria-selected=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme=gx] .chip[aria-pressed=true] i{color:#dbe4ff}
+:root[data-theme=gx] .fbtog button.on{background:var(--blue);color:#fff}
+:root[data-theme=gx] .chip.q[aria-pressed=true]{color:#fff}
+:root[data-theme=gx] .sbar .st,:root[data-theme=gx] .sbar .st i{border-radius:0}
+:root[data-theme=gx] .sbar .st i{background:var(--blue)}
+:root[data-theme=gx] .wipnote{border-left-color:var(--red)}
 .frieze{display:none}
 :root[data-theme=duel] .frieze{display:block;overflow:hidden;white-space:nowrap;text-align:center;padding:6px 0 4px;
   font:400 22px/1.4 "Hiero",serif;letter-spacing:.7em;color:var(--gold-dim);
@@ -377,7 +417,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   .grid .cw .info{padding-bottom:46px}
 }
 </style>
-<script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="duel"||t==="light"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="duel"||t==="light"||t==="gx"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script data-goatcounter="https://lucas-ygo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
@@ -452,7 +492,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=bc3163676a"></script>
+<script src="data.js?v=8aec64b8c4"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -892,7 +932,7 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
 
 /* ---------- theme ---------- */
 (function(){const b=$("#theme"),root=document.documentElement;
-  const T=[["dark","ACE","#06172c"],["duel","Duel Monsters","#1f130a"],["light","Light","#f2f5f9"]];   // theme 1, 2, 3
+  const T=[["dark","ACE","#06172c"],["duel","Duel Monsters","#1f130a"],["light","Light","#f2f5f9"],["gx","Tag Force GX","#0E1526"]];   // theme 1, 2, 3
   const G=["\u{13080}","\u{132F9}","\u{131A3}","\u{13183}","\u{131F3}","\u{130ED}","\u{132B9}","\u{13193}"];
   const row=Array.from({length:14},()=>G.join(" ")).join(" ");
   document.querySelectorAll(".frieze").forEach(f=>f.textContent=row);
