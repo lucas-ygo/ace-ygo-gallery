@@ -492,7 +492,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=8b45ef4fec"></script>
+<script src="data.js?v=f42a272918"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -932,7 +932,7 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
 
 /* ---------- theme ---------- */
 (function(){const b=$("#theme"),root=document.documentElement;
-  const T=[["dark","ACE","#06172c"],["duel","Duel Monsters","#1f130a"],["light","Light","#f2f5f9"],["gx","Tag Force GX","#0E1526"]];   // theme 1, 2, 3
+  const T=[["dark","ACE","#06172c","ACE"],["duel","DM","#1f130a","Duel Monsters"],["gx","GX","#0E1526","Tag Force GX"],["light","L","#f2f5f9","Light"]];   // theme 1, 2, 3
   const G=["\u{13080}","\u{132F9}","\u{131A3}","\u{13183}","\u{131F3}","\u{130ED}","\u{132B9}","\u{13193}"];
   const row=Array.from({length:14},()=>G.join(" ")).join(" ");
   document.querySelectorAll(".frieze").forEach(f=>f.textContent=row);
@@ -940,8 +940,8 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   function paint(){
     const i=idx(),n=T[(i+1)%T.length];
     root.dataset.theme=T[i][0];
-    b.textContent=String(i+1);
-    b.title="Theme "+(i+1)+": "+T[i][1]+". Tap for theme "+(((i+1)%T.length)+1)+" ("+n[1]+")";
+    b.textContent=T[i][1];
+    b.title="Theme "+(i+1)+": "+T[i][3]+". Tap for theme "+(((i+1)%T.length)+1)+" ("+n[3]+")";
     b.setAttribute("aria-label",b.title);
     const m=document.querySelector('meta[name=theme-color]');if(m)m.content=T[i][2];
   }
