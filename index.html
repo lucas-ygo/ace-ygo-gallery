@@ -332,6 +332,7 @@ body.hastray{padding-bottom:90px}
 .cmpbox .x{top:10px;right:12px}
 .subtxt{max-width:520px;font-size:14.5px}.subtxt h4{margin:16px 0 6px;font:600 15px/1.2 var(--ui)}
 .subtxt ol{margin:0 0 12px;padding-left:20px}.subtxt li{margin:5px 0}
+.scanned{margin:14px 0 0;font-size:11px;letter-spacing:.04em;color:var(--mist);opacity:.55}
 .subtxt code{background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:13px;word-break:break-all}
 .leads{margin:14px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--raise);max-width:520px}
 .leads[hidden]{display:none}.leads{margin-top:14px}.leads p{margin:0 0 8px}.leads form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -494,7 +495,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=e7fdfabd40"></script>
+<script src="data.js?v=59deecadc1"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -716,7 +717,7 @@ function openLB(idx,item){
         <button class="btn" type="button" id="lbcopy">Copy link</button>
         <button class="btn" type="button" id="lbshare">Share image</button>
         <span id="shpick" hidden><button class="btn shp" type="button" data-s="navy">Gallery style</button> <button class="btn shp" type="button" data-s="duel">Duel style</button></span>
-        <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div></div>
+        <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div>${i.sd?`<p class="scanned">Scanned ${esc(new Date(i.sd*1000).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZoneName:"short"}).replace(",",""))}</p>`:""}</div>
     <button class="x" type="button" aria-label="Close" id="lbx">&times;</button></div>
     ${idx>=0?`<button class="navbtn prev" type="button" aria-label="Previous slab" id="lbp">&lsaquo;</button>
     <button class="navbtn next" type="button" aria-label="Next slab" id="lbn">&rsaquo;</button>`:""}`;
