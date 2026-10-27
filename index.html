@@ -394,7 +394,15 @@ body.hastray{padding-bottom:90px}
 .daych i{display:block;width:100%;background:var(--gold);border-radius:3px 3px 0 0}
 .daych b{font-size:10px;color:var(--mist);margin-bottom:2px;font-weight:600}
 .daych span{font-size:9.5px;color:var(--mist);margin-top:3px}
-.sold{margin-top:14px}.sold h4{margin:0 0 6px}.srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.srow b{color:var(--gold);font-variant-numeric:tabular-nums}.srow span{color:var(--mist)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:6px}
+.salec{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
+.salec:hover,.salec:focus-visible{border-color:var(--gold)}
+.sth{display:flex;gap:4px;flex:none}.sth img{width:64px;height:auto;border-radius:6px}
+.sinf{display:flex;flex-direction:column;gap:3px;min-width:0}
+.sinf .sp{font:800 26px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.sinf .sn{font-weight:600;font-size:14px;line-height:1.25;color:var(--foil)}
+.sinf small{color:var(--mist);font-size:12px;line-height:1.3}
+.sub.so{color:var(--mist);font-weight:600}.sold{margin-top:14px}.sold h4{margin:0 0 6px}.srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.srow b{color:var(--gold);font-variant-numeric:tabular-nums}.srow span{color:var(--mist)}
 .unpd{margin-top:16px}.unpd summary{cursor:pointer;font:600 14px var(--ui);color:var(--foil)}
 .unpl{margin-top:6px;max-height:220px;overflow:auto}
 .unpl button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px;color:var(--foil)}
@@ -502,6 +510,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   <p class="scan" id="scan" hidden></p>
   <div class="hlinks"><button class="coffee" id="leadbtn" type="button">&#128269; Send a cert</button>
   <button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
+  <button class="coffee" id="salesbtn" type="button" hidden>&#128183; Sales</button>
   <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" hidden>&#9749; Buy me a coffee</a>
   <a class="coffee" id="igbtn" href="#" target="_blank" rel="noopener noreferrer" hidden>&#128247; Instagram</a>
   <button class="coffee" id="installbtn" type="button" hidden>&#10133; Install app</button></div>
@@ -517,6 +526,7 @@ footer p{margin:0 0 6px;max-width:80ch}
     <option value="yn">Release year, newest</option><option value="yo">Release year, oldest</option>
     <option value="val">Raw value, high to low</option><option value="vall">Raw value, low to high</option>
     <option value="pop">Fewest graded at that grade</option>
+    <option value="sold">Recently sold</option>
     <option value="name">Name A to Z</option>
   </select>
   <div class="zoom" title="Slab size"><button type="button" id="zout" aria-label="Smaller slabs">−</button><input id="zoom" type="range" min="100" max="380" step="10" value="190" aria-label="Slab size"><button type="button" id="zin" aria-label="Larger slabs">+</button></div>
@@ -560,9 +570,10 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="cmpd" aria-label="Compare slabs"></dialog>
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
+<dialog id="saled" aria-label="Recorded sales"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=a5943e7da0"></script>
+<script src="data.js?v=554248fced"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -596,6 +607,7 @@ const GROUPS=[
   {k:"fy",title:"New for you",hint:"since your last visit",label:v=>v,get:i=>isFY(i)?["New since your last visit"]:[],when:()=>DATA.some(isFY)},
   {k:"co",title:"Collaboration",label:v=>v,get:i=>i.co?["Collaboration"]:[],when:()=>DATA.some(i=>i.co)},
   {k:"eb",title:"For sale",hint:"on eBay now",label:v=>v,get:i=>i.eb?["On eBay now"]:[],when:()=>DATA.some(i=>i.eb)},
+  {k:"so",title:"Sold",hint:"recorded eBay sales",label:v=>v,get:i=>i.sl&&i.sl.length?["Has a recorded sale"]:[],when:()=>DATA.some(i=>i.sl&&i.sl.length)},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
   {k:"y",title:"Release year",label:v=>v,get:i=>[i.y?String(i.y):""],asc:true},
   {k:"f",title:"Finish",hint:"match all",label:v=>v,get:i=>i.t||[],all:true,open:true},
@@ -608,6 +620,7 @@ const GROUPS=[
 const PRESETS=[
   {n:"New since your last visit",set:{fy:["New since your last visit"]},when:()=>DATA.some(isFY)},
   {n:"Just added",set:{nw:["Just added"]},when:()=>DATA.some(i=>i.nw)},
+  {n:"Recently sold",set:{so:["Has a recorded sale"]},sort:"sold",when:()=>DATA.some(i=>i.sl&&i.sl.length)},
   {n:"Perfect 10s",set:{g:["10"],pf:["All four sub-grades 10"]}},
   {n:"Duel Monsters-era cards",set:{e:[ERAS[0]]}},
   {n:"Grand master rares",set:{f:["Grand master"]},when:()=>DATA.some(i=>(i.t||[]).includes("Grand master"))},
@@ -642,7 +655,8 @@ function sorter(){
     yn:(a,b)=>(b.y||0)-(a.y||0)||b.c-a.c,yo:(a,b)=>(a.y||9999)-(b.y||9999)||a.c-b.c,
     val:(a,b)=>(b.p||-1)-(a.p||-1)||b.c-a.c,vall:(a,b)=>(a.p||1e12)-(b.p||1e12)||b.c-a.c,
     pop:(a,b)=>(a.pop==null?1e9:a.pop)-(b.pop==null?1e9:b.pop)||gnum(b)-gnum(a)||b.c-a.c,
-    name:(a,b)=>a.n.localeCompare(b.n)||b.c-a.c}[s]||((a,b)=>(b.a||0)-(a.a||0)||b.c-a.c);
+    name:(a,b)=>a.n.localeCompare(b.n)||b.c-a.c,
+    sold:(a,b)=>String((b.sl&&b.sl[0].d)||"").localeCompare(String((a.sl&&a.sl[0].d)||""))||b.c-a.c}[s]||((a,b)=>(b.a||0)-(a.a||0)||b.c-a.c);
 }
 
 /* ---------- filters ---------- */
@@ -699,7 +713,7 @@ function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb" title="Listed on eBay">eBay \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
-    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}</div>
+    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
     <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
     <button type="button" class="favb${fav.has(i.c)?" on":""}" data-c="${i.c}" aria-pressed="${fav.has(i.c)}" aria-label="Save ${esc(i.n)}" title="Save to my list">${fav.has(i.c)?"\u2665":"\u2661"}</button></div>`;
@@ -1234,6 +1248,26 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
 
 paintFav();
 
+/* ---------- sales ---------- */
+(function(){
+  const sd=$("#saled"),btn=$("#salesbtn");if(!btn||!sd)return;
+  const rows=()=>{const out=[],seen=new Set();for(const i of DATA)for(const s of (i.sl||[])){let mates=null;
+      if(s.n){const k=s.d+"|"+s.p+"|"+s.n;if(seen.has(k))continue;seen.add(k);mates=DATA.filter(j=>(j.sl||[]).some(t=>t.n&&t.d===s.d&&t.p===s.p))}
+      out.push({i,s,mates})}
+    return out.sort((a,b)=>String(b.s.d).localeCompare(String(a.s.d))||b.s.p-a.s.p)};
+  if(!rows().length)return;btn.hidden=false;
+  const typ=s=>s.t==="auction"?"Auction":s.t==="best_offer"?"Best Offer listing":"Buy it now";
+  btn.addEventListener("click",()=>{const r=rows(),tot=r.reduce((a,x)=>a+x.s.p,0),top=r.reduce((a,x)=>x.s.p>a.s.p?x:a,r[0]);
+    const tile=(b,l)=>`<div class="stile"><b>${b}</b><span>${l}</span></div>`;
+    sd.innerHTML=`<div class="cmpbox stat"><h3>Recorded sales</h3><button class="x" type="button" id="salex" aria-label="Close">&times;</button>
+      <div class="stiles">${tile(fmt(r.length),"sales recorded")}${tile(moneyWhole(tot),"sold in total")}${tile(moneyWhole(top.s.p),"highest sale")}</div>
+      <div class="sgrid">${r.map(({i,s,mates})=>{const ms=mates&&mates.length?mates:[i];return `<button type="button" class="salec" data-c="${i.c}"><span class="sth">${ms.slice(0,2).map(m=>`<img src="${esc(m.th)}" alt="" loading="lazy">`).join("")}</span><span class="sinf"><b class="sp">${esc(money(s.p))}</b><span class="sn">${esc(ms.map(m=>m.n).join(" + "))}</span><small>ACE ${esc(ms.map(m=>m.g).join(" + "))}${ms.length===1&&i.v?" · "+esc(i.v):""}</small><small>${esc(sDate(s.d))} · ${typ(s)}${s.n?" · bundle of "+s.n:""}</small></span></button>`}).join("")}</div>
+      <p class="note">From eBay sold listings, matched to each slab by the cert number in the photos. A Best Offer sale may have gone for less than the price shown. Tap a sale to see the slab.</p></div>`;
+    sd.showModal()});
+  sd.addEventListener("click",e=>{if(e.target.id==="salex"||e.target===sd){sd.close();return}
+    const o=e.target.closest(".salec");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
+})();
+
 /* ---------- stats ---------- */
 (function(){
   const sd=$("#statd"),btn=$("#statsbtn");if(!btn||!DATA.length)return;btn.hidden=false;
@@ -1274,7 +1308,7 @@ paintFav();
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${moneyWhole(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
-      ${soldHTML}${dayHTML}${unpHTML}
+      ${dayHTML}${unpHTML}
       <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
       ${sc?`<div class="spane" data-pane="sc" hidden>${sc}</div>`:""}</div>`;
     sd.showModal();
@@ -1364,7 +1398,7 @@ $("#grid").addEventListener("click",e=>{
 $("#groups").addEventListener("click",e=>{
   const b=e.target.closest(".chip");if(!b)return;
   if(b.dataset.p!==undefined){const p=PRESETS[+b.dataset.p],was=presetOn(p);
-    st.s="";st.q="";$("#q").value="";GROUPS.forEach(g=>{st[g.k].clear();if(!was)(p.set[g.k]||[]).forEach(v=>st[g.k].add(v))});apply(true);return}
+    st.s="";st.q="";$("#q").value="";GROUPS.forEach(g=>{st[g.k].clear();if(!was)(p.set[g.k]||[]).forEach(v=>st[g.k].add(v))});if(!was&&p.sort){st.sort=p.sort;$("#sort").value=p.sort}apply(true);return}
   const s=st[b.dataset.g],v=b.dataset.v;
   s.has(v)?s.delete(v):s.add(v);apply(true)});
 $("#groups").addEventListener("change",e=>{if(e.target.id==="setpick"){st.s=e.target.value;apply(true)}});
