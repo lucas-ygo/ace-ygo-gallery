@@ -70,9 +70,12 @@
 :root[data-theme=gx] :is(.coffee,footer .cof,.wipnote b,.acl,.filter-btn,.chip.q:not([aria-pressed=true]),.sub.pr,.oth b,.origin,.origbn b,.clear,.empty button,.cgrid .best,#leadmsg,.finder,.subrow button,.totop){color:var(--bluet)}
 :root[data-theme=gx] :is(.gr b,.stile b,.lb .big b,.cgrid .cg,.subs b.ten){font-weight:400;letter-spacing:.01em;color:var(--gold)}
 :root[data-theme=gx] .stile b{font-size:32px}
+:root[data-theme=gx] [data-g]{color:var(--redt)!important}
+:root[data-theme=gx] :is([data-g="7"],[data-g="8"]){color:var(--gold)!important}
+:root[data-theme=gx] :is([data-g="9"],[data-g="10"]){color:var(--bluet)!important}
 :root[data-theme=gx] :is(.oth b,.fbtog button){font-family:var(--ui);font-weight:700}
 :root[data-theme=gx] .frieze{display:flex;gap:8px;height:12px;padding:0;margin:10px auto 10px 16px;font-size:0;border:0;overflow:visible}
-:root[data-theme=gx] .frieze:before{content:"";flex:0 0 208px;height:12px;transform:skewX(-18deg);background:linear-gradient(90deg,var(--red) 0 64px,transparent 64px 72px,var(--gold) 72px 136px,transparent 136px 144px,var(--blue) 144px 208px)}
+:root[data-theme=gx] .frieze:before{content:"";flex:0 0 208px;height:12px;transform:skewX(-18deg);background:linear-gradient(90deg,var(--blue) 0 64px,transparent 64px 72px,var(--gold) 72px 136px,transparent 136px 144px,var(--red) 144px 208px)}
 :root[data-theme=gx] .frieze:after{content:none}
 :root[data-theme=gx] .case,:root[data-theme=gx] .lb .pic{background:var(--raise)}
 :root[data-theme=gx] .card:hover .case{background:var(--hi)}
@@ -82,7 +85,7 @@
 :root[data-theme=gx] :is(.iconbtn,.search input,.sort,.filter-btn,.clear,.btn,select.setpick,.stabs button,.subs div,.stile,.leads,.leads input,.empty button,.zoom button,.mynote textarea,.oth,.tt,.origbn,.wipnote,.subtxt code,.navbtn,.x,.cmpb,.favb){border-radius:0}
 :root[data-theme=gx] :is(.card,.lb,.cmpbox){border-radius:6px}
 :root[data-theme=gx] .card{position:relative}
-:root[data-theme=gx] .card:before{content:"";position:absolute;top:0;left:10px;width:56px;height:6px;z-index:3;transform:skewX(-18deg);background:linear-gradient(90deg,var(--red) 0 16px,transparent 16px 20px,var(--gold) 20px 36px,transparent 36px 40px,var(--blue) 40px 56px)}
+:root[data-theme=gx] .card:before{content:"";position:absolute;top:0;left:10px;width:56px;height:6px;z-index:3;transform:skewX(-18deg);background:linear-gradient(90deg,var(--blue) 0 16px,transparent 16px 20px,var(--gold) 20px 36px,transparent 36px 40px,var(--red) 40px 56px)}
 :root[data-theme=gx] .card:after{content:none}
 :root[data-theme=gx] .btn.gold{background:var(--red);border-color:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
 :root[data-theme=gx] .chip[aria-pressed=true],:root[data-theme=gx] .stabs button[aria-selected=true]{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -490,7 +493,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=caf0d40b5d"></script>
+<script src="data.js?v=271aa46922"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -627,7 +630,7 @@ function cardHTML(i,idx){
   return `<div class="cw"><button type="button" class="card" data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb" title="Listed on eBay">eBay \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}</div>
-    <div class="gr"><b>${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
+    <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
     <button type="button" class="favb${fav.has(i.c)?" on":""}" data-c="${i.c}" aria-pressed="${fav.has(i.c)}" aria-label="Save ${esc(i.n)}" title="Save to my list">${fav.has(i.c)?"\u2665":"\u2661"}</button></div>`;
 }
@@ -692,8 +695,8 @@ function openLB(idx,item){
     <div class="det"><div><h3>${i.nw?`<span class="newb inl">NEW</span>`:""}${esc(i.n)}</h3></div>
       ${i.c===FIRST?`<p class="origbn"><b>\u265b The very first one.</b> Cert ${FIRST} is the first Yu-Gi-Oh! card ACE ever graded: the Grand Master Rare Blue-Eyes White Dragon from their launch.</p>`:""}
       ${i.c===ORIGIN?`<p class="origbn"><b>\u2605 Where it all started.</b> Cert ${ORIGIN} is the creator&rsquo;s very first ACE slab, and the first cert this scanner ever read.</p>`:""}
-      <div class="big"><b>${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
-      ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
+      <div class="big"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>ACE ${esc(gname)}</span></div>
+      ${(i.sg&&i.sg.length)?`<div class="subs">${i.sg.map((v,k)=>`<div><b data-g="${esc(v)}"${v===10?' class="ten"':""}>${esc(v)}</b><span>${["Surface","Centering","Edges","Corners"][k]}</span></div>`).join("")}</div>`:""}
       <dl><dt>Card number</dt><dd>${esc(i.no)}</dd><dt>Set</dt><dd>${esc(i.s)}</dd>
       <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card debut</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
@@ -891,7 +894,7 @@ function openCmp(){
     <div class="cgrid" style="grid-template-columns:96px repeat(${n},minmax(150px,1fr))">`
     +row("",i=>`<img src="${esc(i.im)}" alt="${esc(i.n)}">`)
     +row("",i=>`<span class="cn">${esc(i.n)}</span><br><button class="rm" type="button" data-c="${i.c}">Remove</button>`)
-    +`<div class="cl">Grade</div>`+(()=>{const g=its.map(gnum),mx=Math.max(...g),diff=g.some(v=>v!==mx);return its.map((i,k)=>`<div class="cc cg${diff&&g[k]===mx?" best":""}">${esc(i.g)}<small>${esc((i.gn||"").toUpperCase())}</small></div>`).join("")})()
+    +`<div class="cl">Grade</div>`+(()=>{const g=its.map(gnum),mx=Math.max(...g),diff=g.some(v=>v!==mx);return its.map((i,k)=>`<div class="cc cg${diff&&g[k]===mx?" best":""}" data-g="${esc(i.g)}">${esc(i.g)}<small>${esc((i.gn||"").toUpperCase())}</small></div>`).join("")})()
     +["Surface","Centering","Edges","Corners"].map((nm,k)=>num(nm,i=>i.sg&&i.sg[k]!=null?i.sg[k]:null)).join("")
     +row("Card number",i=>dash(i.no))+row("Set",i=>dash(i.s))+row("Release year",i=>dash(i.y))+row("Finish",i=>dash(i.v))
     +row("Edition",i=>dash(i.ed))+row("Language",i=>dash(i.l))+row("Label",i=>dash(i.lb))+row("Raw price",i=>i.p?money(i.p):"TBC")+row("Cert number",i=>dash(i.c))
