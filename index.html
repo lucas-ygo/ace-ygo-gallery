@@ -72,6 +72,8 @@
 :root[data-theme="5d"] .card[data-top]{border-color:#e3a21a}
 :root[data-theme="5d"] :is(.gr b,.lb .big b){display:inline-block;padding:3px 9px 2px;border-radius:6px;color:#fff;background:#c4122f;line-height:1.05}
 :root[data-theme="5d"] .gr b{font-size:28px;min-width:46px}
+:root[data-theme="5d"] .gr{line-height:1.1}
+:root[data-theme="5d"] .gr span{margin-top:6px}
 :root[data-theme="5d"] .lb .big b{font-size:52px;padding:4px 14px 2px}
 :root[data-theme="5d"] :is(.gr b,.lb .big b)[data-g="10"]{background:#1d5fc4}
 :root[data-theme="5d"] :is(.gr b,.lb .big b)[data-g^="9"]{background:#1f7a3d}
@@ -394,6 +396,7 @@ body.hastray{padding-bottom:90px}
 .daych i{display:block;width:100%;background:var(--gold);border-radius:3px 3px 0 0}
 .daych b{font-size:10px;color:var(--mist);margin-bottom:2px;font-weight:600}
 .daych span{font-size:9.5px;color:var(--mist);margin-top:3px}
+.cshare{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.cshare b{font-size:14px;margin-right:4px}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:6px}
 .salec{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
 .salec:hover,.salec:focus-visible{border-color:var(--gold)}
@@ -573,7 +576,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="saled" aria-label="Recorded sales"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=c58f12e8ae"></script>
+<script src="data.js?v=3eb162f80e"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -749,9 +752,10 @@ function renderActive(){const el=$("#actv"),out=[];
   if(st.notes)out.push(ch("notes","","\u270e My notes"));
   if(st.only)out.push(ch("only","","Shared list ("+st.only.size+")"));
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
-  el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
+  el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button><button type="button" class="acl" data-sharefav="1">Share image</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
 $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
   if(b.dataset.shareown){shareCollection(b);return}
+  if(b.dataset.sharefav){shareGrid(b,DATA.filter(i=>fav.has(i.c)),"MY SAVED SLABS",null,"my-saved-ace-slabs.png");return}
   if(b.dataset.share){const u=location.href.split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
     copyText(u).then(()=>{b.textContent="Link copied \u2713"},()=>{b.textContent="Copy failed"});setTimeout(()=>{b.textContent="Copy link to my list"},1800);return}
   const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="own")st.own=false;else if(k==="notes")st.notes=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
@@ -903,11 +907,11 @@ const COLL={dark:{bg:["#0f2a52","#0b1d3a","#071225"],eye:"#d9ad5b",ttl:"#eaf0fb"
   gx:{bg:["#0E1526"],eye:"#F4B814",ttl:"#F5F1E8",tf:"400 S Anton,Impact,sans-serif",sv:"#7C9BFF",sl:"#A9B3C7",host:"#7d89a3",legal:"#5d6884",sh:"",U:"Barlow,Arial,sans-serif"},
   "5d":{bg:["#f6f8fb"],eye:"#1d5fc4",ttl:"#16213e",tf:"700 S 'Chakra Petch',sans-serif",sv:"#1d5fc4",sl:"#4a5873",host:"#4a5873",legal:"#7a869c",sh:"rgba(22,33,62,.28)",U:"'Hanken Grotesk',Arial,sans-serif"}};
 const shareFonts=()=>Promise.all(['800 100px "Big Shoulders Display"','600 30px "Hanken Grotesk"',"700 100px Cinzel",'400 100px "Anton"','700 30px "Barlow"','700 100px "Chakra Petch"'].map(f=>document.fonts?document.fonts.load(f).catch(()=>0):0).concat(document.fonts?document.fonts.load("400 40px Hiero","\u{13080}").catch(()=>0):0));
-function collectionCard(){
-  const mine=DATA.filter(i=>own.has(i.c)).sort((a,b)=>(b.p||0)-(a.p||0));
+function gridCard(list,title,thm){
+  const mine=[...list].sort((a,b)=>gnum(b)-gnum(a)||(b.p||0)-(a.p||0));
   if(!mine.length)return Promise.reject(new Error("none"));
   const show=mine.slice(0,12),val=mine.reduce((a,i)=>a+(i.p||0),0),gems=mine.filter(i=>String(i.g)==="10").length;
-  const th=document.documentElement.dataset.theme,P=COLL[th]||COLL.dark,U=P.U;
+  const th=COLL[thm]?thm:(thm==="navy"?"dark":document.documentElement.dataset.theme),P=COLL[th]||COLL.dark,U=P.U,lab=show.length<=6;
   return shareFonts().then(()=>Promise.all(show.map(i=>new Promise(r=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>r(im);im.onerror=()=>r(null);im.src=i.im})))).then(imgs=>new Promise((res,rej)=>{
     try{
       const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
@@ -916,16 +920,19 @@ function collectionCard(){
       deco(x,W,40,th);
       x.textAlign="center";x.textBaseline="alphabetic";
       x.fillStyle=P.eye;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,118);try{x.letterSpacing="0px"}catch(e){}
-      x.fillStyle=P.ttl;let ts=150;const tf=s=>P.tf.replace("S",s+"px");x.font=tf(ts);while(x.measureText("MY COLLECTION").width>W-120&&ts>60){ts-=6;x.font=tf(ts)}x.fillText("MY COLLECTION",W/2,268);
+      x.fillStyle=P.ttl;let ts=150;const tf=s=>P.tf.replace("S",s+"px");x.font=tf(ts);while(x.measureText(title).width>W-120&&ts>60){ts-=6;x.font=tf(ts)}x.fillText(title,W/2,268);
       const stats=[[fmt(mine.length),mine.length===1?"SLAB":"SLABS"]];if(val)stats.push([moneyWhole(val),"RAW VALUE"]);if(gems)stats.push([fmt(gems),"GEM MINT 10S"]);
       const sw=W/stats.length;stats.forEach((s,k)=>{const cx=sw*k+sw/2;x.fillStyle=P.sv;x.font=tf(th==="dark"?92:76);x.fillText(s[0],cx,400);x.fillStyle=P.sl;x.font="600 24px "+U;try{x.letterSpacing="4px"}catch(e){}x.fillText(s[1],cx+2,444);try{x.letterSpacing="0px"}catch(e){}});
-      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gy=520,AW=960,AH=1160,gap=26,asp=.597;let best=null;
-      for(let c=1;c<=4;c++){const cw=(AW-(c-1)*gap)/c,ch=Math.min(cw/asp,560),rows=Math.ceil(n/c),thh=rows*ch+(rows-1)*gap;if(thh<=AH&&(!best||ch>best.ch))best={c,ch,cw:ch*asp}}
-      if(!best){const c=4,ch=(AH-2*gap)/3;best={c,ch,cw:ch*asp}}
-      const rows=Math.ceil(n/best.c),gh=rows*best.ch+(rows-1)*gap,top=gy+(AH-gh)/2;
-      ok.forEach((p,k)=>{const r=Math.floor(k/best.c),inRow=Math.min(best.c,n-r*best.c),rw=inRow*best.cw+(inRow-1)*gap,cx=(W-rw)/2+(k%best.c)*(best.cw+gap),im=p[1];
-        let w=best.cw,h=im.height*w/im.width;if(h>best.ch){h=best.ch;w=im.width*h/im.height}
-        x.save();if(P.sh){x.shadowColor=P.sh;x.shadowBlur=28;x.shadowOffsetY=14}x.drawImage(im,cx+(best.cw-w)/2,top+r*(best.ch+gap)+(best.ch-h)/2,w,h);x.restore()});
+      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gy=520,AW=960,AH=1160,gap=26,asp=.597,LH=lab?84:0;let best=null;
+      for(let c=1;c<=4;c++){const cw=(AW-(c-1)*gap)/c,rows=Math.ceil(n/c),ch=Math.min(cw/asp,lab?900:560,(AH-(rows-1)*gap)/rows-LH);if(ch>0&&(!best||ch>best.ch))best={c,ch,cw:ch*asp}}
+      if(!best){const c=4,ch=(AH-2*gap)/3-LH;best={c,ch,cw:ch*asp}}
+      const rows=Math.ceil(n/best.c),gh=rows*(best.ch+LH)+(rows-1)*gap,top=gy+(AH-gh)/2;
+      ok.forEach((p,k)=>{const r=Math.floor(k/best.c),inRow=Math.min(best.c,n-r*best.c),slot=Math.max(best.cw,lab?230:0),rw=inRow*slot+(inRow-1)*gap,cx=(W-rw)/2+(k%best.c)*(slot+gap),im=p[1],it=p[0];
+        let w=best.cw,h=im.height*w/im.width;if(h>best.ch){h=best.ch;w=im.width*h/im.height}const y0=top+r*(best.ch+LH+gap);
+        x.save();if(P.sh){x.shadowColor=P.sh;x.shadowBlur=28;x.shadowOffsetY=14}x.drawImage(im,cx+(slot-w)/2,y0+(best.ch-h)/2,w,h);x.restore();
+        if(lab){let nm=String(it.n||"").split(",")[0];x.fillStyle=P.ttl;let fs=28;x.font="700 "+fs+"px "+U;while(x.measureText(nm).width>slot+10&&fs>18){fs-=2;x.font="700 "+fs+"px "+U}
+          if(x.measureText(nm).width>slot+10){while(nm.length>4&&x.measureText(nm+"…").width>slot+10)nm=nm.slice(0,-1);nm+="…"}
+          x.fillText(nm,cx+slot/2,y0+best.ch+36);x.fillStyle=P.sv;x.font="700 26px "+U;x.fillText("ACE "+it.g+(it.p?"  ·  "+moneyWhole(it.p):""),cx+slot/2,y0+best.ch+70)}});
       if(mine.length>show.length){x.fillStyle=P.sl;x.font="600 30px "+U;x.fillText("+ "+fmt(mine.length-show.length)+" more slabs",W/2,gy+AH+44)}
       deco(x,W,H-170,th);
       x.fillStyle=P.host;x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
@@ -934,6 +941,13 @@ function collectionCard(){
       x.fillStyle=P.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-56);try{x.letterSpacing="0px"}catch(e){}
       cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
     }catch(e){rej(e)}}))}
+function collectionCard(){return gridCard(DATA.filter(i=>own.has(i.c)),"MY COLLECTION")}
+function shareGrid(btn,list,title,thm,file){
+  const old=btn.textContent;__busy(btn,"Making image...");btn.disabled=true;
+  gridCard(list,title,thm).then(b=>{const f=new File([b],file,{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:title}).catch(e=>{if(e&&e.name==="AbortError")return});
+    const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)})
+  .then(()=>{btn.textContent="Done ✓"},()=>{btn.textContent="Couldn't make image"}).then(()=>setTimeout(()=>{btn.textContent=old;btn.disabled=false},1800))}
 function shareCollection(btn){
   const old=btn.textContent;__busy(btn,"Making image...");btn.disabled=true;
   collectionCard().then(b=>{const f=new File([b],"my-ace-yugioh-collection.png",{type:"image/png"});
@@ -1037,12 +1051,13 @@ function openCmp(){
     +row("Card number",i=>dash(i.no))+row("Set",i=>dash(i.s))+row("Release year",i=>dash(i.y))+row("Finish",i=>dash(i.v))
     +row("Edition",i=>dash(i.ed))+row("Language",i=>dash(i.l))+row("Label",i=>dash(i.lb))+row("Raw price",i=>i.p?money(i.p):"TBC")+row("Cert number",i=>dash(i.c))
     +row("",i=>`<a class="btn" href="${esc(i.u)}" target="_blank" rel="noopener">Open on ACE</a>`)
-    +`</div></div>`;
+    +`</div><div class="cshare"><b>Share as one image:</b> <button class="btn cshp" type="button" data-s="dark">ACE</button> <button class="btn cshp" type="button" data-s="duel">DM</button> <button class="btn cshp" type="button" data-s="gx">GX</button> <button class="btn cshp" type="button" data-s="5d">5D's</button></div></div>`;
   if(!cmpd.open)cmpd.showModal();
 }
 cmpd.addEventListener("click",e=>{
   if(e.target.id==="cmpx"||e.target===cmpd){cmpd.close();return}
-  const r=e.target.closest(".rm");if(r){toggleCmp(+r.dataset.c);cmp.size>=2?openCmp():cmpd.close()}
+  const r=e.target.closest(".rm");if(r){toggleCmp(+r.dataset.c);cmp.size>=2?openCmp():cmpd.close();return}
+  const sh=e.target.closest(".cshp");if(sh){shareGrid(sh,[...cmp].map(c=>BYC.get(c)).filter(Boolean),"SIDE BY SIDE",sh.dataset.s,"ace-slabs-side-by-side.png")}
 });
 $("#cmpgo").addEventListener("click",openCmp);
 $("#cmpclr").addEventListener("click",()=>{[...cmp].forEach(c=>toggleCmp(c))});
