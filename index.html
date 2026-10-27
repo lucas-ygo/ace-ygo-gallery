@@ -127,8 +127,9 @@
 :root[data-theme=gx] :is(.gr b,.stile b,.lb .big b,.cgrid .cg,.subs b.ten){font-weight:400;letter-spacing:.01em;color:var(--gold)}
 :root[data-theme=gx] .stile b{font-size:32px}
 :root[data-theme=gx] [data-g]{color:var(--redt)!important}
-:root[data-theme=gx] :is([data-g="7"],[data-g="8"]){color:var(--gold)!important}
-:root[data-theme=gx] :is([data-g="9"],[data-g="10"]){color:var(--bluet)!important}
+:root[data-theme=gx] :is([data-g^="7"],[data-g^="8"]){color:var(--gold)!important}
+:root[data-theme=gx] :is([data-g^="9"],[data-g="10"]){color:var(--bluet)!important}
+:root[data-theme=gx] [data-g="A"]{color:var(--mist)!important}
 :root[data-theme=gx] :is(.oth b,.fbtog button){font-family:var(--ui);font-weight:700}
 :root[data-theme=gx] :is(h1,h1 *,h2,h2 *,.hstats b,.gr b,.stile b,.lb .big b,.cgrid .cg)::selection{background:transparent;color:var(--gold)}
 :root[data-theme=gx] .frieze{display:flex;gap:8px;height:12px;padding:0;margin:10px auto 10px 16px;font-size:0;border:0;overflow:visible}
@@ -388,6 +389,15 @@ body.hastray{padding-bottom:90px}
 .cmpbox .x{top:10px;right:12px}
 .subtxt{max-width:520px;font-size:14.5px}.subtxt h4{margin:16px 0 6px;font:600 15px/1.2 var(--ui)}
 .subtxt ol{margin:0 0 12px;padding-left:20px}.subtxt li{margin:5px 0}
+.daych{display:flex;align-items:flex-end;gap:4px;height:96px;margin:6px 0 2px}
+.daych div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.daych i{display:block;width:100%;background:var(--gold);border-radius:3px 3px 0 0}
+.daych b{font-size:10px;color:var(--mist);margin-bottom:2px;font-weight:600}
+.daych span{font-size:9.5px;color:var(--mist);margin-top:3px}
+.unpd{margin-top:16px}.unpd summary{cursor:pointer;font:600 14px var(--ui);color:var(--foil)}
+.unpl{margin-top:6px;max-height:220px;overflow:auto}
+.unpl button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px;color:var(--foil)}
+.unpl button:hover{color:var(--gold)}.unpl small{color:var(--mist)}
 .scanned{margin:14px 0 0;font-size:11px;letter-spacing:.04em;color:var(--mist);opacity:.55}
 .subtxt code{background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:13px;word-break:break-all}
 .leads{margin:14px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--raise);max-width:520px}
@@ -551,7 +561,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=98623d758c"></script>
+<script src="data.js?v=a9c59f4d9c"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1184,12 +1194,19 @@ paintFav();
     const priced=DATA.filter(i=>i.p),tot=priced.reduce((a,i)=>a+i.p,0),gems=DATA.filter(i=>String(i.g)==="10").length;
     const gn=DATA.map(gnum).filter(x=>x>=0),avg=gn.length?gn.reduce((a,b)=>a+b,0)/gn.length:0;
     const uniq=new Set(DATA.map(i=>i.n+"|"+i.no)).size;
-    const gr=[...tally(i=>[i.g])].sort((a,b)=>(parseFloat(b[0])||0)-(parseFloat(a[0])||0)).map(([v,n])=>["ACE "+v,n,v]);
+    const gr=[...tally(i=>[i.g])].sort((a,b)=>(parseFloat(b[0])||0)-(parseFloat(a[0])||0)).map(([v,n])=>[v==="A"?"Authentic":"ACE "+v,n,v]);
     const er=ERAS.map(e=>[e,(tally(i=>[i.e]).get(e)||0)]).filter(r=>r[1]);
     const sets=[...tally(i=>[i.s])].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,8);
     const fin=[...tally(i=>i.t||[])].sort((a,b)=>b[1]-a[1]).slice(0,6);
     const lang=[...tally(i=>[i.l])].sort((a,b)=>b[1]-a[1]);
     const top=[...priced].sort((a,b)=>b.p-a.p).slice(0,5);
+    const dk=t=>{const d=new Date(t*1000);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
+    const days=[];for(let k=13;k>=0;k--){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-k);days.push(d)}
+    const per=new Map();for(const i of DATA)if(i.sd){const k=dk(i.sd);per.set(k,(per.get(k)||0)+1)}
+    const dv=days.map(d=>[d,per.get(dk(d.getTime()/1000))||0]),dmax=Math.max(1,...dv.map(x=>x[1]));
+    const dayHTML=dv.some(x=>x[1])?`<h4>Added in the last 14 days</h4><div class="daych">${dv.map(([d,n])=>`<div title="${n} added on ${d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})}"><b>${n||""}</b><i style="height:${n?Math.max(4,n/dmax*70):0}px"></i><span>${d.getDate()}</span></div>`).join("")}</div>`:"";
+    const unp=DATA.filter(i=>!i.p);
+    const unpHTML=unp.length?`<details class="unpd"><summary>No price yet (${unp.length})</summary><div class="unpl">${unp.map(i=>`<button type="button" class="unpr" data-c="${i.c}"><span>${esc(i.n)} <small>${esc(i.no)}</small></span><small>cert ${i.c}</small></button>`).join("")}</div></details>`:"";
     const tile=(b,s)=>`<div class="stile"><b>${b}</b><span>${s}</span></div>`;
     const sc=scanHTML();
     sd.innerHTML=`<div class="cmpbox stat"><h3>Gallery stats</h3><button class="x" type="button" id="statx" aria-label="Close">&times;</button>
@@ -1199,6 +1216,7 @@ paintFav();
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${moneyWhole(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
+      ${dayHTML}${unpHTML}
       <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
       ${sc?`<div class="spane" data-pane="sc" hidden>${sc}</div>`:""}</div>`;
     sd.showModal();
@@ -1208,7 +1226,7 @@ paintFav();
     const tb=e.target.closest(".stabs button");
     if(tb){sd.querySelectorAll(".stabs button").forEach(x=>x.setAttribute("aria-selected",String(x===tb)));
       sd.querySelectorAll(".spane").forEach(p=>{p.hidden=p.dataset.pane!==tb.dataset.tab});return}
-    const o=e.target.closest(".oth");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
+    const o=e.target.closest(".oth,.unpr");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
     const b=e.target.closest(".sbar");if(!b)return;
     st.q="";st.s="";st.fav=false;st.own=false;st.notes=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
     if(b.dataset.k==="s")st.s=b.dataset.v;else st[b.dataset.k].add(b.dataset.v);
