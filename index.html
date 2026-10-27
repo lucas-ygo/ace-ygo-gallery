@@ -66,14 +66,14 @@
 }
 :root[data-theme=gx] h1,:root[data-theme=gx] h2{font-weight:400;text-transform:uppercase;letter-spacing:.01em}
 :root[data-theme=gx] h1 em{color:var(--redt)}
-:root[data-theme=gx] .eyebrow{font-weight:700;letter-spacing:.14em;color:var(--bluet)}
-:root[data-theme=gx] :is(.coffee,footer .cof,.wipnote b,.acl,.filter-btn,.chip.q:not([aria-pressed=true]),.subs b.ten,.sub.pr,.stile b,.gr b,.lb .big b,.oth b,.origin,.origbn b,.clear,.empty button,.cgrid .cg,.cgrid .best,#leadmsg,.finder,.subrow button,.totop){color:var(--bluet)}
-:root[data-theme=gx] :is(.gr b,.stile b,.lb .big b,.cgrid .cg){font-weight:400;letter-spacing:.01em}
+:root[data-theme=gx] .eyebrow{font-weight:700;letter-spacing:.14em;color:var(--gold)}
+:root[data-theme=gx] :is(.coffee,footer .cof,.wipnote b,.acl,.filter-btn,.chip.q:not([aria-pressed=true]),.sub.pr,.oth b,.origin,.origbn b,.clear,.empty button,.cgrid .best,#leadmsg,.finder,.subrow button,.totop){color:var(--bluet)}
+:root[data-theme=gx] :is(.gr b,.stile b,.lb .big b,.cgrid .cg,.subs b.ten){font-weight:400;letter-spacing:.01em;color:var(--gold)}
 :root[data-theme=gx] .stile b{font-size:32px}
 :root[data-theme=gx] :is(.oth b,.fbtog button){font-family:var(--ui);font-weight:700}
 :root[data-theme=gx] .frieze{display:flex;gap:8px;height:12px;padding:0;margin:10px auto 10px 16px;font-size:0;border:0;overflow:visible}
 :root[data-theme=gx] .frieze:before,:root[data-theme=gx] .frieze:after{content:"";flex:0 0 64px;transform:skewX(-18deg)}
-:root[data-theme=gx] .frieze:before{background:var(--red)}
+:root[data-theme=gx] .frieze:before{background:var(--red);box-sizing:border-box;border-right:10px solid var(--gold)}
 :root[data-theme=gx] .frieze:after{background:var(--blue)}
 :root[data-theme=gx] .case,:root[data-theme=gx] .lb .pic{background:var(--raise)}
 :root[data-theme=gx] .card:hover .case{background:var(--hi)}
@@ -84,7 +84,7 @@
 :root[data-theme=gx] :is(.card,.lb,.cmpbox){border-radius:6px}
 :root[data-theme=gx] .card{position:relative}
 :root[data-theme=gx] .card:before,:root[data-theme=gx] .card:after{content:"";position:absolute;top:0;width:18px;height:6px;z-index:3;transform:skewX(-18deg)}
-:root[data-theme=gx] .card:before{left:10px;background:var(--red)}
+:root[data-theme=gx] .card:before{left:10px;background:var(--red);box-sizing:border-box;border-right:5px solid var(--gold)}
 :root[data-theme=gx] .card:after{left:32px;background:var(--blue)}
 :root[data-theme=gx] .btn.gold{background:var(--red);border-color:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
 :root[data-theme=gx] .chip[aria-pressed=true],:root[data-theme=gx] .stabs button[aria-selected=true]{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -492,7 +492,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=f42a272918"></script>
+<script src="data.js?v=b9f3337ab0"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
