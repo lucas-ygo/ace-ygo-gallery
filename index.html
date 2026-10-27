@@ -72,9 +72,8 @@
 :root[data-theme=gx] .stile b{font-size:32px}
 :root[data-theme=gx] :is(.oth b,.fbtog button){font-family:var(--ui);font-weight:700}
 :root[data-theme=gx] .frieze{display:flex;gap:8px;height:12px;padding:0;margin:10px auto 10px 16px;font-size:0;border:0;overflow:visible}
-:root[data-theme=gx] .frieze:before,:root[data-theme=gx] .frieze:after{content:"";flex:0 0 64px;transform:skewX(-18deg)}
-:root[data-theme=gx] .frieze:before{background:var(--red);box-sizing:border-box;border-right:10px solid var(--gold)}
-:root[data-theme=gx] .frieze:after{background:var(--blue)}
+:root[data-theme=gx] .frieze:before{content:"";flex:0 0 208px;height:12px;transform:skewX(-18deg);background:linear-gradient(90deg,var(--red) 0 64px,transparent 64px 72px,var(--gold) 72px 136px,transparent 136px 144px,var(--blue) 144px 208px)}
+:root[data-theme=gx] .frieze:after{content:none}
 :root[data-theme=gx] .case,:root[data-theme=gx] .lb .pic{background:var(--raise)}
 :root[data-theme=gx] .card:hover .case{background:var(--hi)}
 :root[data-theme=gx] .case img,:root[data-theme=gx] .lb .pic img,:root[data-theme=gx] .cgrid img{filter:none}
@@ -83,9 +82,8 @@
 :root[data-theme=gx] :is(.iconbtn,.search input,.sort,.filter-btn,.clear,.btn,select.setpick,.stabs button,.subs div,.stile,.leads,.leads input,.empty button,.zoom button,.mynote textarea,.oth,.tt,.origbn,.wipnote,.subtxt code,.navbtn,.x,.cmpb,.favb){border-radius:0}
 :root[data-theme=gx] :is(.card,.lb,.cmpbox){border-radius:6px}
 :root[data-theme=gx] .card{position:relative}
-:root[data-theme=gx] .card:before,:root[data-theme=gx] .card:after{content:"";position:absolute;top:0;width:18px;height:6px;z-index:3;transform:skewX(-18deg)}
-:root[data-theme=gx] .card:before{left:10px;background:var(--red);box-sizing:border-box;border-right:5px solid var(--gold)}
-:root[data-theme=gx] .card:after{left:32px;background:var(--blue)}
+:root[data-theme=gx] .card:before{content:"";position:absolute;top:0;left:10px;width:56px;height:6px;z-index:3;transform:skewX(-18deg);background:linear-gradient(90deg,var(--red) 0 16px,transparent 16px 20px,var(--gold) 20px 36px,transparent 36px 40px,var(--blue) 40px 56px)}
+:root[data-theme=gx] .card:after{content:none}
 :root[data-theme=gx] .btn.gold{background:var(--red);border-color:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
 :root[data-theme=gx] .chip[aria-pressed=true],:root[data-theme=gx] .stabs button[aria-selected=true]{background:var(--blue);border-color:var(--blue);color:#fff}
 :root[data-theme=gx] .chip[aria-pressed=true] i{color:#dbe4ff}
@@ -492,7 +490,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=b9f3337ab0"></script>
+<script src="data.js?v=caf0d40b5d"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
