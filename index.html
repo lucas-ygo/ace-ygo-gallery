@@ -389,6 +389,20 @@ body.hastray{padding-bottom:90px}
 .cgrid .best{color:var(--gold)}
 .cgrid .rm{all:unset;cursor:pointer;color:var(--mist);font-size:12.5px;text-decoration:underline}
 .cmpbox .x{top:10px;right:12px}
+#themed .cmpbox{max-width:600px;margin:0 auto}
+.thgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+.thc{all:unset;box-sizing:border-box;cursor:pointer;display:block;border:2px solid var(--line);border-radius:14px;padding:8px;background:var(--raise)}
+.thc:hover{border-color:var(--gold)}.thc:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.thc[aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.thp{display:block;background:var(--pb);border:1px solid var(--pl);border-radius:9px;padding:10px;color:var(--pt)}
+.tha{display:block;font:600 8px/1 var(--ui);letter-spacing:.14em;color:var(--pa);font-style:normal}
+.tht{display:block;font:700 19px/1.05 var(--pf);margin:5px 0 9px;color:var(--pt);text-transform:uppercase}
+.thr{display:flex;gap:6px}
+.ths{flex:1;aspect-ratio:3/4;background:var(--pc);border:1px solid var(--pl);border-radius:5px;position:relative;display:block}
+.ths em{position:absolute;left:3px;top:3px;font:700 11px/1 var(--pf);font-style:normal;padding:2px 4px;border-radius:3px;background:var(--pk);color:var(--pq)}
+.ths:after{content:"";position:absolute;left:18%;right:18%;top:30%;bottom:16%;border-radius:3px;background:var(--pl);opacity:.7}
+.thn{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 4px 2px;color:var(--foil);font:600 14px var(--ui)}
+.thn i{font-style:normal;font-size:11px;color:var(--gold);font-weight:600}
 .subtxt{max-width:520px;font-size:14.5px}.subtxt h4{margin:16px 0 6px;font:600 15px/1.2 var(--ui)}
 .subtxt ol{margin:0 0 12px;padding-left:20px}.subtxt li{margin:5px 0}
 .daych{display:flex;align-items:flex-end;gap:4px;height:96px;margin:6px 0 2px}
@@ -575,8 +589,9 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="saled" aria-label="Recorded sales"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
+<dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=42a5ab3b0e"></script>
+<script src="data.js?v=f05d085d9b"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1096,12 +1111,26 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     const i=idx(),n=T[(i+1)%T.length];
     root.dataset.theme=T[i][0];
     b.textContent=T[i][1];
-    b.title="Theme "+(i+1)+": "+T[i][3]+". Tap for theme "+(((i+1)%T.length)+1)+" ("+n[3]+")";
+    b.title="Theme "+(i+1)+": "+T[i][3]+". Tap to choose a theme";
     b.setAttribute("aria-label",b.title);
     const m=document.querySelector('meta[name=theme-color]');if(m)m.content=T[i][2];
   }
   paint();
-  b.addEventListener("click",()=>{root.dataset.theme=T[(idx()+1)%T.length][0];try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint();window.__prefChanged&&window.__prefChanged()});
+  const P={dark:["#06172c","#0c2540","#1c3b5f","#eaf0f7","#d6ab5b","#d6ab5b","#201505",'"Big Shoulders Display","Arial Narrow",sans-serif'],
+    duel:["#1f130a","#33200f","#6a4a28","#f7ebcf","#eab84e","#eab84e","#2a1704",'"Cinzel",Georgia,serif'],
+    gx:["#0E1526","#182238","#2A3550","#F5F1E8","#F4B814","#2E5BEA","#ffffff",'"Anton",Impact,sans-serif'],
+    "5d":["#f6f8fb","#ffffff","#d3dae4","#16213e","#1d5fc4","#1d5fc4","#ffffff",'"Chakra Petch","Arial Narrow",sans-serif']};
+  const td=$("#themed");
+  b.addEventListener("click",()=>{
+    if(!td){root.dataset.theme=T[(idx()+1)%T.length][0];try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint();window.__prefChanged&&window.__prefChanged();return}
+    const cur=idx();
+    td.innerHTML=`<div class="cmpbox"><h3>Choose a theme</h3><button class="x" type="button" id="thx" aria-label="Close">&times;</button>
+      <div class="thgrid">${T.map((t,i)=>{const p=P[t[0]]||P.dark;
+        return `<button type="button" class="thc" data-t="${t[0]}" aria-pressed="${i===cur}" aria-label="${esc(t[3])}${i===cur?" (current)":""}" style="--pb:${p[0]};--pc:${p[1]};--pl:${p[2]};--pt:${p[3]};--pa:${p[4]};--pk:${p[5]};--pq:${p[6]};--pf:${p[7]}"><span class="thp"><i class="tha">ACE-GRADED SLABS</i><b class="tht">Slab gallery</b><span class="thr"><span class="ths"><em>10</em></span><span class="ths"><em>9</em></span><span class="ths"><em>10</em></span></span></span><span class="thn"><span>${i+1}. ${esc(t[3])}</span><i>${i===cur?"Current":""}</i></span></button>`}).join("")}</div>
+      <p class="note">Tap a theme to switch. Your choice is remembered on this device.</p></div>`;
+    td.showModal()});
+  if(td)td.addEventListener("click",e=>{if(e.target.id==="thx"||e.target===td){td.close();return}
+    const o=e.target.closest(".thc");if(o){root.dataset.theme=o.dataset.t;try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint();window.__prefChanged&&window.__prefChanged();td.close()}});
   window.__setTheme=n=>{if(n==="light")n="5d";if(!T.some(x=>x[0]===n))return;root.dataset.theme=n;try{localStorage.setItem("theme",n)}catch(e){}paint()}})();
 
 /* ---------- support link ---------- */
