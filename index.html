@@ -405,7 +405,7 @@ body.hastray{padding-bottom:90px}
 .sinf .sp{font:800 26px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
 .sinf .sn{font-weight:600;font-size:14px;line-height:1.25;color:var(--foil)}
 .sinf small{color:var(--mist);font-size:12px;line-height:1.3}
-.sub.so{color:var(--mist);font-weight:600}.sold{margin-top:14px}.sold h4{margin:0 0 6px}.srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.srow b{color:var(--gold);font-variant-numeric:tabular-nums}.srow span{color:var(--mist)}
+.fixn{margin:10px 0 0;padding:9px 11px;border-left:3px solid var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent);border-radius:6px;font-size:13px;line-height:1.45;color:var(--ink,inherit)}.fixn b{color:var(--gold);margin-right:4px}.sub.so{color:var(--mist);font-weight:600}.sold{margin-top:14px}.sold h4{margin:0 0 6px}.srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.srow b{color:var(--gold);font-variant-numeric:tabular-nums}.srow span{color:var(--mist)}
 .unpd{margin-top:16px}.unpd summary{cursor:pointer;font:600 14px var(--ui);color:var(--foil)}
 .unpl{margin-top:6px;max-height:220px;overflow:auto}
 .unpl button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px;color:var(--foil)}
@@ -576,7 +576,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="saled" aria-label="Recorded sales"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 
-<script src="data.js?v=16b7504cc3"></script>
+<script src="data.js?v=cfd46577ee"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -791,6 +791,7 @@ function openLB(idx,item){
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
       <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}</dd></dl>
       ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
+      ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
