@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=adef09a810"></script>
+<script src="data.js?v=21f5647c59"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -624,6 +624,7 @@ const GROUPS=[
   {k:"g",title:"Grade",cls:"grade",label:v=>"ACE "+v,get:i=>[i.g],sortNum:true,open:true},
   {k:"e",title:"Anime era",hint:"when the card first came out",label:v=>v,get:i=>[i.e],order:ERAS,open:true},
   {k:"l",title:"Language",label:v=>v,get:i=>[i.l],open:true},
+  {k:"gm",title:"Game",hint:"Yu-Gi-Oh! or Rush Duel",label:v=>v,get:i=>[/^RD\//i.test(i.no||"")?"Rush Duel":"Yu-Gi-Oh!"],open:true},
   {k:"lb",title:"Label",label:v=>(v.toUpperCase()==="ACE"?"ACE":v)+" label",get:i=>[i.lb],open:true},
   {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
   {k:"fy",title:"New for you",hint:"since your last visit",label:v=>v,get:i=>isFY(i)?["New since your last visit"]:[],when:()=>DATA.some(isFY)},
@@ -648,6 +649,7 @@ const PRESETS=[
   {n:"Grand master rares",set:{f:["Grand master"]},when:()=>DATA.some(i=>(i.t||[]).includes("Grand master"))},
   {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))},
   {n:"Collabs",set:{co:["Collaboration"]},when:()=>DATA.some(i=>i.co)},
+  {n:"Rush Duel",set:{gm:["Rush Duel"]},when:()=>DATA.some(i=>/^RD\//i.test(i.no||""))},
   {n:"Video game promos",set:{pt:["Video game promos"]},when:()=>DATA.some(i=>(i.pt||[]).includes("Video game promos"))}
 ];
 const st={q:"",sort:"add",s:"",c:"",fav:false,own:false,notes:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
