@@ -591,7 +591,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=1e5b282c26"></script>
+<script src="data.js?v=150bdbc6c5"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -643,7 +643,8 @@ const PRESETS=[
   {n:"Duel Monsters-era cards",set:{e:[ERAS[0]]}},
   {n:"Grand master rares",set:{f:["Grand master"]},when:()=>DATA.some(i=>(i.t||[]).includes("Grand master"))},
   {n:"Ghost rares",set:{f:["Ghost rare"]},when:()=>DATA.some(i=>(i.t||[]).includes("Ghost rare"))},
-  {n:"Collabs",set:{co:["Collaboration"]},when:()=>DATA.some(i=>i.co)}
+  {n:"Collabs",set:{co:["Collaboration"]},when:()=>DATA.some(i=>i.co)},
+  {n:"Video game promos",set:{pt:["Video game promos"]},when:()=>DATA.some(i=>(i.pt||[]).includes("Video game promos"))}
 ];
 const st={q:"",sort:"add",s:"",c:"",fav:false,own:false,notes:false,only:null};GROUPS.forEach(g=>{st[g.k]=new Set()});
 const openG=new Set(GROUPS.filter(g=>g.open).map(g=>g.k));
