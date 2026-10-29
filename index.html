@@ -366,6 +366,10 @@ dt{color:var(--mist)} dd{margin:0;overflow-wrap:anywhere}
 .oth img{display:block;width:100%;aspect-ratio:3/4;object-fit:contain}
 .oth b{display:block;font:800 16px/1 var(--display);color:var(--gold);margin-top:3px;white-space:nowrap}
 .oth small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;font-size:10.5px;line-height:1.25;margin-top:3px;color:var(--mist);overflow:hidden;text-overflow:ellipsis;word-break:break-word}
+.nudge{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:28;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100vw - 24px);padding:10px 8px 10px 16px;border:1px solid var(--gold-dim);border-radius:16px;background:var(--barbg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--foil);font:600 14px/1.3 var(--ui);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nudge a,.nudge .nb{display:inline-block;border:0;border-radius:999px;padding:8px 14px;background:var(--gold);color:var(--ongold);font:700 13px/1 var(--ui);text-decoration:none;cursor:pointer}
+.nudge .ng{background:transparent;color:var(--foil);border:1px solid var(--line)}
+.nudge .nx{background:none;border:0;color:var(--mist);font-size:22px;line-height:1;padding:4px 8px;cursor:pointer}
 .tray{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 20px);
   padding:8px 10px;border-radius:14px;border:1px solid var(--gold-dim);background:var(--barbg);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .tray[hidden]{display:none}
@@ -591,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=570e4aa689"></script>
+<script src="data.js?v=050edb7ba8"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1099,6 +1103,29 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     sd.showModal();
   });
   sd.addEventListener("click",e=>{if(e.target.id==="subx"||e.target===sd)sd.close()});
+})();
+
+/* ---------- come-back prompt: alerts + Instagram (once, dismissible) ---------- */
+(function(){
+  const N=(window.GALLERY&&window.GALLERY.notify)||{},ig=String((window.GALLERY&&window.GALLERY.instagram)||"");
+  const hasIg=/^https:\/\/(www\.)?instagram\.com\//i.test(ig),hasBell=!!(N.topic||N.feed);
+  if(!hasIg&&!hasBell)return;
+  const KEY="nudgeUntil",DAY=864e5;
+  const quiet=ms=>{try{localStorage.setItem(KEY,String(Date.now()+ms))}catch(e){}};
+  try{if(Date.now()<+localStorage.getItem(KEY))return}catch(e){}
+  const cnt=nm=>{if(window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"nudge-"+nm,title:"Prompt: "+nm,event:true})}catch(x){}};
+  const busy=()=>document.querySelector("dialog[open]")||(()=>{const t=document.querySelector(".tray");return t&&t.getClientRects().length})();
+  let tries=0;
+  function show(){
+    if(document.visibilityState!=="visible"||busy()){if(++tries<60)setTimeout(show,5000);return}
+    const d=document.createElement("div");d.className="nudge";d.setAttribute("role","region");d.setAttribute("aria-label","Stay up to date");
+    d.innerHTML='<span>New slabs land every day.</span>'+(hasBell?'<button type="button" class="nb" data-a="alerts">Get alerts</button>':"")+(hasIg?'<a class="'+(hasBell?"ng":"")+'" data-a="ig" href="'+esc(ig)+'" target="_blank" rel="noopener noreferrer">Follow on Instagram</a>':"")+'<button type="button" class="nx" data-a="x" aria-label="Dismiss">&times;</button>';
+    document.body.appendChild(d);quiet(3*DAY);cnt("shown");
+    d.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;quiet(30*DAY);cnt(a);
+      if(a==="alerts"){const bell=$("#bell");if(bell)bell.click()}
+      if(a!=="ig")d.remove();else setTimeout(()=>d.remove(),300)});
+  }
+  setTimeout(show,25000);
 })();
 
 /* ---------- theme ---------- */
