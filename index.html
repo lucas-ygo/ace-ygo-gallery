@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=050edb7ba8"></script>
+<script src="data.js?v=38effea7b8"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -814,7 +814,7 @@ function openLB(idx,item){
       ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
-      <p class="note">Population counts are a snapshot from when this cert was collected, so they may have grown since.</p>`:""}
+      <p class="note">Population counts are the latest we have for this card, from when this or another slab of it was last collected, so they may have grown since.</p>`:""}
       ${others.length?`<div class="others"><h4>Other slabs of this card</h4><div class="orow">${others.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.v)} \u00b7 ACE ${esc(o.g)} \u00b7 cert ${esc(o.c)}"><img src="${esc(o.th)}" alt=""><b>${esc(o.g)}</b><small>${esc(o.v)}</small></button>`).join("")}</div></div>`:""}
       ${i.eb?`<div class="sale"><h4>For sale on eBay</h4>${i.eb.slice(0,3).map(x=>`<a class="btn gold" href="${esc(x.u)}" target="_blank" rel="noopener sponsored">${esc(money(x.p))} \u00b7 View listing</a>`).join("")}<p class="note">Found by card and grade, so a listing may be another slab of this card. Check the photos for cert ${esc(i.c)}.</p></div>`:""}
       ${i.sl&&i.sl.length?`<div class="sold"><h4>Recorded sales</h4>${i.sl.map(s=>`<div class="srow"><b>${esc(money(s.p))}</b><span>${esc(sDate(s.d))}${s.t==="auction"?" \u00b7 auction":s.t==="best_offer"?" \u00b7 Best Offer listing":""}${s.n?" \u00b7 bundle of "+s.n:""}</span></div>`).join("")}<p class="note">From eBay sold listings.${i.sl.some(s=>s.t==="best_offer")?" A Best Offer sale may have gone for less than the price shown.":""}${i.sl.some(s=>s.n)?" A bundle price covers every slab in the bundle.":""}</p></div>`:""}
