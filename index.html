@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=ad08802028"></script>
+<script src="data.js?v=bc6930d244"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1270,7 +1270,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
       return `<div class="pcard"><div class="phead"><b>${esc(p.n)}</b>${del(p)}</div>${x(p)}`+
         (p.c?`<div class="pbadge">Cert ${p.c} sent \u00b7 waiting for ACE's page to go live</div>`
           :`<div class="pstage" role="group" aria-label="Stage at ACE">${STAGES.map((s,k)=>`<button type="button" data-pst="${id}" data-v="${k}" class="${k<=(+p.st||0)?"on":""}${k===(+p.st||0)?" cur":""}">${s}</button>`).join("")}</div>
-          <form class="pcert" data-pid="${id}"><input inputmode="numeric" maxlength="7" placeholder="Cert number once assigned" aria-label="Cert number"><button class="btn" type="submit">Send cert</button></form>`)+`</div>`}).join("");
+          <form class="pcert" data-pid="${id}"><input inputmode="numeric" maxlength="7" placeholder="Cert number" aria-label="Cert number"><button class="btn" type="submit">Send cert</button></form>`)+`</div>`}).join("");
     box.innerHTML=(rows||`<p class="note" style="margin:0 0 10px">Cards you've sent to ACE and are waiting on. Add them below, move the stage as ACE updates yours, and send the cert here once it's assigned.</p>`)+`<div class="padd"><div class="plab">Add a card</div><form id="pendadd" class="pcert"><input maxlength="60" placeholder="Card name, e.g. Skull Servant" aria-label="Card name"><button class="btn" type="submit">Add</button></form><label class="pshot">\ud83d\udcf7 Add from a screenshot of your ACE submission<input type="file" id="pendshot" accept="image/*" hidden></label><p id="pendmsg" class="note" style="margin:8px 0 0"></p></div>`}
   async function hashOf(uid){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(uid));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,16)}catch(e){return""}}
   function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"My account \u25be":"Sign in with Google";
