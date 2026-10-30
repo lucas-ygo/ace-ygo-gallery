@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=7c854d631c"></script>
+<script src="data.js?v=89aacbbf8b"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1253,14 +1253,14 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
       det=det.map(x=>x.split(/\s+/).filter(w=>/^[A-Za-z0-9'.,&:\/\-]+$/.test(w)&&!/^[A-Za-z]{1,2}$/.test(w)&&!/^\d$/.test(w)&&!/^ace$/i.test(w)).join(" ")).filter(Boolean).join(" \u00b7 ").slice(0,120);
       if(/[A-Za-z]{3}/.test(name))out.push({n:name,x:det})});
     return out}
-  async function readShot(file){const msg=$("#pendmsg"),say=t=>{if(msg)msg.textContent=t};
+  async function readShot(file,inp){let step="start";const msg=$("#pendmsg"),say=t=>{if(msg)msg.textContent=t};
     say("Reading your screenshot. The first time it loads a reader (about 10 MB). The image stays on your device.");
-    try{if(!window.Tesseract)await new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)});
-      const r=await Tesseract.recognize(file,"eng",window.__tessOpts||{}),cards=parseAce(r.data.text);
+    try{step="open the image";const blob=new Blob([await file.arrayBuffer()],{type:file.type||"image/jpeg"});if(inp)inp.value="";step="load the reader";if(!window.Tesseract)await new Promise((ok,no)=>{const U=["https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js","https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"],go=k=>{const s=document.createElement("script");s.src=U[k];s.onload=ok;s.onerror=()=>{s.remove();k+1<U.length?go(k+1):no(new Error("the download was blocked or failed"))};document.head.appendChild(s)};go(0)});
+      step="read the text";const o=Object.assign({logger:m=>{if(m&&m.status==="recognizing text")say("Reading your screenshot... "+Math.round((m.progress||0)*100)+"%")}},window.__tessOpts||{});const r=await Tesseract.recognize(blob,"eng",o);step="find the cards";const cards=parseAce(r.data.text);
       if(!cards.length){say("Couldn't find any cards in that. Use a screenshot of the Card Details list on your ACE submission, or add them by name.");return}
       let n=0;cards.forEach(c=>{if(pend.length<30&&!pend.some(p=>p.n.toLowerCase()===c.n.toLowerCase()&&(p.x||"")===c.x)){pend.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),n:c.n,x:c.x,st:2,d:new Date().toISOString().slice(0,10)});n++}});
       savePend();renderPend();const m2=$("#pendmsg");if(m2)m2.textContent=n?"Added "+n+" card"+(n>1?"s":"")+" at stage Grading. Check the names look right.":"Those cards are already on your list."}
-    catch(e){say("Couldn't read that screenshot. Please add the cards by name.")}}
+    catch(e){say("Couldn't "+step+" ("+String((e&&e.message)||e||"unknown error").slice(0,90)+"). Please add the cards by name, or tell the site owner this message.")}}
   function renderPend(){const box=$("#acctpend");if(!box)return;
     const rows=pend.map(p=>{const it=p.c?BYC.get(p.c):null;
       if(it){if(!own.has(p.c)){own.add(p.c);saveOwn();paintOwn()}
@@ -1339,7 +1339,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     box.innerHTML=`<p style="margin:0 0 6px">${fmt(list.length)} sent in, ${fmt(n)} became slabs in the gallery.</p>`+list.slice().reverse().map(r=>{const c=+r[0],it=BYC.get(c);
       return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>${(r[2]&&r[2].length)?`<div class="subnb">Also found because of it: ${r[2].map(k=>{const q=BYC.get(k);return q?`<button type="button" data-c="${k}">${esc(q.n)} (${k})</button>`:""}).filter(Boolean).join(", ")}</div>`:""}`}).join("")}
   ad.addEventListener("click",e=>{const x=e.target.closest("[data-pdel]");if(x){pend=pend.filter(p=>p.id!==x.dataset.pdel);savePend();renderPend()}});
-  ad.addEventListener("change",e=>{if(e.target.id==="pendshot"){const f=e.target.files&&e.target.files[0];e.target.value="";if(f)readShot(f);return}const x=e.target.closest("[data-pst]");if(!x)return;const p=pend.find(q=>q.id===x.dataset.pst);if(p){p.st=+x.value;savePend()}});
+  ad.addEventListener("change",e=>{if(e.target.id==="pendshot"){const f=e.target.files&&e.target.files[0];if(f)readShot(f,e.target);return}const x=e.target.closest("[data-pst]");if(!x)return;const p=pend.find(q=>q.id===x.dataset.pst);if(p){p.st=+x.value;savePend()}});
   ad.addEventListener("submit",e=>{const f=e.target;if(!f.classList||!f.classList.contains("pcert"))return;e.preventDefault();const inp=f.querySelector("input"),msg=$("#pendmsg");
     if(f.id==="pendadd"){const n=(inp.value||"").replace(/[<>]/g,"").trim().slice(0,60);if(!n)return;if(pend.length>=30){msg&&(msg.textContent="That's the limit of 30 pending cards.");return}
       pend.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),n,st:0,d:new Date().toISOString().slice(0,10)});savePend();renderPend();return}
