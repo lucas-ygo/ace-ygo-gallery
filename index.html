@@ -284,7 +284,7 @@ main{min-width:0}
 .welc{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .welc li{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.4}
 .welc .wi{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(217,173,91,.15);color:var(--gold);display:grid;place-items:center;font-size:15px}
-.subrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.subrow button{background:none;border:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline;padding:0;text-align:left}
+.subrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.subrow button,.subnb button{background:none;border:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline;padding:0;text-align:left}.subnb{font-size:13px;color:var(--foil);padding:6px 0 8px 12px;border-bottom:1px solid var(--line);opacity:.9}
 .card{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background:var(--case)}
 .case{position:relative;aspect-ratio:3/4;display:grid;place-items:center;padding:12px;
@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=8f679fc911"></script>
+<script src="data.js?v=d0ecd887af"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1305,14 +1305,14 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     const n=list.filter(r=>r[1]==="s"||BYC.has(+r[0])).length;
     const bd=$("#acctbadge");if(bd&&n){bd.hidden=false;bd.textContent="\u2605 "+(n>=25?"Slab legend":n>=10?"Slab hunter":n>=3?"Slab finder":"Slab spotter")+" \u00b7 "+n+" found"}
     box.innerHTML=`<p style="margin:0 0 6px">${fmt(list.length)} sent in, ${fmt(n)} became slabs in the gallery.</p>`+list.slice().reverse().map(r=>{const c=+r[0],it=BYC.get(c);
-      return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>`}).join("")}
+      return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>${(r[2]&&r[2].length)?`<div class="subnb">Also found because of it: ${r[2].map(k=>{const q=BYC.get(k);return q?`<button type="button" data-c="${k}">${esc(q.n)} (${k})</button>`:""}).filter(Boolean).join(", ")}</div>`:""}`}).join("")}
   ad.addEventListener("click",async e=>{
     if(e.target.id==="acctx"||e.target.id==="acctx2"||e.target===ad){ad.close();return}
     if(e.target.id==="acctmy"){openAcct();return}
     const go=e.target.closest("[data-go]");if(go){const k=go.dataset.go;ad.close();st.fav=k==="fav";st.own=k==="own";st.notes=k==="notes";apply();const g=$("#grid");g&&g.scrollIntoView({block:"start"});return}
     if(e.target.id==="acctshare"){shareCollection(e.target);return}
     if(e.target.id==="acctout"){ad.close();try{await fb.au.signOut(fb.auth)}catch(x){}return}
-    const b=e.target.closest(".subrow button");if(b){ad.close();const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
+    const b=e.target.closest(".subrow button,.subnb button");if(b){ad.close();const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
   btn.addEventListener("click",async()=>{if(busy)return;busy=true;
     try{const f=await load();
       if(user)await openAcct();
