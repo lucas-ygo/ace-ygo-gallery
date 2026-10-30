@@ -284,7 +284,7 @@ main{min-width:0}
 .welc{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .welc li{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.4}
 .welc .wi{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(217,173,91,.15);color:var(--gold);display:grid;place-items:center;font-size:15px}
-.subrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.subrow button,.subnb button{background:none;border:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline;padding:0;text-align:left}.subnb{font-size:13px;color:var(--foil);padding:6px 0 8px 12px;border-bottom:1px solid var(--line);opacity:.9}
+.subrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.subrow button,.subnb button{background:none;border:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline;padding:0;text-align:left}.pend{margin-bottom:14px}.prow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--foil)}.prow b{flex:1;color:inherit}.prow>span:not(.subnb){margin-left:auto;font-size:13px}.prow .subnb{flex:1;padding:0;border:0}.prow select,.pcert input{background:transparent;color:inherit;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:13px}.pcert{display:flex;gap:8px;margin:8px 0 0}.pcert input{flex:1;min-width:0}.pdel{background:none;border:0;color:var(--mist);font-size:20px;line-height:1;cursor:pointer;padding:0 4px}.subnb{font-size:13px;color:var(--foil);padding:6px 0 8px 12px;border-bottom:1px solid var(--line);opacity:.9}
 .card{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background:var(--case)}
 .case{position:relative;aspect-ratio:3/4;display:grid;place-items:center;padding:12px;
@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=06737c8054"></script>
+<script src="data.js?v=6d131bfe86"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1237,6 +1237,16 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}return null};
   const same=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
   const js=o=>JSON.stringify(o);
+  let pend=[];try{pend=JSON.parse(ls("pend")||"[]")||[]}catch(e){}if(!Array.isArray(pend))pend=[];
+  const STAGES=["Sent","Received","Grading","Shipped back"];
+  function setPend(a){pend=a.slice(0,30);ls("pend",js(pend))}
+  function savePend(){setPend(pend);if(syncHook)syncHook()}
+  function renderPend(){const box=$("#acctpend");if(!box)return;
+    const rows=pend.map(p=>{const it=p.c?BYC.get(p.c):null;
+      if(it){if(!own.has(p.c)){own.add(p.c);saveOwn();paintOwn()}
+        return `<div class="prow"><span class="subnb"><button type="button" data-c="${p.c}">${esc(it.n)} (${p.c})</button></span><span>Graded ACE ${esc(it.g)}</span><button type="button" class="pdel" data-pdel="${esc(p.id)}" title="Remove from this list" aria-label="Remove">&times;</button></div>`}
+      return `<div class="prow"><b>${esc(p.n)}${p.c?`<small style="display:block;font-weight:400;font-size:12px;color:var(--mist)">Cert ${p.c} sent, waiting for ACE's page</small>`:""}</b>${p.c?"":`<select data-pst="${esc(p.id)}" aria-label="Stage">${STAGES.map((x,k)=>`<option value="${k}"${k===(+p.st||0)?" selected":""}>${x}</option>`).join("")}</select>`}<button type="button" class="pdel" data-pdel="${esc(p.id)}" title="Remove from this list" aria-label="Remove">&times;</button></div>`+(p.c?"":`<form class="pcert" data-pid="${esc(p.id)}"><input inputmode="numeric" maxlength="7" placeholder="Cert number, once you have it" aria-label="Cert number"><button class="btn" type="submit">Send cert</button></form>`)}).join("");
+    box.innerHTML=(rows||`<p class="note" style="margin:0 0 8px">Cards you've sent to ACE and are waiting on. Add them here, move the stage as ACE updates yours, and send the cert from here once it's assigned.</p>`)+`<form id="pendadd" class="pcert"><input maxlength="60" placeholder="Card, e.g. Skull Servant" aria-label="Card name"><button class="btn" type="submit">Add</button></form><p id="pendmsg" class="note" style="margin:6px 0 0"></p>`}
   async function hashOf(uid){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(uid));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,16)}catch(e){return""}}
   function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"My account \u25be":"Sign in with Google";
     $("#accti").innerHTML=on&&user.photoURL?'<img alt="" referrerpolicy="no-referrer" src="'+user.photoURL.replace(/"/g,"")+'">':GSVG;
@@ -1246,8 +1256,10 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   function setFav(s){fav=s;ls("fav",js([...fav]));refresh()}
   function setOwn(s){own=s;ls("own",js([...own]));refresh()}
   function setNotes(o){notes=o;ls("notes",js(notes));const t=$("#lbnote");if(t&&document.activeElement!==t){const c=+($("#lbfav")||{dataset:{}}).dataset.c;t.value=notes[c]||""}}
-  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;return p}
-  function applyPrefs(p){if(!p)return;applying=true;try{
+  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;p.pend=pend;return p}
+  function applyPrefs(p,fst){if(!p)return;
+    if(Array.isArray(p.pend)){const nx=fst?[...p.pend,...pend.filter(x=>!p.pend.some(y=>y.id===x.id))]:p.pend;if(js(nx)!==js(pend)){setPend(nx);if(ad.open)renderPend()}}
+    applying=true;try{
     if(p.theme&&p.theme!==(ls("theme")||"dark")&&window.__setTheme)window.__setTheme(p.theme);
     if(p.view&&p.view!==(ls("view")||"grid")&&window.__setView)window.__setView(p.view);
     const k=window.__sizeKey;if(k&&p[k]&&+p[k]!==+ls(k)&&window.__setSize)window.__setSize(+p[k])}finally{applying=false}}
@@ -1268,8 +1280,8 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
         if(+d.seen>seenBase){seenBase=+d.seen;ls("seenA",String(seenBase));apply(true)}   // slabs you already saw on another device are not "new" here
         const mf=trust?rf:new Set([...fav,...rf]),mo=trust?ro:new Set([...own,...ro]),mn=trust?rn:Object.assign({},rn,notes);
         if(!same(mf,fav))setFav(mf);if(!same(mo,own))setOwn(mo);if(js(mn)!==js(notes))setNotes(mn);
-        applyPrefs(remotePrefs);   // a new device adopts the cloud settings
-        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length)push();
+        applyPrefs(remotePrefs,true);   // a new device adopts the cloud settings
+        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length||js(pend)!==js(remotePrefs.pend||[]))push();
         if(ls("welcomed")!==uid){ls("welcomed",uid);setTimeout(welcome,400)}
         return}
       if(snap.metadata.hasPendingWrites||Date.now()<quiet)return;
@@ -1295,9 +1307,9 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     ad.innerHTML=`<div class="cmpbox stat"><h3>My account</h3><button class="x" type="button" id="acctx" aria-label="Close">&times;</button>
       <p class="note" style="margin-top:0">Signed in as <b>${esc(user.email||"you")}</b>. Your saved slabs, owned slabs, notes and settings sync across your devices.</p>
       <div class="stiles">${tile(fmt([...fav].filter(c=>BYC.has(c)).length),"saved","fav",[...fav].filter(c=>BYC.has(c)).length)}${tile(fmt(mine.length),"owned","own",mine.length)}${mine.length&&val?tile(moneyWhole(val),"collection raw value","own",1):""}${tile(fmt(Object.keys(notes).length),"notes","notes",Object.keys(notes).filter(c=>BYC.has(+c)).length)}</div>
-      <p id="acctbadge" class="finder" hidden></p><h4>Certs you sent in</h4><div id="acctsub" class="note">Checking...</div>
+      <h4>Pending at ACE</h4><div id="acctpend" class="pend"></div><p id="acctbadge" class="finder" hidden></p><h4>Certs you sent in</h4><div id="acctsub" class="note">Checking...</div>
       <div class="acts" style="margin-top:14px">${mine.length?'<button class="btn" type="button" id="acctshare">Share my collection</button> ':""}<button class="btn" type="button" id="acctout">Sign out</button></div></div>`;
-    ad.showModal();
+    ad.showModal();renderPend();
     let list=[];try{const u=($('script[src*="data.js"]')||{}).src||"";const r=await fetch(u.replace(/data\.js.*$/,"mine.json?t="+Date.now()),{cache:"no-store"});if(r.ok){const j=await r.json();list=j[uh]||[]}}catch(e){}
     const box=$("#acctsub");if(!box||!ad.open)return;
     if(!list.length){box.textContent="Nothing yet. Certs you send with the Send a cert box while signed in will be listed here, with what became of them. This list refreshes about every 20 minutes.";return}
@@ -1306,6 +1318,15 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     const bd=$("#acctbadge");if(bd&&n){bd.hidden=false;bd.textContent="\u2605 "+(n>=25?"Slab legend":n>=10?"Slab hunter":n>=3?"Slab finder":"Slab spotter")+" \u00b7 "+n+" found"}
     box.innerHTML=`<p style="margin:0 0 6px">${fmt(list.length)} sent in, ${fmt(n)} became slabs in the gallery.</p>`+list.slice().reverse().map(r=>{const c=+r[0],it=BYC.get(c);
       return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>${(r[2]&&r[2].length)?`<div class="subnb">Also found because of it: ${r[2].map(k=>{const q=BYC.get(k);return q?`<button type="button" data-c="${k}">${esc(q.n)} (${k})</button>`:""}).filter(Boolean).join(", ")}</div>`:""}`}).join("")}
+  ad.addEventListener("click",e=>{const x=e.target.closest("[data-pdel]");if(x){pend=pend.filter(p=>p.id!==x.dataset.pdel);savePend();renderPend()}});
+  ad.addEventListener("change",e=>{const x=e.target.closest("[data-pst]");if(!x)return;const p=pend.find(q=>q.id===x.dataset.pst);if(p){p.st=+x.value;savePend()}});
+  ad.addEventListener("submit",e=>{const f=e.target;if(!f.classList||!f.classList.contains("pcert"))return;e.preventDefault();const inp=f.querySelector("input"),msg=$("#pendmsg");
+    if(f.id==="pendadd"){const n=(inp.value||"").replace(/[<>]/g,"").trim().slice(0,60);if(!n)return;if(pend.length>=30){msg&&(msg.textContent="That's the limit of 30 pending cards.");return}
+      pend.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),n,st:0,d:new Date().toISOString().slice(0,10)});savePend();renderPend();return}
+    const v=(inp.value||"").replace(/\D/g,"");if(!/^\d{7}$/.test(v)){msg&&(msg.textContent="A cert number is 7 digits.");return}
+    const p=pend.find(q=>q.id===f.dataset.pid);if(!p)return;let who="";try{who=(localStorage.getItem("leadname")||"").replace(/[^A-Za-z0-9 _.@\-]/g,"").trim().slice(0,24)}catch(x){}
+    if(msg)msg.textContent="Sending...";
+    fetch("https://ntfy.sh/ygo-slab-leads-de80f655be",{method:"POST",body:v+((who||uh)?" | "+who:"")+(uh?" | u:"+uh:"")}).then(r=>{if(!r.ok)throw 0;p.c=+v;own.add(+v);saveOwn();paintOwn();savePend();renderPend();const m=$("#pendmsg");if(m)m.textContent="Thanks! "+v+" is queued. It shows here as graded once ACE's page is live and the slab is in the gallery."}).catch(()=>{if(msg)msg.textContent="Couldn't send, please try again later."})});
   ad.addEventListener("click",async e=>{
     if(e.target.id==="acctx"||e.target.id==="acctx2"||e.target===ad){ad.close();return}
     if(e.target.id==="acctmy"){openAcct();return}
