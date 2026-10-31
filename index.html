@@ -595,7 +595,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 
-<script src="data.js?v=9d7fc14e5f"></script>
+<script src="data.js?v=2988fc277f"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -620,6 +620,8 @@ const moneyWhole=p=>"\u00a3"+Math.round(p).toLocaleString("en-GB");
 const BANDS=["Under \u00a35","\u00a35 \u2013 \u00a325","\u00a325 \u2013 \u00a3100","\u00a3100 \u2013 \u00a3250","\u00a3250+","No price yet"];
 const band=p=>!p?BANDS[5]:p<5?BANDS[0]:p<25?BANDS[1]:p<100?BANDS[2]:p<250?BANDS[3]:BANDS[4];
 const ERAS=["Duel Monsters (to 2004)", "GX (2005–2007)", "5D's (2008–2010)", "ZEXAL (2011–2013)", "ARC-V (2014–2016)", "VRAINS (2017–2019)", "SEVENS (2020–2021)", "GO RUSH!! (2022–2024)", "2025 onwards"];
+const SRCL={me:"Submitted by the creator",vis:"Sent in by a visitor",eb:"eBay search",ns:"Next to a submitted cert",near:"Next to a find",scan:"Scanner",oth:"Other lead",nr:"Not recorded"};
+const SRCORD=["Submitted by the creator","Sent in by a visitor","eBay search","Next to a submitted cert","Next to a find","Scanner","Other lead","Not recorded"];
 const GROUPS=[
   {k:"g",title:"Grade",cls:"grade",label:v=>"ACE "+v,get:i=>[i.g],sortNum:true,open:true},
   {k:"e",title:"Anime era",hint:"when the card first came out",label:v=>v,get:i=>[i.e],order:ERAS,open:true},
@@ -630,6 +632,7 @@ const GROUPS=[
   {k:"fy",title:"New for you",hint:"since your last visit",label:v=>v,get:i=>isFY(i)?["New since your last visit"]:[],when:()=>DATA.some(isFY)},
   {k:"co",title:"Collaboration",label:v=>v,get:i=>i.co?["Collaboration"]:[],when:()=>DATA.some(i=>i.co)},
   {k:"eb",title:"For sale",hint:"on eBay now",label:v=>v,get:i=>i.eb?["On eBay now"]:[],when:()=>DATA.some(i=>i.eb)},
+  {k:"sr",title:"Found by",hint:"how the cert reached us",label:v=>v,get:i=>[SRCL[i.sc||"nr"]],order:SRCORD},
   {k:"so",title:"Sold",hint:"recorded eBay sales",label:v=>v,get:i=>i.sl&&i.sl.length?["Has a recorded sale"]:[],when:()=>DATA.some(i=>i.sl&&i.sl.length)},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
   {k:"y",title:"Release year",label:v=>v,get:i=>[i.y?String(i.y):""],asc:true},
@@ -817,6 +820,7 @@ function openLB(idx,item){
       ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
       ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
       ${i.cr?`<p class="note">✨ <b>Found thanks to ${esc(i.cr)}</b>, who sent in a cert on the site.</p>`:""}
+      <p class="note">🔎 <b>Found by:</b> ${esc(SRCL[i.sc||"nr"])}${i.sn?` (${esc(i.sn)})`:""}</p>
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are the latest we have for this card, from when this or another slab of it was last collected, so they may have grown since.</p>`:""}
@@ -1454,6 +1458,7 @@ paintFav();
         ${tile(avg?avg.toFixed(1):"\u2014","average grade")}${priced.length?tile(moneyWhole(tot),"raw value of "+fmt(priced.length)+" priced"):""}</div>
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
+      <h4>How they were found</h4>${bars(SRCORD.map(n=>[n,tally(i=>[SRCL[i.sc||"nr"]]).get(n)||0,n]).filter(r=>r[1]),"sr")}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${moneyWhole(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
       ${dayHTML}${unpHTML}
       <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
