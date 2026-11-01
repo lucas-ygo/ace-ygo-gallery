@@ -603,7 +603,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=5830701a9b"></script>
+<script src="data.js?v=6b737ef4fa"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1238,9 +1238,9 @@ async function loadSet(p){
   const r=await fetch("sets/"+p.replace(/\//g,"_")+".json");if(!r.ok)throw new Error("no list");
   const j=await r.json();SETC.set(p,j);return j}
 function setHTML(){
-  const rows=Object.entries(SETN).map(([p,e])=>[p,e[0],e[1],new Set(DATA.filter(i=>spx(i.no)===p).map(i=>String(i.no).toUpperCase())).size]).filter(r=>r[3]&&r[1])
+  const rows=Object.entries(SETN).map(([p,e])=>[p,e[0],e[1],new Set(DATA.filter(i=>spx(i.no)===p).map(i=>String(i.no).toUpperCase())).size,e[2]]).filter(r=>r[3]&&r[1])
     .sort((a,b)=>b[3]/b[1]-a[3]/a[1]||b[3]-a[3]).slice(0,10);
-  return rows.length?`<h4>Set checklists</h4><div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r[0])}"><span>${esc(r[2])} <small>${esc(r[0])}</small></span><span style="white-space:nowrap"><b>${r[3]} of ${r[1]}</b></span></button>`).join("")}</div><p class="note">How many cards of each set we have found as ACE slabs. Tap one to see the full list.</p>`:""}
+  return rows.length?`<h4>Set checklists</h4><div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r[0])}"><span>${esc(r[2])} <small>${esc(r[0])}</small></span><span style="white-space:nowrap"><b>${r[3]} of ${r[1]}${r[4]?"+":""}</b></span></button>`).join("")}</div><p class="note">How many cards of each set we have found as ACE slabs. Tap one to see the full list.</p>`:""}
 async function openSet(p){
   const sd=$("#setd");if(!sd)return;
   sd.innerHTML=`<div class="cmpbox"><h3>Set checklist</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button><p class="note">Loading...</p></div>`;
@@ -1254,7 +1254,7 @@ async function openSet(p){
       return `<${it?"button":"div"} class="sci${it?" got":""}"${it?` data-c="${it.c}"`:""} style="${it?"":"cursor:default"}"><b>${esc(c[1])}</b><small>${esc(c[0])}${c[2]?" · "+esc(c[2].replace(/,/g,", ")):""}</small>${it?`<small>Found: ACE ${esc(it.g)}${it.p?" · raw "+esc(money(it.p)):""}</small>`:""}</${it?"button":"div"}>`}).join("")||`<p class="note">Nothing to show.</p>`};
   sd.innerHTML=`<div class="cmpbox"><h3>${esc(j.n)}</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button>
     <p class="note" style="margin:0">${esc(p)}${j.d?" · released "+esc(j.d):""}</p>
-    <p style="margin:8px 0 0"><b>${got} of ${total}</b> card numbers found as ACE slabs</p><div class="scprog"><i style="width:${total?Math.max(got?2:0,got/total*100):0}%"></i></div>
+    <p style="margin:8px 0 0"><b>${got} of ${j.x?"at least ":""}${total}</b> card numbers found as ACE slabs</p>${j.x?`<p class="note" style="margin:4px 0 0">\u26a0 The card database has only part of this set so far, so the real total is higher.</p>`:""}<div class="scprog"><i style="width:${total?Math.max(got?2:0,got/total*100):0}%"></i></div>
     <div class="scflt"><button type="button" data-m="all" aria-pressed="true">All</button><button type="button" data-m="got" aria-pressed="false">Found</button><button type="button" data-m="miss" aria-pressed="false">Missing</button></div>
     <div class="scl scbody"></div>
     <p class="note">A card counts as found if we hold any ACE slab with that card number, whatever the finish. The list comes from a community card database and may miss the newest sets or odd printings, so treat it as a guide.</p></div>`;
