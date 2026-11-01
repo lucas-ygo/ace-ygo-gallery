@@ -394,6 +394,13 @@ body.hastray{padding-bottom:90px}
 .cgrid .rm{all:unset;cursor:pointer;color:var(--mist);font-size:12.5px;text-decoration:underline}
 .cmpbox .x{top:10px;right:12px}
 #themed .cmpbox{max-width:600px;margin:0 auto}
+#setd .cmpbox{max-width:760px;margin:0 auto}
+.scl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin:10px 0}
+.sci{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;padding:7px 9px;border-radius:9px;border:1px solid var(--line);background:var(--raise);font-size:13px;line-height:1.25;opacity:.55}
+.sci small{color:var(--mist)}.sci.got{opacity:1;border-color:var(--gold);cursor:pointer}.sci.got b{color:var(--gold)}
+.scprog{height:10px;border-radius:99px;background:var(--raise);overflow:hidden;margin:6px 0}.scprog i{display:block;height:100%;background:var(--gold);border-radius:99px}
+.scflt{display:flex;gap:6px;margin:8px 0}.scflt button{all:unset;cursor:pointer;padding:5px 12px;border-radius:99px;border:1px solid var(--line);font-size:13px}.scflt button[aria-pressed=true]{background:var(--gold);color:#111;border-color:var(--gold)}
+.spark{display:block;margin:6px 0 2px}.spark polyline{fill:none;stroke:var(--gold);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .thgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
 .thc{all:unset;box-sizing:border-box;cursor:pointer;display:block;border:2px solid var(--line);border-radius:14px;padding:8px;background:var(--raise)}
 .thc:hover{border-color:var(--gold)}.thc:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -594,13 +601,16 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="saled" aria-label="Recorded sales"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
+<dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=1510951b64"></script>
+<script src="data.js?v=0931229f23"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
+const SETN=(window.GALLERY&&window.GALLERY.sl)||{};
+const spx=n=>{const m=/^(.*?[A-Za-z])(\d+)$/.exec(String(n||"").toUpperCase());return m?m[1]:""};
 const MAXA=DATA.reduce((m,i)=>Math.max(m,i.a||0),0);
 let seenBase=null;try{const t=localStorage.getItem("seenA");seenBase=t==null?null:+t}catch(e){}
 if(seenBase==null){seenBase=MAXA;try{localStorage.setItem("seenA",String(MAXA))}catch(e){}}      // first visit: nothing is "new for you" yet
@@ -818,6 +828,7 @@ function openLB(idx,item){
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
       <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}</dd></dl>
       ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
+      ${(i.pq&&i.pq.length>1)?sparkHTML(i.pq):""}
       ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
       <p class="note">🔎 <b>Found by:</b> ${esc(SRCL[i.sc||"scan"])}${i.sn?` (${esc(i.sn)})`:""}${i.cr&&i.cr!=="the creator"?` ✨ thanks to <b>${esc(i.cr)}</b>`:""}</p>
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
@@ -831,6 +842,7 @@ function openLB(idx,item){
         <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
         <button class="btn" type="button" id="lbown" data-c="${i.c}">${own.has(i.c)?"\u2714 Owned":"\u2610 I own this"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
+        ${SETN[spx(i.no)]?`<button class="btn" type="button" id="lbset" data-p="${esc(spx(i.no))}">Set checklist</button>`:""}
         <button class="btn" type="button" id="lbshare">Share image</button>
         <span id="shpick" hidden><button class="btn shp" type="button" data-s="navy">ACE</button> <button class="btn shp" type="button" data-s="duel">DM</button> <button class="btn shp" type="button" data-s="gx">GX</button> <button class="btn shp" type="button" data-s="5d">5D's</button></span>
         <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div>${i.sd?`<p class="scanned">Scanned ${esc(new Date(i.sd*1000).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZoneName:"short"}).replace(",",""))}</p>`:""}</div>
@@ -1213,6 +1225,46 @@ function openOrigin(){const i=BYC.get(ORIGIN);if(!i)return;
   const eb=document.querySelector(".eyebrow");let taps=0,tt;
   if(eb)eb.addEventListener("click",()=>{taps++;clearTimeout(tt);tt=setTimeout(()=>{taps=0},900);if(taps>=5){taps=0;openOrigin()}})})();
 
+/* ---------- price trend + set checklists ---------- */
+function sparkHTML(pq){
+  const w=220,h=44,v=pq.map(x=>x[1]),lo=Math.min(...v),hi=Math.max(...v),sp=hi-lo||1,d0=pq[0][0],d1=pq[pq.length-1][0],dd=Math.max(1,d1-d0);
+  const pts=pq.map(x=>((x[0]-d0)/dd*(w-8)+4).toFixed(1)+","+(h-4-(x[1]-lo)/sp*(h-8)).toFixed(1)).join(" ");
+  const a=v[0],b=v[v.length-1],pc=a?Math.round((b-a)/a*100):0,when=new Date(d0*86400000).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+  return `<div class="ptr"><svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Raw price trend"><polyline points="${pts}"/></svg>
+    <p class="note" style="margin:0">Raw price ${b>=a?"up":"down"} ${Math.abs(pc)}% since ${esc(when)} (${esc(money(a))} to ${esc(money(b))}). We only started tracking in November 2026, and small moves are ignored.</p></div>`}
+const SETC=new Map();
+async function loadSet(p){
+  if(SETC.has(p))return SETC.get(p);
+  const r=await fetch("sets/"+p.replace(/\//g,"_")+".json");if(!r.ok)throw new Error("no list");
+  const j=await r.json();SETC.set(p,j);return j}
+function setHTML(){
+  const rows=Object.entries(SETN).map(([p,e])=>[p,e[0],e[1],new Set(DATA.filter(i=>spx(i.no)===p).map(i=>String(i.no).toUpperCase())).size]).filter(r=>r[3]&&r[1])
+    .sort((a,b)=>b[3]/b[1]-a[3]/a[1]||b[3]-a[3]).slice(0,10);
+  return rows.length?`<h4>Set checklists</h4><div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r[0])}"><span>${esc(r[2])} <small>${esc(r[0])}</small></span><span style="white-space:nowrap"><b>${r[3]} of ${r[1]}</b></span></button>`).join("")}</div><p class="note">How many cards of each set we have found as ACE slabs. Tap one to see the full list.</p>`:""}
+async function openSet(p){
+  const sd=$("#setd");if(!sd)return;
+  sd.innerHTML=`<div class="cmpbox"><h3>Set checklist</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button><p class="note">Loading...</p></div>`;
+  if(!sd.open)sd.showModal();
+  let j;try{j=await loadSet(p)}catch(e){sd.querySelector(".note").textContent="Sorry, that set list isn't available.";return}
+  const have=new Map();for(const i of DATA){if(spx(i.no)!==p)continue;const k=String(i.no).toUpperCase(),o=have.get(k);if(!o||gnum(i)>gnum(o))have.set(k,i)}
+  const total=j.c.length,got=j.c.filter(c=>have.has(c[0])).length;let mode="all";
+  const draw=()=>{
+    const list=j.c.filter(c=>mode==="all"||(mode==="got")===have.has(c[0]));
+    sd.querySelector(".scbody").innerHTML=list.map(c=>{const it=have.get(c[0]);
+      return `<${it?"button":"div"} class="sci${it?" got":""}"${it?` data-c="${it.c}"`:""} style="${it?"":"cursor:default"}"><b>${esc(c[1])}</b><small>${esc(c[0])}${c[2]?" · "+esc(c[2].replace(/,/g,", ")):""}</small>${it?`<small>Found: ACE ${esc(it.g)}${it.p?" · raw "+esc(money(it.p)):""}</small>`:""}</${it?"button":"div"}>`}).join("")||`<p class="note">Nothing to show.</p>`};
+  sd.innerHTML=`<div class="cmpbox"><h3>${esc(j.n)}</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button>
+    <p class="note" style="margin:0">${esc(p)}${j.d?" · released "+esc(j.d):""}</p>
+    <p style="margin:8px 0 0"><b>${got} of ${total}</b> card numbers found as ACE slabs</p><div class="scprog"><i style="width:${total?Math.max(got?2:0,got/total*100):0}%"></i></div>
+    <div class="scflt"><button type="button" data-m="all" aria-pressed="true">All</button><button type="button" data-m="got" aria-pressed="false">Found</button><button type="button" data-m="miss" aria-pressed="false">Missing</button></div>
+    <div class="scl scbody"></div>
+    <p class="note">A card counts as found if we hold any ACE slab with that card number, whatever the finish. The list comes from a community card database and may miss the newest sets or odd printings, so treat it as a guide.</p></div>`;
+  draw();
+  sd.onclick=e=>{
+    if(e.target.id==="setx"||e.target===sd){sd.close();return}
+    const f=e.target.closest(".scflt button");if(f){mode=f.dataset.m;sd.querySelectorAll(".scflt button").forEach(b=>b.setAttribute("aria-pressed",String(b===f)));draw();return}
+    const c=e.target.closest(".sci.got");if(c){sd.close();const n=+c.dataset.c,k=view.findIndex(x=>x.c===n);openLB(k,k<0?BYC.get(n):undefined)}}}
+dlg.addEventListener("click",e=>{const b=e.target.closest("#lbset");if(b){dlg.close();openSet(b.dataset.p)}});
+
 /* ---------- saved slabs ---------- */
 let favDirty=false;
 function paintFav(){const b=$("#favbtn"),n=[...fav].filter(c=>BYC.has(c)).length;
@@ -1458,6 +1510,7 @@ paintFav();
       <h4>Grades</h4>${bars(gr,"g")}<h4>Anime era</h4>${bars(er,"e")}<h4>Biggest sets</h4>${bars(sets.map(([n,c])=>[n,c,n]),"s")}
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
       <h4>How they were found</h4>${bars(SRCORD.map(n=>[n,tally(i=>[SRCL[i.sc||"scan"]]).get(n)||0,n]).filter(r=>r[1]),"sr")}
+      ${setHTML()}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${moneyWhole(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
       ${dayHTML}${unpHTML}
       <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
@@ -1469,6 +1522,7 @@ paintFav();
     const tb=e.target.closest(".stabs button");
     if(tb){sd.querySelectorAll(".stabs button").forEach(x=>x.setAttribute("aria-selected",String(x===tb)));
       sd.querySelectorAll(".spane").forEach(p=>{p.hidden=p.dataset.pane!==tb.dataset.tab});return}
+    const sb=e.target.closest(".setb");if(sb){sd.close();openSet(sb.dataset.p);return}
     const o=e.target.closest(".oth,.unpr");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
     const b=e.target.closest(".sbar");if(!b)return;
     st.q="";st.s="";st.fav=false;st.own=false;st.notes=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
