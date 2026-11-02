@@ -604,7 +604,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=736244ec36"></script>
+<script src="data.js?v=58682beedf"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -1243,16 +1243,16 @@ function setHTML(){
     .sort((a,b)=>b[3]/b[1]-a[3]/a[1]||b[3]-a[3]).slice(0,10);
   return rows.length?`<h4>Set checklists</h4><div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r[0])}"><span>${esc(r[2])} <small>${esc(r[0])}</small></span><span style="white-space:nowrap"><b>${r[3]} of ${r[1]}${r[4]?"+":""}</b></span></button>`).join("")}</div><p class="note">How many cards of each set we have found as ACE slabs. Tap one to see the full list.</p>`:""}
 function openSetIndex(sortBy,q){
-  const sd=$("#setd");if(!sd)return;sortBy=sortBy||"pct";q=(q||"").toLowerCase();
+  const sd=$("#setd");if(!sd)return;sortBy=sortBy||"new";q=(q||"").toLowerCase();
   const have=new Map();for(const i of DATA){const p=spx(i.no);if(SETN[p]){if(!have.has(p))have.set(p,new Set());have.get(p).add(String(i.no).toUpperCase())}}
-  let rows=Object.entries(SETN).map(([p,e])=>({p,n:e[1],tot:e[0],plus:e[2],got:(have.get(p)||new Set()).size})).filter(r=>!q||(r.n+" "+r.p).toLowerCase().includes(q));
-  const cmp={pct:(a,b)=>b.got/b.tot-a.got/a.tot||b.got-a.got,got:(a,b)=>b.got-a.got||a.n.localeCompare(b.n),az:(a,b)=>a.n.localeCompare(b.n)}[sortBy];
+  let rows=Object.entries(SETN).map(([p,e])=>({p,n:e[1],tot:e[0],plus:e[2],d:e[3]||"",got:(have.get(p)||new Set()).size})).filter(r=>!q||(r.n+" "+r.p).toLowerCase().includes(q));
+  const cmp={new:(a,b)=>(b.d).localeCompare(a.d)||b.got-a.got||a.n.localeCompare(b.n),pct:(a,b)=>b.got/b.tot-a.got/a.tot||b.got-a.got,got:(a,b)=>b.got-a.got||a.n.localeCompare(b.n),az:(a,b)=>a.n.localeCompare(b.n)}[sortBy];
   rows.sort(cmp);
   sd.innerHTML=`<div class="cmpbox"><h3>Sets</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button>
     <p class="note" style="margin:0">Every set we have an ACE slab from, with its full card list. Tap one to see which cards are found.</p>
     <input id="setq" type="search" placeholder="Search sets" value="${esc(q)}" style="width:100%;margin:10px 0 6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit">
-    <div class="scflt">${[["pct","Most complete"],["got","Most found"],["az","A to Z"]].map(([k,l])=>`<button type="button" data-s="${k}" aria-pressed="${k===sortBy}">${l}</button>`).join("")}</div>
-    <div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r.p)}"><span>${esc(r.n)} <small>${esc(r.p)}</small></span><span style="white-space:nowrap"><b>${r.got} of ${r.tot}${r.plus?"+":""}</b></span></button>`).join("")||`<p class="note">No sets match.</p>`}</div></div>`;
+    <div class="scflt">${[["new","Newest"],["pct","Most complete"],["got","Most found"],["az","A to Z"]].map(([k,l])=>`<button type="button" data-s="${k}" aria-pressed="${k===sortBy}">${l}</button>`).join("")}</div>
+    <div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r.p)}"><span>${esc(r.n)} <small>${esc(r.p)}${r.d?" · "+esc(r.d.slice(0,7)):""}</small></span><span style="white-space:nowrap"><b>${r.got} of ${r.tot}${r.plus?"+":""}</b></span></button>`).join("")||`<p class="note">No sets match.</p>`}</div></div>`;
   if(!sd.open)sd.showModal();
   const inp=sd.querySelector("#setq");
   inp.addEventListener("input",()=>{const v=inp.value,pos=inp.selectionStart;openSetIndex(sortBy,v);const n=$("#setq");n.focus();n.setSelectionRange(pos,pos)});
