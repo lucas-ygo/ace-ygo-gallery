@@ -640,7 +640,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=86c45d92f4"></script>
+<script src="data.js?v=59d9dd6172"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1536,7 +1536,7 @@ paintFav();
   const LS=window.LISTINGS||{},ld=$("#listd"),btn=$("#listbtn");
   /* only listings whose slab is in the gallery are shown (so every picture is the ACE front image); the same slab on eBay and Vinted becomes one card */
   const G=new Map();for(const x of (LS.a||[])){const it=x.c?BYC.get(x.c):null;if(!it||!(it.th||it.im))continue;
-    let g=G.get(x.c);if(!g){g={c:x.c,i:it.th||it.im,g:x.g,t:x.t,f:0,l:[]};G.set(x.c,g)}
+    let g=G.get(x.c);if(!g){g={c:x.c,i:it.th||it.im,g:String(it.g||x.g||""),t:x.t,f:0,l:[]};G.set(x.c,g)}
     g.l.push(x);g.f=Math.max(g.f,x.f||0);if(!g.g&&x.g)g.g=x.g}
   const L=[...G.values()];for(const g of L){g.l.sort((a,b)=>a.p-b.p);g.p=g.l[0].p;g.t=g.l[0].t}
   if(!btn||!ld||!L.length)return;btn.hidden=false;btn.insertAdjacentHTML('beforeend',`<span class="ms"><span class="dot"></span><b>${L.length}</b> slab${L.length>1?"s":""} listed now</span>`);
