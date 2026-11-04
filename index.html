@@ -640,7 +640,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=e1111af944"></script>
+<script src="data.js?v=70b8fe0214"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1566,14 +1566,14 @@ paintFav();
     $("#lgrid").dataset.n=per||"";$("#lgrid").innerHTML=r.length?r.map(x=>{const u0=lurl(x.l[0]);
       return `<div class="lcard"><a class="lim" href="${esc(u0)}" target="_blank" rel="noopener noreferrer" aria-label="Open listing"><img src="${esc(x.i)}" alt="" loading="lazy"></a>
         <div class="lb2"><b class="lp">${x.l.length>1?"from ":""}${esc(money(x.p))}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}<a class="lt" href="${esc(u0)}" target="_blank" rel="noopener noreferrer">${esc(x.t)}</a>
-        ${x.h.length?lhist(x):""}<small>${[...new Set(x.l.map(y=>y.v?"Vinted":"eBay"))].join(" + ")} &middot; this card is in the gallery</small>
+        ${x.h.length?lhist(x):""}<small>${[...new Set(x.l.map(y=>y.v?"Vinted":"eBay"))].join(" + ")}${x.l.some(y=>y.v)?" (Vinted price includes the buyer fee)":""} &middot; this card is in the gallery</small>
         <span class="lbtns">${x.l.map(y=>`<a class="lgo" href="${esc(lurl(y))}" target="_blank" rel="noopener noreferrer">View on ${y.v?"Vinted":"eBay"}${x.l.length>1?" "+esc(money(y.p)):""} &#8599;</a>`).join("")}<button type="button" class="lgal" data-c="${x.c}">See in gallery</button></span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
   btn.addEventListener("click",()=>{
     ld.innerHTML=`<div class="cmpbox stat"><h3>For sale on eBay &amp; Vinted</h3><button class="x" type="button" id="listx" aria-label="Close">&times;</button>
       <p class="note" style="margin-top:0">ACE-graded Yu-Gi-Oh! slabs listed on eBay UK and Vinted UK right now. <span id="lcount"></span>${LS.t?" &middot; checked "+esc(when(LS.t)):""}</p>
       <div class="lbar"><input id="lq" type="search" placeholder="Search name, set or card number" aria-label="Search listings"><select id="ls" aria-label="Sort listings"><option value="new">Newest first</option><option value="plow">Price: low to high</option><option value="phigh">Price: high to low</option><option value="grade">Grade: high to low</option></select></div><div class="lfil"><select id="lfg" aria-label="Grade"><option value="">Any grade</option><option value="10">ACE 10</option><option value="9">ACE 9</option><option value="lo">Under 9</option></select><select id="lfp" aria-label="Price"><option value="">Any price</option><option value="1">Under \u00a325</option><option value="2">\u00a325 to \u00a3100</option><option value="3">\u00a3100 to \u00a3500</option><option value="4">\u00a3500+</option></select><select id="lfs" aria-label="Where"><option value="">eBay + Vinted</option><option value="e">eBay only</option><option value="v">Vinted only</option></select><label class="lchk"><input type="checkbox" id="lfh"> Sold before</label></div><div class="lbar" style="margin-top:0"><span class="lper" role="group" aria-label="Cards per row">${[1,2,3,4].map(n=>`<button type="button" data-n="${n}" aria-pressed="${n===per}" title="${n} per row">${n}</button>`).join("")}</span></div>
       <div class="lgrid" id="lgrid"></div>
-      <p class="note">Listings come from eBay and Vinted search results and are matched to gallery slabs by the cert number on the photos, so check the photos and the seller before buying. Prices and availability change. This site is unofficial and is not connected to eBay, Vinted or ACE.</p></div>`;
+      <p class="note">Listings come from eBay and Vinted search results and are matched to gallery slabs by the cert number on the photos, so check the photos and the seller before buying. Vinted prices include its compulsory buyer protection fee (5% + 70p). Prices and availability change. This site is unofficial and is not connected to eBay, Vinted or ACE.</p></div>`;
     $("#lq").value=q;$("#ls").value=sort;$("#lfg").value=fg;$("#lfp").value=fp;$("#lfs").value=fs;$("#lfh").checked=fh;grid();ld.showModal()});
   ld.addEventListener("input",e=>{if(e.target.id==="lq"){q=e.target.value.trim().toLowerCase();grid()}});
   ld.addEventListener("click",e=>{const b=e.target.closest(".lper button");if(!b)return;per=+b.dataset.n;try{localStorage.setItem("ygoLper",per)}catch(x){}ld.querySelectorAll(".lper button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.n===per)));grid()});
