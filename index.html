@@ -640,7 +640,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=2457bb8671"></script>
+<script src="data.js?v=5aa80cccf3"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1539,8 +1539,8 @@ paintFav();
     g.l.push(x);g.f=Math.max(g.f,x.f||0);if(!g.g&&x.g)g.g=x.g}
   const L=[...G.values()];for(const g of L){g.l.sort((a,b)=>a.p-b.p);g.p=g.l[0].p;g.t=g.l[0].t}
   if(!btn||!ld||!L.length)return;btn.hidden=false;btn.insertAdjacentHTML('beforeend',`<span class="ms"><span class="dot"></span><b>${L.length}</b> slab${L.length>1?"s":""} listed now</span>`);
-  const HIST=new Map();{const sn=new Set();for(const i of DATA)for(const x of (i.sl||[])){const k=i.no+"|"+i.g,u=k+"|"+x.d+"|"+x.p+"|"+(x.n||i.c);if(sn.has(u))continue;sn.add(u);if(!HIST.has(k))HIST.set(k,[]);HIST.get(k).push(x)}for(const a of HIST.values())a.sort((x,y)=>String(x.d).localeCompare(String(y.d)))}
-  for(const g of L){const it=BYC.get(g.c);g.h=it?(HIST.get(it.no+"|"+it.g)||[]):[]}
+  const HIST=new Map();{const sn=new Set();for(const i of DATA)for(const x of (i.sl||[])){const k=i.no+"|"+(i.v||"")+"|"+i.g,u=k+"|"+x.d+"|"+x.p+"|"+(x.n||i.c);if(sn.has(u))continue;sn.add(u);if(!HIST.has(k))HIST.set(k,[]);HIST.get(k).push(x)}for(const a of HIST.values())a.sort((x,y)=>String(x.d).localeCompare(String(y.d)))}
+  for(const g of L){const it=BYC.get(g.c);g.h=it?(HIST.get(it.no+"|"+(it.v||"")+"|"+it.g)||[]):[]}
   let sort="new",q="",fg="",fp="",fs="",fh=false,per=2;try{per=+localStorage.getItem("ygoLper")||(innerWidth<700?2:0)}catch(e){}
   const when=t=>{if(!t)return"";const m=Math.max(1,Math.round((Date.now()/1000-t)/60));return m<90?m+" min ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago"};
   const band={"1":[0,25],"2":[25,100],"3":[100,500],"4":[500,1e9]};
@@ -1559,7 +1559,7 @@ paintFav();
       <div class="stiles"><div class="stile"><b>${h.length}</b><span>sale${h.length>1?"s":""}</span></div><div class="stile"><b>${esc(moneyWhole(tot/h.length))}</b><span>average</span></div><div class="stile"><b>${esc(moneyWhole(x.p))}</b><span>listed now</span></div></div>
       ${spark(h,x.p)}
       <div>${h.slice().reverse().map(s=>`<div class="srow"><b>${esc(money(s.p))}</b><span>${esc(sDate(s.d))}${s.t==="auction"?" \u00b7 auction":s.t==="best_offer"?" \u00b7 Best Offer listing":""}</span></div>`).join("")}</div>
-      <p class="note">From eBay sold listings for this card at this grade. A Best Offer sale may have gone for less than shown. Dashed line is the price listed now.</p></div>`;hd.showModal()};
+      <p class="note">From eBay sold listings for this card, finish and grade. A Best Offer sale may have gone for less than shown. Dashed line is the price listed now.</p></div>`;hd.showModal()};
   hd.addEventListener("click",e=>{if(e.target.id==="histx"||e.target===hd)hd.close()});
   const lurl=y=>y.v?"https://www.vinted.co.uk/items/"+String(y.id).slice(1):"https://www.ebay.co.uk/itm/"+y.id;
   const grid=()=>{const r=rows();$("#lcount").textContent=r.length+" of "+L.length+" slabs";
