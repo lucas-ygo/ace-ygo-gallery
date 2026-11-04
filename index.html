@@ -196,7 +196,14 @@ h1 em{font-style:normal;color:var(--gold)}
 .coffee:hover{border-color:var(--gold)}.coffee[hidden]{display:none}
 button.coffee{cursor:pointer}
 .hlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.hlinks .coffee{margin-top:0}
-.hlinks.hmain{margin-bottom:-8px}.hlinks.hmain:not(:has(>:not([hidden]))){display:none}.hlinks.hmain .coffee{font-weight:700}
+.hlinks.hmain{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 6px;padding-bottom:20px;border-bottom:1px solid var(--gold-dim)}.hlinks.hmain:not(:has(>:not([hidden]))){display:none}
+.hlinks.hmain .mtile{flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;min-height:76px;padding:14px 18px;border-radius:18px;border:2px solid var(--gold);background:linear-gradient(135deg,var(--case),var(--abyss));box-shadow:0 4px 18px rgba(0,0,0,.3);text-align:left;transition:transform .15s,box-shadow .15s}
+.hlinks.hmain .mtile:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.mtile .mt{font:800 19px/1.1 var(--ui);letter-spacing:.2px}.mtile .mt i{font-style:normal;margin-right:8px}
+.mtile .ms{font:500 12.5px/1.25 var(--ui);color:var(--mist);white-space:normal}.mtile .ms b{color:var(--gold);font-weight:800}
+.mtile .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#3ddc84;margin-right:6px;vertical-align:1px;box-shadow:0 0 0 0 rgba(61,220,132,.6);animation:pls 2s infinite}
+@keyframes pls{70%{box-shadow:0 0 0 7px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
+@media (prefers-reduced-motion:reduce){.mtile .dot{animation:none}.hlinks.hmain .mtile{transition:none}}
 footer .cof{color:var(--gold)}
 .hstats b{font:800 30px/1 var(--display);letter-spacing:.02em;color:var(--foil)}
 .lede{margin:8px 0 0;color:var(--mist);max-width:62ch}
@@ -550,8 +557,8 @@ footer p{margin:0 0 6px;max-width:80ch}
   <p class="wipnote"><b>Work in progress.</b> The scanner is still working back through older certs, so lots of slabs are not here yet. New ones are added as they are found.</p>
   <div class="hstats" id="hstats" hidden></div>
   <p class="scan" id="scan" hidden></p>
-  <div class="hlinks hmain"><button class="coffee" id="listbtn" type="button" hidden>&#128722; For sale</button>
-  <button class="coffee" id="salesbtn" type="button" hidden>&#128183; Sales</button></div>
+  <div class="hlinks hmain"><button class="coffee mtile" id="listbtn" type="button" hidden><span class="mt"><i>&#128722;</i>For sale</span></button>
+  <button class="coffee mtile" id="salesbtn" type="button" hidden><span class="mt"><i>&#128183;</i>Sales</span></button></div>
   <div class="hlinks"><button class="coffee" id="leadbtn" type="button">&#128269; Send a cert</button>
   <button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
   <button class="coffee" id="setsbtn" type="button" hidden>&#128218; Sets</button>
@@ -620,7 +627,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=648b13ed33"></script>
+<script src="data.js?v=7e735439c1"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1497,7 +1504,7 @@ paintFav();
       if(s.n){const k=s.d+"|"+s.p+"|"+s.n;if(seen.has(k))continue;seen.add(k);mates=DATA.filter(j=>(j.sl||[]).some(t=>t.n&&t.d===s.d&&t.p===s.p))}
       out.push({i,s,mates})}
     return out.sort((a,b)=>String(b.s.d).localeCompare(String(a.s.d))||b.s.p-a.s.p)};
-  if(!rows().length)return;btn.hidden=false;
+  if(!rows().length)return;btn.hidden=false;btn.insertAdjacentHTML('beforeend',`<span class="ms"><b>${rows().length}</b> sale${rows().length>1?"s":""} recorded</span>`);
   const typ=s=>s.t==="auction"?"Auction":s.t==="best_offer"?"Best Offer listing":"Buy it now";
   btn.addEventListener("click",()=>{const r=rows(),tot=r.reduce((a,x)=>a+x.s.p,0),top=r.reduce((a,x)=>x.s.p>a.s.p?x:a,r[0]);
     const tile=(b,l)=>`<div class="stile"><b>${b}</b><span>${l}</span></div>`;
@@ -1518,7 +1525,7 @@ paintFav();
     let g=G.get(x.c);if(!g){g={c:x.c,i:it.th||it.im,g:x.g,t:x.t,f:0,l:[]};G.set(x.c,g)}
     g.l.push(x);g.f=Math.max(g.f,x.f||0);if(!g.g&&x.g)g.g=x.g}
   const L=[...G.values()];for(const g of L){g.l.sort((a,b)=>a.p-b.p);g.p=g.l[0].p;g.t=g.l[0].t}
-  if(!btn||!ld||!L.length)return;btn.hidden=false;
+  if(!btn||!ld||!L.length)return;btn.hidden=false;btn.insertAdjacentHTML('beforeend',`<span class="ms"><span class="dot"></span><b>${L.length}</b> slab${L.length>1?"s":""} listed now</span>`);
   let sort="new",q="";
   const when=t=>{if(!t)return"";const m=Math.max(1,Math.round((Date.now()/1000-t)/60));return m<90?m+" min ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago"};
   const rows=()=>{let r=L.filter(x=>!q||x.l.some(y=>(y.t||"").toLowerCase().includes(q)));
