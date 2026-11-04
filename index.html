@@ -604,7 +604,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=baf9d848f5"></script>
+<script src="data.js?v=79e32b5c61"></script>
 <script src="sales.js"></script>
 <script>
 (function(){
@@ -827,8 +827,8 @@ function openLB(idx,item){
       <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card debut</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
-      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}</dd></dl>
-      ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP). A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
+      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}</dd>${(i.p&&i.pl)?`<dt>Lowest listing</dt><dd>${money(i.pl)}</dd>`:""}</dl>
+      ${i.p?`<p class="note">Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price, from recent sales","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP).${i.pl?" Lowest listing is the cheapest copy for sale on TCGplayer right now (condition not specified).":""} A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
       ${(i.pq&&i.pq.length>1)?sparkHTML(i.pq):""}
       ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
       <p class="note">🔎 <b>Found by:</b> ${esc(SRCL[i.sc||"scan"])}${i.sn?` (${esc(i.sn)})`:""}${i.cr&&i.cr!=="the creator"?` ✨ thanks to <b>${esc(i.cr)}</b>`:""}</p>
