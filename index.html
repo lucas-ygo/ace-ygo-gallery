@@ -196,6 +196,7 @@ h1 em{font-style:normal;color:var(--gold)}
 .coffee:hover{border-color:var(--gold)}.coffee[hidden]{display:none}
 button.coffee{cursor:pointer}
 .hlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.hlinks .coffee{margin-top:0}
+.hlinks.hmain{margin-bottom:-8px}.hlinks.hmain:not(:has(>:not([hidden]))){display:none}.hlinks.hmain .coffee{font-weight:700}
 footer .cof{color:var(--gold)}
 .hstats b{font:800 30px/1 var(--display);letter-spacing:.02em;color:var(--foil)}
 .lede{margin:8px 0 0;color:var(--mist);max-width:62ch}
@@ -549,10 +550,10 @@ footer p{margin:0 0 6px;max-width:80ch}
   <p class="wipnote"><b>Work in progress.</b> The scanner is still working back through older certs, so lots of slabs are not here yet. New ones are added as they are found.</p>
   <div class="hstats" id="hstats" hidden></div>
   <p class="scan" id="scan" hidden></p>
+  <div class="hlinks hmain"><button class="coffee" id="listbtn" type="button" hidden>&#128722; For sale</button>
+  <button class="coffee" id="salesbtn" type="button" hidden>&#128183; Sales</button></div>
   <div class="hlinks"><button class="coffee" id="leadbtn" type="button">&#128269; Send a cert</button>
   <button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
-  <button class="coffee" id="salesbtn" type="button" hidden>&#128183; Sales</button>
-  <button class="coffee" id="listbtn" type="button" hidden>&#128722; For sale</button>
   <button class="coffee" id="setsbtn" type="button" hidden>&#128218; Sets</button>
   <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" hidden>&#9749; Buy me a coffee</a>
   <a class="coffee" id="igbtn" href="#" target="_blank" rel="noopener noreferrer" hidden>&#128247; Instagram</a>
@@ -619,7 +620,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=96dea7e97b"></script>
+<script src="data.js?v=84ff1a5410"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1513,13 +1514,14 @@ paintFav();
 (function(){
   const LS=window.LISTINGS||{},L=LS.a||[],ld=$("#listd"),btn=$("#listbtn");if(!btn||!ld||!L.length)return;btn.hidden=false;
   let sort="new",q="";
+  const gi=x=>{const it=x.c?BYC.get(x.c):null;return it&&it.th?it.th:x.i};
   const when=t=>{if(!t)return"";const m=Math.max(1,Math.round((Date.now()/1000-t)/60));return m<90?m+" min ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago"};
   const rows=()=>{let r=L.filter(x=>!q||(x.t||"").toLowerCase().includes(q));
     const gnum=x=>parseFloat(x.g)||0;
     r=r.slice().sort(sort==="plow"?(a,b)=>a.p-b.p:sort==="phigh"?(a,b)=>b.p-a.p:sort==="grade"?(a,b)=>gnum(b)-gnum(a)||a.p-b.p:(a,b)=>(b.f||0)-(a.f||0));return r};
   const grid=()=>{const r=rows();$("#lcount").textContent=r.length+" of "+L.length+" listings";
     $("#lgrid").innerHTML=r.length?r.map(x=>{const vt=!!x.v,u=vt?"https://www.vinted.co.uk/items/"+String(x.id).slice(1):"https://www.ebay.co.uk/itm/"+x.id,sn=vt?"Vinted":"eBay";
-      return `<div class="lcard"><a class="lim" href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="Open on ${sn}"><img src="${esc(x.i)}" alt="" loading="lazy"></a>
+      return `<div class="lcard"><a class="lim" href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="Open on ${sn}"><img src="${esc(gi(x))}" alt="" loading="lazy"></a>
         <div class="lb2"><b class="lp">${esc(money(x.p))}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}<a class="lt" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(x.t)}</a>
         <small>${sn}${x.c?" · this card is in the gallery":""}</small>
         <span class="lbtns"><a class="lgo" href="${esc(u)}" target="_blank" rel="noopener noreferrer">View on ${sn} &#8599;</a>${x.c?`<button type="button" class="lgal" data-c="${x.c}">See in gallery</button>`:""}</span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
