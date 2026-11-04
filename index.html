@@ -619,7 +619,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=03376bef53"></script>
+<script src="data.js?v=926332c039"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1518,17 +1518,17 @@ paintFav();
     const gnum=x=>parseFloat(x.g)||0;
     r=r.slice().sort(sort==="plow"?(a,b)=>a.p-b.p:sort==="phigh"?(a,b)=>b.p-a.p:sort==="grade"?(a,b)=>gnum(b)-gnum(a)||a.p-b.p:(a,b)=>(b.f||0)-(a.f||0));return r};
   const grid=()=>{const r=rows();$("#lcount").textContent=r.length+" of "+L.length+" listings";
-    $("#lgrid").innerHTML=r.length?r.map(x=>{const u="https://www.ebay.co.uk/itm/"+x.id;
-      return `<div class="lcard"><a class="lim" href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="Open on eBay"><img src="${esc(x.i)}" alt="" loading="lazy"></a>
+    $("#lgrid").innerHTML=r.length?r.map(x=>{const vt=!!x.v,u=vt?"https://www.vinted.co.uk/items/"+String(x.id).slice(1):"https://www.ebay.co.uk/itm/"+x.id,sn=vt?"Vinted":"eBay";
+      return `<div class="lcard"><a class="lim" href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="Open on ${sn}"><img src="${esc(x.i)}" alt="" loading="lazy"></a>
         <div class="lb2"><b class="lp">${esc(money(x.p))}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}<a class="lt" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(x.t)}</a>
-        ${x.c?`<small>This card is in the gallery</small>`:""}
-        <span class="lbtns"><a class="lgo" href="${esc(u)}" target="_blank" rel="noopener noreferrer">View on eBay &#8599;</a>${x.c?`<button type="button" class="lgal" data-c="${x.c}">See in gallery</button>`:""}</span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
+        <small>${sn}${x.c?" · this card is in the gallery":""}</small>
+        <span class="lbtns"><a class="lgo" href="${esc(u)}" target="_blank" rel="noopener noreferrer">View on ${sn} &#8599;</a>${x.c?`<button type="button" class="lgal" data-c="${x.c}">See in gallery</button>`:""}</span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
   btn.addEventListener("click",()=>{
-    ld.innerHTML=`<div class="cmpbox stat"><h3>For sale on eBay</h3><button class="x" type="button" id="listx" aria-label="Close">&times;</button>
-      <p class="note" style="margin-top:0">ACE-graded Yu-Gi-Oh! slabs listed on eBay UK right now. <span id="lcount"></span>${LS.t?" &middot; checked "+esc(when(LS.t)):""}</p>
+    ld.innerHTML=`<div class="cmpbox stat"><h3>For sale on eBay &amp; Vinted</h3><button class="x" type="button" id="listx" aria-label="Close">&times;</button>
+      <p class="note" style="margin-top:0">ACE-graded Yu-Gi-Oh! slabs listed on eBay UK and Vinted UK right now. <span id="lcount"></span>${LS.t?" &middot; checked "+esc(when(LS.t)):""}</p>
       <div class="lbar"><input id="lq" type="search" placeholder="Search name, set or card number" aria-label="Search listings"><select id="ls" aria-label="Sort listings"><option value="new">Newest first</option><option value="plow">Price: low to high</option><option value="phigh">Price: high to low</option><option value="grade">Grade: high to low</option></select></div>
       <div class="lgrid" id="lgrid"></div>
-      <p class="note">Listings come from eBay's search results and are matched by the ACE grade in the title, so check the photos and the seller on eBay before buying. Prices and availability change. This site is unofficial and is not connected to eBay or ACE.</p></div>`;
+      <p class="note">Listings come from eBay and Vinted search results and are matched by the ACE grade in the title, so check the photos and the seller before buying. Prices and availability change. This site is unofficial and is not connected to eBay, Vinted or ACE.</p></div>`;
     $("#lq").value=q;$("#ls").value=sort;grid();ld.showModal()});
   ld.addEventListener("input",e=>{if(e.target.id==="lq"){q=e.target.value.trim().toLowerCase();grid()}});
   ld.addEventListener("change",e=>{if(e.target.id==="ls"){sort=e.target.value;grid()}});
