@@ -640,7 +640,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=a52e37a557"></script>
+<script src="data.js?v=86c45d92f4"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -656,7 +656,8 @@ function isFY(i){return(i.a||0)>seenBase}
 function persistSeen(){try{localStorage.setItem("seenA",String(MAXA))}catch(e){}}
 addEventListener("pagehide",persistSeen);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persistSeen()});
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest(".sale a");if(a&&window.goatcounter&&goatcounter.count)try{goatcounter.count({path:"click-ebay",title:"eBay listing click",event:true})}catch(x){}});
-const SALES=window.SALES||{};DATA.forEach(i=>{const s=SALES[i.no+"|"+i.g];if(s&&s.length)i.eb=s;i.co=/collab/i.test(i.s||"")});
+const LSTS=new Map();for(const x of ((window.LISTINGS||{}).a||[])){if(!x.c)continue;if(!LSTS.has(x.c))LSTS.set(x.c,[]);LSTS.get(x.c).push({u:x.v?"https://www.vinted.co.uk/items/"+String(x.id).slice(1):"https://www.ebay.co.uk/itm/"+x.id,p:x.p,v:!!x.v})}
+DATA.forEach(i=>{const s=LSTS.get(i.c);if(s&&s.length)i.eb=s.sort((a,b)=>a.p-b.p);i.co=/collab/i.test(i.s||"")});   /* for-sale marks come from listings read by cert, so they are the exact slab */
 const ORIGIN=1490916;
 const FIRST=1411573;
 const $=s=>document.querySelector(s);
@@ -679,7 +680,7 @@ const GROUPS=[
   {k:"nw",title:"Latest batch",label:v=>v,get:i=>i.nw?["Just added"]:[]},
   {k:"fy",title:"New for you",hint:"since your last visit",label:v=>v,get:i=>isFY(i)?["New since your last visit"]:[],when:()=>DATA.some(isFY)},
   {k:"co",title:"Collaboration",label:v=>v,get:i=>i.co?["Collaboration"]:[],when:()=>DATA.some(i=>i.co)},
-  {k:"eb",title:"For sale",hint:"on eBay now",label:v=>v,get:i=>i.eb?["On eBay now"]:[],when:()=>DATA.some(i=>i.eb)},
+  {k:"eb",title:"For sale",hint:"listed now",label:v=>v,get:i=>i.eb?["For sale now"]:[],when:()=>DATA.some(i=>i.eb)},
   {k:"sr",title:"Found by",hint:"how the cert reached us",label:v=>v,get:i=>[SRCL[i.sc||"scan"]],order:SRCORD},
   {k:"so",title:"Sold",hint:"recorded eBay sales",label:v=>v,get:i=>i.sl&&i.sl.length?["Has a recorded sale"]:[],when:()=>DATA.some(i=>i.sl&&i.sl.length)},
   {k:"rv",title:"Raw value",hint:"ungraded",label:v=>v,get:i=>[band(i.p)],order:BANDS,open:true},
@@ -788,7 +789,7 @@ const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
-    <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb" title="Listed on eBay">eBay \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
+    <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb" title="This slab is for sale">FOR SALE \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
     <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
@@ -873,7 +874,7 @@ function openLB(idx,item){
       <dt>Submitted in total</dt><dd>${fmt(i.ts)}</dd>${i.gr?`<dt>Gem rate</dt><dd>${esc(i.gr)}</dd>`:""}</dl>
       <p class="note">Population counts are the latest we have for this card, from when this or another slab of it was last collected, so they may have grown since.</p>`:""}
       ${others.length?`<div class="others"><h4>Other slabs of this card</h4><div class="orow">${others.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.v)} \u00b7 ACE ${esc(o.g)} \u00b7 cert ${esc(o.c)}"><img src="${esc(o.th)}" alt=""><b>${esc(o.g)}</b><small>${esc(o.v)}</small></button>`).join("")}</div></div>`:""}
-      ${i.eb?`<div class="sale"><h4>For sale on eBay</h4>${i.eb.slice(0,3).map(x=>`<a class="btn gold" href="${esc(x.u)}" target="_blank" rel="noopener sponsored">${esc(money(x.p))} \u00b7 View listing</a>`).join("")}<p class="note">Found by card and grade, so a listing may be another slab of this card. Check the photos for cert ${esc(i.c)}.</p></div>`:""}
+      ${i.eb?`<div class="sale"><h4>This slab is for sale</h4>${i.eb.slice(0,3).map(x=>`<a class="btn gold" href="${esc(x.u)}" target="_blank" rel="noopener sponsored">${x.v?"Vinted":"eBay"} \u00b7 ${esc(money(x.p))} \u00b7 View listing</a>`).join("")}<p class="note">Matched by the cert number on the listing photos (${esc(i.c)}). Check the photos and the seller before buying.${i.eb.some(x=>x.v)?" Vinted price includes the buyer fee.":""}</p></div>`:""}
       ${i.sl&&i.sl.length?`<div class="sold"><h4>Recorded sales</h4>${i.sl.map(s=>`<div class="srow"><b>${esc(money(s.p))}</b><span>${esc(sDate(s.d))}${s.t==="auction"?" \u00b7 auction":s.t==="best_offer"?" \u00b7 Best Offer listing":""}${s.n?" \u00b7 bundle of "+s.n:""}</span></div>`).join("")}<p class="note">From eBay sold listings.${i.sl.some(s=>s.t==="best_offer")?" A Best Offer sale may have gone for less than the price shown.":""}${i.sl.some(s=>s.n)?" A bundle price covers every slab in the bundle.":""}</p></div>`:""}
       <div class="mynote"><label for="lbnote">My note <small>(private, only you)</small></label><textarea id="lbnote" maxlength="200" rows="2" placeholder="e.g. bought for \u00a340, want a better grade">${esc(notes[i.c]||"")}</textarea></div>
       <div class="acts"><a class="btn gold" href="${esc(i.u)}" target="_blank" rel="noopener">Open cert on ACE</a>
