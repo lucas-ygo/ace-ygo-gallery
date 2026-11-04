@@ -430,6 +430,19 @@ body.hastray{padding-bottom:90px}
 .sinf .sp{font:800 26px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
 .sinf .sn{font-weight:600;font-size:14px;line-height:1.25;color:var(--foil)}
 .sinf small{color:var(--mist);font-size:12px;line-height:1.3}
+.lbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}.lbar select,.lbar input{font:inherit;font-size:14px;background:var(--raise);color:var(--foil);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}.lbar input{flex:1 1 160px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;margin-top:8px}
+.lcard{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--raise);overflow:hidden}
+.lcard:hover,.lcard:focus-within{border-color:var(--gold)}
+.lcard .lim{display:block;aspect-ratio:1/1;background:rgba(0,0,0,.18)}.lcard .lim img{width:100%;height:100%;object-fit:contain;display:block}
+.lcard .lb2{padding:8px 10px 10px;display:flex;flex-direction:column;gap:5px;flex:1}
+.lcard .lp{font:800 24px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.lcard .lt{font-size:13px;line-height:1.3;color:var(--foil);text-decoration:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lcard small{color:var(--mist);font-size:12px;line-height:1.3}
+.lcard .lbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.lcard .lgo,.lcard .lgal{font:inherit;font-size:12px;font-weight:700;border:1px solid var(--gold);border-radius:999px;padding:5px 10px;color:var(--gold);background:transparent;text-decoration:none;cursor:pointer}
+.lcard .lgo{background:color-mix(in srgb,var(--gold) 18%,transparent)}
+.lcard .lg{font:800 12px/1 var(--display);letter-spacing:.04em;border:1px solid var(--line);border-radius:6px;padding:3px 6px;align-self:flex-start;color:var(--foil)}
 .fixn{margin:10px 0 0;padding:9px 11px;border-left:3px solid var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent);border-radius:6px;font-size:13px;line-height:1.45;color:var(--ink,inherit)}.fixn b{color:var(--gold);margin-right:4px}.sub.so{color:var(--mist);font-weight:600}.sold{margin-top:14px}.sold h4{margin:0 0 6px}.srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.srow b{color:var(--gold);font-variant-numeric:tabular-nums}.srow span{color:var(--mist)}
 .unpd{margin-top:16px}.unpd summary{cursor:pointer;font:600 14px var(--ui);color:var(--foil)}
 .unpl{margin-top:6px;max-height:220px;overflow:auto}
@@ -539,6 +552,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   <div class="hlinks"><button class="coffee" id="leadbtn" type="button">&#128269; Send a cert</button>
   <button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
   <button class="coffee" id="salesbtn" type="button" hidden>&#128183; Sales</button>
+  <button class="coffee" id="listbtn" type="button" hidden>&#128722; For sale</button>
   <button class="coffee" id="setsbtn" type="button" hidden>&#128218; Sets</button>
   <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" hidden>&#9749; Buy me a coffee</a>
   <a class="coffee" id="igbtn" href="#" target="_blank" rel="noopener noreferrer" hidden>&#128247; Instagram</a>
@@ -600,12 +614,14 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="subd" aria-label="Get notified"></dialog>
 <dialog id="statd" aria-label="Gallery stats"></dialog>
 <dialog id="saled" aria-label="Recorded sales"></dialog>
+<dialog id="listd" aria-label="ACE Yu-Gi-Oh! slabs for sale on eBay"></dialog>
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=014a57143b"></script>
+<script src="data.js?v=03376bef53"></script>
 <script src="sales.js"></script>
+<script src="listings.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1491,6 +1507,33 @@ paintFav();
     sd.showModal()});
   sd.addEventListener("click",e=>{if(e.target.id==="salex"||e.target===sd){sd.close();return}
     const o=e.target.closest(".salec");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
+})();
+
+/* ---------- for sale on eBay ---------- */
+(function(){
+  const LS=window.LISTINGS||{},L=LS.a||[],ld=$("#listd"),btn=$("#listbtn");if(!btn||!ld||!L.length)return;btn.hidden=false;
+  let sort="new",q="";
+  const when=t=>{if(!t)return"";const m=Math.max(1,Math.round((Date.now()/1000-t)/60));return m<90?m+" min ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago"};
+  const rows=()=>{let r=L.filter(x=>!q||(x.t||"").toLowerCase().includes(q));
+    const gnum=x=>parseFloat(x.g)||0;
+    r=r.slice().sort(sort==="plow"?(a,b)=>a.p-b.p:sort==="phigh"?(a,b)=>b.p-a.p:sort==="grade"?(a,b)=>gnum(b)-gnum(a)||a.p-b.p:(a,b)=>(b.f||0)-(a.f||0));return r};
+  const grid=()=>{const r=rows();$("#lcount").textContent=r.length+" of "+L.length+" listings";
+    $("#lgrid").innerHTML=r.length?r.map(x=>{const u="https://www.ebay.co.uk/itm/"+x.id;
+      return `<div class="lcard"><a class="lim" href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="Open on eBay"><img src="${esc(x.i)}" alt="" loading="lazy"></a>
+        <div class="lb2"><b class="lp">${esc(money(x.p))}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}<a class="lt" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(x.t)}</a>
+        ${x.c?`<small>This card is in the gallery</small>`:""}
+        <span class="lbtns"><a class="lgo" href="${esc(u)}" target="_blank" rel="noopener noreferrer">View on eBay &#8599;</a>${x.c?`<button type="button" class="lgal" data-c="${x.c}">See in gallery</button>`:""}</span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
+  btn.addEventListener("click",()=>{
+    ld.innerHTML=`<div class="cmpbox stat"><h3>For sale on eBay</h3><button class="x" type="button" id="listx" aria-label="Close">&times;</button>
+      <p class="note" style="margin-top:0">ACE-graded Yu-Gi-Oh! slabs listed on eBay UK right now. <span id="lcount"></span>${LS.t?" &middot; checked "+esc(when(LS.t)):""}</p>
+      <div class="lbar"><input id="lq" type="search" placeholder="Search name, set or card number" aria-label="Search listings"><select id="ls" aria-label="Sort listings"><option value="new">Newest first</option><option value="plow">Price: low to high</option><option value="phigh">Price: high to low</option><option value="grade">Grade: high to low</option></select></div>
+      <div class="lgrid" id="lgrid"></div>
+      <p class="note">Listings come from eBay's search results and are matched by the ACE grade in the title, so check the photos and the seller on eBay before buying. Prices and availability change. This site is unofficial and is not connected to eBay or ACE.</p></div>`;
+    $("#lq").value=q;$("#ls").value=sort;grid();ld.showModal()});
+  ld.addEventListener("input",e=>{if(e.target.id==="lq"){q=e.target.value.trim().toLowerCase();grid()}});
+  ld.addEventListener("change",e=>{if(e.target.id==="ls"){sort=e.target.value;grid()}});
+  ld.addEventListener("click",e=>{if(e.target.id==="listx"||e.target===ld){ld.close();return}
+    const o=e.target.closest(".lgal");if(o){ld.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
 })();
 
 /* ---------- stats ---------- */
