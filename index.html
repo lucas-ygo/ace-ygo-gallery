@@ -643,7 +643,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=8e9f4a68c9"></script>
+<script src="data.js?v=24ba2f0c27"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -903,7 +903,7 @@ function copyText(txt){
 const shareURL=c=>{const base=location.href.split("#")[0];
   try{if(window.GALLERY&&window.GALLERY.share&&/^https?:/.test(location.protocol))return new URL("c/"+c+"/",base).href}catch(e){}
   return base+"#cert="+c};
-function storyCv(fn){const W=1080,H=1920,T=240,B=300,h=H-T-B,a=document.createElement("canvas");a.width=W;a.height=h;fn(a.getContext("2d"),W,h);
+function storyCv(fn){const W=1080,H=1920,T=205,B=200,h=H-T-B,a=document.createElement("canvas");a.width=W;a.height=h;fn(a.getContext("2d"),W,h);
   const cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
   const av=y=>{const t=document.createElement("canvas");t.width=1;t.height=1;const c=t.getContext("2d");c.drawImage(a,0,y,W,1,0,0,1,1);const d=c.getImageData(0,0,1,1).data;return "rgb("+d[0]+","+d[1]+","+d[2]+")"};
   x.fillStyle=av(0);x.fillRect(0,0,W,T+2);x.fillStyle=av(h-1);x.fillRect(0,T+h-2,W,B+2);x.drawImage(a,0,T);return cv}
@@ -1011,7 +1011,7 @@ function gridCard(list,title,thm){
       x.fillStyle=P.ttl;let ts=124;const tf=s=>P.tf.replace("S",s+"px");x.font=tf(ts);while(x.measureText(title).width>W-120&&ts>60){ts-=6;x.font=tf(ts)}x.fillText(title,W/2,196);
       const stats=[[fmt(mine.length),mine.length===1?"SLAB":"SLABS"]];if(val)stats.push([moneyWhole(val),"RAW VALUE"]);if(gems)stats.push([fmt(gems),"GEM MINT 10S"]);
       const sw=W/stats.length;stats.forEach((s,k)=>{const cx=sw*k+sw/2;x.fillStyle=P.sv;x.font=tf(th==="dark"?92:76);x.fillText(s[0],cx,306);x.fillStyle=P.sl;x.font="600 24px "+U;try{x.letterSpacing="4px"}catch(e){}x.fillText(s[1],cx+2,350);try{x.letterSpacing="0px"}catch(e){}});
-      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gy=390,AW=960,AH=780,gap=26,asp=.597,LH=lab?84:0;let best=null;
+      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gy=390,AW=960,AH=H-390-235,gap=26,asp=.597,LH=lab?84:0;let best=null;
       for(let c=1;c<=4;c++){const cw=(AW-(c-1)*gap)/c,rows=Math.ceil(n/c),ch=Math.min(cw/asp,lab?900:560,(AH-(rows-1)*gap)/rows-LH);if(ch>0&&(!best||ch>best.ch))best={c,ch,cw:ch*asp}}
       if(!best){const c=4,ch=(AH-2*gap)/3-LH;best={c,ch,cw:ch*asp}}
       const rows=Math.ceil(n/best.c),gh=rows*(best.ch+LH)+(rows-1)*gap,top=gy+(AH-gh)/2;
