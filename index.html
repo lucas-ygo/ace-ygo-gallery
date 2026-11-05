@@ -643,7 +643,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=8cee76eb30"></script>
+<script src="data.js?v=6dfd8d0aaf"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -903,7 +903,11 @@ function copyText(txt){
 const shareURL=c=>{const base=location.href.split("#")[0];
   try{if(window.GALLERY&&window.GALLERY.share&&/^https?:/.test(location.protocol))return new URL("c/"+c+"/",base).href}catch(e){}
   return base+"#cert="+c};
-function drawDuel(x,img,i,W,H){
+function storyCv(fn){const W=1080,H=1920,T=240,B=300,h=H-T-B,a=document.createElement("canvas");a.width=W;a.height=h;fn(a.getContext("2d"),W,h);
+  const cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+  const av=y=>{const t=document.createElement("canvas");t.width=1;t.height=1;const c=t.getContext("2d");c.drawImage(a,0,y,W,1,0,0,1,1);const d=c.getImageData(0,0,1,1).data;return "rgb("+d[0]+","+d[1]+","+d[2]+")"};
+  x.fillStyle=av(0);x.fillRect(0,0,W,T+2);x.fillStyle=av(h-1);x.fillRect(0,T+h-2,W,B+2);x.drawImage(a,0,T);return cv}
+function drawDuel(x,img,i,W,H){const c=H<1700;
   const U="'Hanken Grotesk',Arial,sans-serif",C="Cinzel,'Big Shoulders Display',Georgia,serif",HR="Hiero,serif";
   const GOLD="#eab84e",GD="#a4742a",LINE="#6a4a28",FOIL="#f7ebcf",MIST="#cdb184";
   x.fillStyle="#1f130a";x.fillRect(0,0,W,H);
@@ -914,16 +918,16 @@ function drawDuel(x,img,i,W,H){
   const frieze=(y)=>{x.save();x.strokeStyle=GD;x.lineWidth=2;x.beginPath();x.moveTo(0,y);x.lineTo(W,y);x.moveTo(0,y+62);x.lineTo(W,y+62);x.stroke();
     const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,"rgba(164,116,42,0)");g.addColorStop(.14,GD);g.addColorStop(.86,GD);g.addColorStop(1,"rgba(164,116,42,0)");x.fillStyle=g;x.font="400 40px "+HR;try{x.letterSpacing="24px"}catch(e){}
     x.fillText(G.concat(G).join(""),W/2,y+46);try{x.letterSpacing="0px"}catch(e){}x.restore()};
-  frieze(54);
-  x.fillStyle=GOLD;x.font="600 26px "+U;try{x.letterSpacing="7px"}catch(e){}const et="ACE YU-GI-OH! SLAB GALLERY",ew=x.measureText(et).width;x.fillText(et,W/2+4,176);x.font="400 30px "+HR;try{x.letterSpacing="0px"}catch(e){}x.fillText("\u{13080}",W/2-ew/2-46,178);x.fillText("\u{13080}",W/2+ew/2+50,178);
-  let fs=100,name=String(i.n||"").toUpperCase();
+  frieze(c?18:54);
+  x.fillStyle=GOLD;x.font="600 26px "+U;try{x.letterSpacing="7px"}catch(e){}const et="ACE YU-GI-OH! SLAB GALLERY",ew=x.measureText(et).width;x.fillText(et,W/2+4,c?116:176);x.font="400 30px "+HR;try{x.letterSpacing="0px"}catch(e){}x.fillText("\u{13080}",W/2-ew/2-46,c?118:178);x.fillText("\u{13080}",W/2+ew/2+50,c?118:178);
+  let fs=c?88:100,name=String(i.n||"").toUpperCase();
   const wrap=(t,f)=>{x.font="700 "+f+"px "+C;const w=t.split(" "),L=[];let c="";w.forEach(k=>{const n=c?c+" "+k:k;if(x.measureText(n).width>W-130&&c){L.push(c);c=k}else c=n});if(c)L.push(c);return L};
   try{x.letterSpacing="2px"}catch(e){}
   let L=wrap(name,fs);while((L.length>3||L.some(t=>x.measureText(t).width>W-130))&&fs>46){fs-=6;L=wrap(name,fs)}
-  const ty0=176+fs*1.15,lh=fs*1.08,tg=x.createLinearGradient(0,ty0-fs,0,ty0+lh*L.length);tg.addColorStop(0,"#ffe596");tg.addColorStop(.48,"#e8b44a");tg.addColorStop(1,"#a8701c");
+  const ty0=(c?116:176)+fs*1.15,lh=fs*1.08,tg=x.createLinearGradient(0,ty0-fs,0,ty0+lh*L.length);tg.addColorStop(0,"#ffe596");tg.addColorStop(.48,"#e8b44a");tg.addColorStop(1,"#a8701c");
   x.save();x.shadowColor="rgba(0,0,0,.55)";x.shadowOffsetY=3;x.fillStyle=tg;L.forEach((t,k)=>x.fillText(t,W/2,ty0+k*lh));x.restore();try{x.letterSpacing="0px"}catch(e){}
-  const hb=ty0+(L.length-1)*lh+50,fy=H-190,pad=40,px=60,pw=W-120;
-  const ph=fy-hb-190;
+  const hb=ty0+(L.length-1)*lh+50,pad=40,px=60,pw=W-120;
+  const ph=H-(c?294:380)-hb;
   const rr=(a,b,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(a,b,w,h,r);else x.rect(a,b,w,h)};
   rr(px,hb,pw,ph,26);const cg=x.createRadialGradient(W/2,hb+ph*.36,20,W/2,hb+ph*.36,ph*.8);cg.addColorStop(0,"#7a512a");cg.addColorStop(.3,"#5a3a1d");cg.addColorStop(.7,"#33200f");cg.addColorStop(1,"#281a0d");x.fillStyle=cg;x.fill();x.lineWidth=3;x.strokeStyle=GD;x.stroke();
   rr(px+8,hb+8,pw-16,ph-16,20);x.lineWidth=2;x.strokeStyle="rgba(232,180,74,.18)";x.stroke();
@@ -935,11 +939,11 @@ function drawDuel(x,img,i,W,H){
   if(tot>W-100){chips.length=2;wd=chips.map(t=>x.measureText(t).width+66);tot=wd.reduce((a,b)=>a+b,0)-14}
   let cx=(W-tot)/2;chips.forEach((t,k)=>{const cw=wd[k]-14,gold=k===0;rr(cx,y-44,cw,64,32);x.fillStyle=gold?GOLD:"#281a0d";x.fill();if(!gold){x.lineWidth=3;x.strokeStyle=LINE;x.stroke()}x.fillStyle=gold?"#2a1704":FOIL;x.font="700 31px "+U;x.fillText(t,cx+cw/2,y);cx+=wd[k]});
   if(i.p&&i.p>=20){x.fillStyle=MIST;x.font="500 32px "+U;x.fillText("Raw about £"+Math.round(i.p).toLocaleString("en-GB"),W/2,y+66)}
-  frieze(H-150);
+  frieze(c?H-130:H-150);
   x.fillStyle=MIST;x.font="600 24px "+U;try{x.letterSpacing="3px"}catch(e){}
   const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
-  x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-52);
-  x.fillStyle="#8a7048";x.font="500 20px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-20);try{x.letterSpacing="0px"}catch(e){}
+  x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,c?H-36:H-52);
+  x.fillStyle="#8a7048";x.font="500 20px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,c?H-10:H-20);try{x.letterSpacing="0px"}catch(e){}
 }
 const tierOf=g=>{if(String(g)==="A")return"a";const n=parseFloat(g);return isNaN(n)?"lo":n>=10?"t10":n>=9?"t9":n>=8?"t8":n>=7?"t7":"lo"};
 function deco(x,W,y,t){
@@ -950,7 +954,7 @@ function deco(x,W,y,t){
 function streaks(x,W,H){x.save();x.strokeStyle="rgba(214,224,238,.6)";x.lineWidth=4;const d=H*Math.tan(25*Math.PI/180);
   for(let s=-d;s<W+d;s+=26){x.beginPath();x.moveTo(s,0);x.lineTo(s-d,H);x.stroke()}
   const f=x.createLinearGradient(0,H*.45,0,H);f.addColorStop(0,"rgba(246,248,251,0)");f.addColorStop(1,"#f6f8fb");x.fillStyle=f;x.fillRect(0,H*.45,W,H*.55+1);x.restore()}
-function drawTheme(x,img,i,W,H,t){
+function drawTheme(x,img,i,W,H,t){const cp=H<1700;
   const gx=t==="gx",U=gx?"Barlow,Arial,sans-serif":"'Hanken Grotesk',Arial,sans-serif",D=gx?"Anton,Impact,'Arial Narrow',sans-serif":"'Chakra Petch','Arial Narrow',sans-serif",DW=gx?"400":"700";
   const C=gx?{bg:"#0E1526",ink:"#F5F1E8",mute:"#A9B3C7",line:"#2A3550",raise:"#182238",eye:"#F4B814",foot:"#7d89a3",legal:"#5d6884"}
             :{bg:"#f6f8fb",ink:"#16213e",mute:"#4a5873",line:"#d3dae4",raise:"#ffffff",eye:"#1d5fc4",foot:"#4a5873",legal:"#7a869c"};
@@ -958,14 +962,14 @@ function drawTheme(x,img,i,W,H,t){
              :{t10:["#1d5fc4","#fff"],t9:["#1f7a3d","#fff"],t8:["#8a5a00","#fff"],t7:["#c4122f","#fff"],lo:["#c4122f","#fff"],a:["#4a5873","#fff"]};
   if(!gx&&parseFloat(i.g)>=7.5&&parseFloat(i.g)<8)TF.t7=["#c4122f","#fff"];
   x.fillStyle=C.bg;x.fillRect(0,0,W,H);if(!gx)streaks(x,W,H*.42);
-  deco(x,W,58,t);
+  deco(x,W,cp?24:58,t);
   x.textAlign="center";x.textBaseline="alphabetic";
-  x.fillStyle=C.eye;x.font="700 27px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,140);try{x.letterSpacing="0px"}catch(e){}
-  x.fillStyle=C.ink;let fs=gx?122:104;const name=String(i.n||"").toUpperCase();
+  x.fillStyle=C.eye;x.font="700 27px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,cp?88:140);try{x.letterSpacing="0px"}catch(e){}
+  x.fillStyle=C.ink;let fs=cp?(gx?104:90):(gx?122:104);const name=String(i.n||"").toUpperCase();
   const wrap=(s,f)=>{x.font=DW+" "+f+"px "+D;const w=s.split(" "),L=[];let c="";w.forEach(k=>{const n=c?c+" "+k:k;if(x.measureText(n).width>W-150&&c){L.push(c);c=k}else c=n});if(c)L.push(c);return L};
   let L=wrap(name,fs);while((L.length>3||L.some(s=>x.measureText(s).width>W-150))&&fs>56){fs-=6;L=wrap(name,fs)}
-  L.forEach((s,k)=>x.fillText(s,W/2,265+k*fs*1.0));
-  const hb=265+(L.length-1)*fs+60,avail=H-200-hb-170,maxW=760;let h=Math.min(1100,avail),w=img.width*h/img.height;if(w>maxW){w=maxW;h=img.height*w/img.width}
+  const ny=cp?190:265;L.forEach((s,k)=>x.fillText(s,W/2,ny+k*fs*1.0));
+  const hb=ny+(L.length-1)*fs+60,avail=H-(cp?335:370)-hb,maxW=760;let h=Math.min(1100,avail),w=img.width*h/img.height;if(w>maxW){w=maxW;h=img.height*w/img.width}
   const top=hb+Math.max(0,(avail-h)/2-20),left=(W-w)/2;
   const rr=(a,b,ww,hh,r)=>{x.beginPath();if(x.roundRect)x.roundRect(a,b,ww,hh,r);else x.rect(a,b,ww,hh)};
   if(!gx){rr(left-44,top-34,w+88,h+68,16);x.fillStyle="#e8eef6";x.fill();x.lineWidth=2;x.strokeStyle=C.line;x.stroke();
@@ -980,11 +984,11 @@ function drawTheme(x,img,i,W,H,t){
   chips.forEach((s,k)=>{const cw=wd[k]-16,g0=k===0;rr(cx,y-46,cw,68,gx?34:10);x.fillStyle=g0?tc[0]:C.raise;x.fill();if(!g0){x.lineWidth=3;x.strokeStyle=C.line;x.stroke()}
     x.fillStyle=g0?tc[1]:C.ink;x.font="700 32px "+U;x.fillText(s,cx+cw/2,y);cx+=wd[k]});
   if(i.p&&i.p>=20){x.fillStyle=C.mute;x.font="500 34px "+U;x.fillText("Raw about £"+Math.round(i.p).toLocaleString("en-GB"),W/2,y+86)}
-  deco(x,W,H-170,t);
+  deco(x,W,cp?H-128:H-170,t);
   x.fillStyle=C.foot;x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
   const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
-  x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-100);
-  x.fillStyle=C.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-56);try{x.letterSpacing="0px"}catch(e){}
+  x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,cp?H-66:H-100);
+  x.fillStyle=C.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,cp?H-26:H-56);try{x.letterSpacing="0px"}catch(e){}
 }
 const COLL={dark:{bg:["#0f2a52","#0b1d3a","#071225"],eye:"#d9ad5b",ttl:"#eaf0fb",tf:"800 S 'Big Shoulders Display','Arial Narrow',sans-serif",sv:"#d9ad5b",sl:"#a9b8d3",host:"#6f86ad",legal:"#52698f",sh:"rgba(0,0,0,.6)",U:"'Hanken Grotesk',Arial,sans-serif"},
   duel:{bg:["#2a1a0c","#1f130a","#150d06"],eye:"#eab84e",ttl:"#f7ebcf",tf:"700 S Cinzel,Georgia,serif",sv:"#eab84e",sl:"#cdb184",host:"#a4742a",legal:"#8a7048",sh:"rgba(0,0,0,.6)",U:"'Hanken Grotesk',Arial,sans-serif"},
@@ -998,16 +1002,16 @@ function gridCard(list,title,thm){
   const th=COLL[thm]?thm:(thm==="navy"?"dark":document.documentElement.dataset.theme),P=COLL[th]||COLL.dark,U=P.U,lab=show.length<=6;
   return shareFonts().then(()=>Promise.all(show.map(i=>new Promise(r=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>r(im);im.onerror=()=>r(null);im.src=i.im})))).then(imgs=>new Promise((res,rej)=>{
     try{
-      const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+      storyCv((x,W,H)=>{
       if(P.bg.length>1){const bg=x.createLinearGradient(0,0,0,H);P.bg.forEach((c,k)=>bg.addColorStop(k/(P.bg.length-1),c));x.fillStyle=bg}else x.fillStyle=P.bg[0];x.fillRect(0,0,W,H);
       if(th==="5d")streaks(x,W,H*.3);
-      deco(x,W,40,th);
+      deco(x,W,20,th);
       x.textAlign="center";x.textBaseline="alphabetic";
-      x.fillStyle=P.eye;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,118);try{x.letterSpacing="0px"}catch(e){}
-      x.fillStyle=P.ttl;let ts=150;const tf=s=>P.tf.replace("S",s+"px");x.font=tf(ts);while(x.measureText(title).width>W-120&&ts>60){ts-=6;x.font=tf(ts)}x.fillText(title,W/2,268);
+      x.fillStyle=P.eye;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,80);try{x.letterSpacing="0px"}catch(e){}
+      x.fillStyle=P.ttl;let ts=124;const tf=s=>P.tf.replace("S",s+"px");x.font=tf(ts);while(x.measureText(title).width>W-120&&ts>60){ts-=6;x.font=tf(ts)}x.fillText(title,W/2,196);
       const stats=[[fmt(mine.length),mine.length===1?"SLAB":"SLABS"]];if(val)stats.push([moneyWhole(val),"RAW VALUE"]);if(gems)stats.push([fmt(gems),"GEM MINT 10S"]);
-      const sw=W/stats.length;stats.forEach((s,k)=>{const cx=sw*k+sw/2;x.fillStyle=P.sv;x.font=tf(th==="dark"?92:76);x.fillText(s[0],cx,400);x.fillStyle=P.sl;x.font="600 24px "+U;try{x.letterSpacing="4px"}catch(e){}x.fillText(s[1],cx+2,444);try{x.letterSpacing="0px"}catch(e){}});
-      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gy=520,AW=960,AH=1160,gap=26,asp=.597,LH=lab?84:0;let best=null;
+      const sw=W/stats.length;stats.forEach((s,k)=>{const cx=sw*k+sw/2;x.fillStyle=P.sv;x.font=tf(th==="dark"?92:76);x.fillText(s[0],cx,306);x.fillStyle=P.sl;x.font="600 24px "+U;try{x.letterSpacing="4px"}catch(e){}x.fillText(s[1],cx+2,350);try{x.letterSpacing="0px"}catch(e){}});
+      const ok=show.map((i,k)=>[i,imgs[k]]).filter(p=>p[1]),n=ok.length,gy=390,AW=960,AH=780,gap=26,asp=.597,LH=lab?84:0;let best=null;
       for(let c=1;c<=4;c++){const cw=(AW-(c-1)*gap)/c,rows=Math.ceil(n/c),ch=Math.min(cw/asp,lab?900:560,(AH-(rows-1)*gap)/rows-LH);if(ch>0&&(!best||ch>best.ch))best={c,ch,cw:ch*asp}}
       if(!best){const c=4,ch=(AH-2*gap)/3-LH;best={c,ch,cw:ch*asp}}
       const rows=Math.ceil(n/best.c),gh=rows*(best.ch+LH)+(rows-1)*gap,top=gy+(AH-gh)/2;
@@ -1018,12 +1022,12 @@ function gridCard(list,title,thm){
           if(x.measureText(nm).width>slot+10){while(nm.length>4&&x.measureText(nm+"…").width>slot+10)nm=nm.slice(0,-1);nm+="…"}
           x.fillText(nm,cx+slot/2,y0+best.ch+36);x.fillStyle=P.sv;x.font="700 26px "+U;x.fillText("ACE "+it.g+(it.p?"  ·  "+moneyWhole(it.p):""),cx+slot/2,y0+best.ch+70)}});
       if(mine.length>show.length){x.fillStyle=P.sl;x.font="600 30px "+U;x.fillText("+ "+fmt(mine.length-show.length)+" more slabs",W/2,gy+AH+44)}
-      deco(x,W,H-170,th);
+      deco(x,W,H-128,th);
       x.fillStyle=P.host;x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
       const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
-      x.fillText(host.toUpperCase(),W/2,H-100);
-      x.fillStyle=P.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-56);try{x.letterSpacing="0px"}catch(e){}
-      cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
+      x.fillText(host.toUpperCase(),W/2,H-66);
+      x.fillStyle=P.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-26);try{x.letterSpacing="0px"}catch(e){}
+      }).toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
     }catch(e){rej(e)}}))}
 function collectionCard(){return gridCard(DATA.filter(i=>own.has(i.c)),"MY COLLECTION")}
 function shareGrid(btn,list,title,thm,file){
@@ -1042,20 +1046,20 @@ function shareCard(i,style){
   return shareFonts().then(()=>new Promise((res,rej)=>{
     const img=new Image();img.crossOrigin="anonymous";
     img.onload=()=>{try{
-      const W=1080,H=1920,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
-      if(style==="duel"){drawDuel(x,img,i,W,H);return cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")}
-      if(style==="gx"||style==="5d"){drawTheme(x,img,i,W,H,style);return cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")}
+      if(style==="duel"){return storyCv((x,W,H)=>drawDuel(x,img,i,W,H)).toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")}
+      if(style==="gx"||style==="5d"){return storyCv((x,W,H)=>drawTheme(x,img,i,W,H,style)).toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")}
+      storyCv((x,W,H)=>{
       const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#0f2a52");bg.addColorStop(.5,"#0b1d3a");bg.addColorStop(1,"#071225");x.fillStyle=bg;x.fillRect(0,0,W,H);
       const gl=x.createRadialGradient(W/2,820,40,W/2,820,760);gl.addColorStop(0,"rgba(217,173,91,.22)");gl.addColorStop(1,"rgba(217,173,91,0)");x.fillStyle=gl;x.fillRect(0,0,W,H);
       const GOLD="#d9ad5b",D="'Big Shoulders Display','Arial Narrow',sans-serif",U="'Hanken Grotesk',Arial,sans-serif";
       x.textAlign="center";x.textBaseline="alphabetic";
-      x.fillStyle=GOLD;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,120);
-      x.fillStyle="#eaf0fb";let fs=124,name=String(i.n||"").toUpperCase();
+      x.fillStyle=GOLD;x.font="600 28px "+U;try{x.letterSpacing="8px"}catch(e){}x.fillText("ACE YU-GI-OH! SLAB GALLERY",W/2+4,70);
+      x.fillStyle="#eaf0fb";let fs=108,name=String(i.n||"").toUpperCase();
       const wrap=(t,f)=>{x.font="800 "+f+"px "+D;const w=t.split(" "),L=[];let c="";w.forEach(k=>{const n=c?c+" "+k:k;if(x.measureText(n).width>W-150&&c){L.push(c);c=k}else c=n});if(c)L.push(c);return L};
       let L=wrap(name,fs);while(L.length>3&&fs>70){fs-=8;L=wrap(name,fs)}
       try{x.letterSpacing="0px"}catch(e){}
-      L.forEach((t,k)=>x.fillText(t,W/2,265+k*fs*.95));
-      const hb=265+(L.length-1)*fs*.95+50,avail=H-200-hb-170,maxW=760;let h=Math.min(1100,avail),w=img.width*h/img.height;if(w>maxW){w=maxW;h=img.height*w/img.width}
+      L.forEach((t,k)=>x.fillText(t,W/2,165+k*fs*.95));
+      const hb=165+(L.length-1)*fs*.95+50,avail=H-300-hb,maxW=760;let h=Math.min(1100,avail),w=img.width*h/img.height;if(w>maxW){w=maxW;h=img.height*w/img.width}
       const top=hb+Math.max(0,(avail-h)/2-20);
       x.save();x.shadowColor="rgba(0,0,0,.65)";x.shadowBlur=60;x.shadowOffsetY=30;x.drawImage(img,(W-w)/2,top,w,h);x.restore();
       let y=top+h+70;
@@ -1067,9 +1071,9 @@ function shareCard(i,style){
       if(i.p&&i.p>=20){x.fillStyle="#a9b8d3";x.font="500 34px "+U;x.fillText("Raw about £"+Math.round(i.p).toLocaleString("en-GB"),W/2,y+86)}
       x.fillStyle="#6f86ad";x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
       const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
-      x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-110);
-      x.fillStyle="#52698f";x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-64);
-      cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
+      x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-64);
+      x.fillStyle="#52698f";x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not affiliated with ACE Grading or Konami.",W/2,H-22);
+      }).toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
     }catch(e){rej(e)}};
     img.onerror=()=>rej(new Error("image"));img.src=i.im})) }
 function shareSlab(btn,style){
