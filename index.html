@@ -643,7 +643,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=b1c2554716"></script>
+<script src="data.js?v=f8b0ee7a71"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -651,6 +651,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 "use strict";
 const DATA=(window.GALLERY&&window.GALLERY.items)||[];
 const SETN=(window.GALLERY&&window.GALLERY.sl)||{};
+const skn=i=>String(i.sk||i.no||"").toUpperCase();
 const spx=n=>{const m=/^(.*?[A-Za-z])(\d+)$/.exec(String(n||"").toUpperCase());return m?m[1]:""};
 const MAXA=DATA.reduce((m,i)=>Math.max(m,i.a||0),0);
 let seenBase=null;try{const t=localStorage.getItem("seenA");seenBase=t==null?null:+t}catch(e){}
@@ -885,7 +886,7 @@ function openLB(idx,item){
         <button class="btn" type="button" id="lbfav" data-c="${i.c}">${fav.has(i.c)?"\u2665 Saved":"\u2661 Save"}</button>
         <button class="btn" type="button" id="lbown" data-c="${i.c}">${own.has(i.c)?"\u2714 Owned":"\u2610 I own this"}</button>
         <button class="btn" type="button" id="lbcopy">Copy link</button>
-        ${SETN[spx(i.no)]?`<button class="btn" type="button" id="lbset" data-p="${esc(spx(i.no))}">Set checklist</button>`:""}
+        ${SETN[spx(skn(i))]?`<button class="btn" type="button" id="lbset" data-p="${esc(spx(skn(i)))}">Set checklist</button>`:""}
         <button class="btn" type="button" id="lbshare">Share image</button>
         <span id="shpick" hidden><button class="btn shp" type="button" data-s="navy">ACE</button> <button class="btn shp" type="button" data-s="duel">DM</button> <button class="btn shp" type="button" data-s="gx">GX</button> <button class="btn shp" type="button" data-s="5d">5D's</button></span>
         <button class="btn" type="button" id="lbcmp" data-c="${i.c}">${cmp.has(i.c)?"Remove from compare":"Add to compare"}</button></div>${i.sd?`<p class="scanned">Scanned ${esc(new Date(i.sd*1000).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZoneName:"short"}).replace(",",""))}</p>`:""}</div>
@@ -1285,12 +1286,12 @@ async function loadSet(p){
   const r=await fetch("sets/"+p.replace(/\//g,"_")+".json");if(!r.ok)throw new Error("no list");
   const j=await r.json();SETC.set(p,j);return j}
 function setHTML(){
-  const rows=Object.entries(SETN).map(([p,e])=>[p,e[0],e[1],new Set(DATA.filter(i=>spx(i.no)===p).map(i=>String(i.no).toUpperCase())).size,e[2]]).filter(r=>r[3]&&r[1])
+  const rows=Object.entries(SETN).map(([p,e])=>[p,e[0],e[1],new Set(DATA.filter(i=>spx(skn(i))===p).map(skn)).size,e[2]]).filter(r=>r[3]&&r[1])
     .sort((a,b)=>b[3]/b[1]-a[3]/a[1]||b[3]-a[3]).slice(0,10);
   return rows.length?`<h4>Set checklists</h4><div class="unpl">${rows.map(r=>`<button type="button" class="unpr setb" data-p="${esc(r[0])}"><span>${esc(r[2])} <small>${esc(r[0])}</small></span><span style="white-space:nowrap"><b>${r[3]} of ${r[1]}${r[4]?"+":""}</b></span></button>`).join("")}</div><p class="note">How many cards of each set we have found as ACE slabs. Tap one to see the full list.</p>`:""}
 function openSetIndex(sortBy,q){
   const sd=$("#setd");if(!sd)return;sortBy=sortBy||"new";q=(q||"").toLowerCase();
-  const have=new Map();for(const i of DATA){const p=spx(i.no);if(SETN[p]){if(!have.has(p))have.set(p,new Set());have.get(p).add(String(i.no).toUpperCase())}}
+  const have=new Map();for(const i of DATA){const p=spx(skn(i));if(SETN[p]){if(!have.has(p))have.set(p,new Set());have.get(p).add(skn(i))}}
   let rows=Object.entries(SETN).map(([p,e])=>({p,n:e[1],tot:e[0],plus:e[2],d:e[3]||"",got:(have.get(p)||new Set()).size})).filter(r=>!q||(r.n+" "+r.p).toLowerCase().includes(q));
   const cmp={new:(a,b)=>(b.d).localeCompare(a.d)||b.got-a.got||a.n.localeCompare(b.n),pct:(a,b)=>b.got/b.tot-a.got/a.tot||b.got-a.got,got:(a,b)=>b.got-a.got||a.n.localeCompare(b.n),az:(a,b)=>a.n.localeCompare(b.n)}[sortBy];
   rows.sort(cmp);
@@ -1312,7 +1313,7 @@ async function openSet(p){
   sd.innerHTML=`<div class="cmpbox"><h3>Set checklist</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button><p class="note">Loading...</p></div>`;
   if(!sd.open)sd.showModal();
   let j;try{j=await loadSet(p)}catch(e){sd.querySelector(".note").textContent="Sorry, that set list isn't available.";return}
-  const have=new Map();for(const i of DATA){if(spx(i.no)!==p)continue;const k=String(i.no).toUpperCase(),o=have.get(k);if(!o||gnum(i)>gnum(o))have.set(k,i)}
+  const have=new Map();for(const i of DATA){if(spx(skn(i))!==p)continue;const k=skn(i),o=have.get(k);if(!o||gnum(i)>gnum(o))have.set(k,i)}
   const total=j.c.length,got=j.c.filter(c=>have.has(c[0])).length;let mode="all";
   const draw=()=>{
     const list=j.c.filter(c=>mode==="all"||(mode==="got")===have.has(c[0]));
