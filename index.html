@@ -455,7 +455,7 @@ body.hastray{padding-bottom:90px}
 .lper{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.lper button{font:inherit;font-size:13px;font-weight:700;background:var(--raise);color:var(--mist);border:0;padding:8px 11px;cursor:pointer}.lper button+button{border-left:1px solid var(--line)}.lper button[aria-pressed=true]{background:var(--gold);color:var(--abyss)}
 .lcard{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--raise);overflow:hidden}
 .lcard:hover,.lcard:focus-within{border-color:var(--gold)}
-.lcard .lim{display:block;aspect-ratio:1/1;background:rgba(0,0,0,.18)}.lcard .lim img{width:100%;height:100%;object-fit:contain;display:block}
+.lcard .lim{display:block;aspect-ratio:1/1;background:rgba(0,0,0,.18)}.lcard .lim img{width:100%;height:100%;object-fit:contain;display:block}.lcard .lim.two{display:flex;gap:2px;padding:4px;box-sizing:border-box}.lcard .lim.two img{width:50%;min-width:0}
 .lcard .lb2{padding:8px 10px 10px;display:flex;flex-direction:column;gap:5px;flex:1}
 .lcard .lp{font:800 24px/1 var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
 .lcard .lt{font-size:13px;line-height:1.3;color:var(--foil);text-decoration:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -643,7 +643,7 @@ footer p{margin:0 0 6px;max-width:80ch}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=e7962a34eb"></script>
+<script src="data.js?v=06831dee99"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1547,7 +1547,7 @@ paintFav();
   const hk=i=>[i.n,i.no,i.v,i.l,i.s,i.g].map(x=>String(x||"").toLowerCase()).join("|");const HIST=new Map();{const sn=new Set();for(const i of DATA)for(const x of (i.sl||[])){const k=hk(i),u=k+"|"+x.d+"|"+x.p+"|"+(x.n||i.c);if(sn.has(u))continue;sn.add(u);if(!HIST.has(k))HIST.set(k,[]);HIST.get(k).push(x)}for(const a of HIST.values())a.sort((x,y)=>String(x.d).localeCompare(String(y.d)))}
   for(const g of L){const it=BYC.get(g.c);g.h=it?(HIST.get(hk(it))||[]):[]}
   let sort="new",q="",fg="",fp="",fs="",ft="",fh=false,per=2;try{per=+localStorage.getItem("ygoLper")||(innerWidth<700?2:0)}catch(e){}
-  const kind=y=>y.v?"fix":y.a?"auc":(y.n||y.o)?"bin":"";const lotn=y=>y.m&&y.m.length>1?y.m.length:0;
+  const kind=y=>y.v?"fix":y.a?"auc":(y.n||y.o)?"bin":"";const lotn=y=>y.m&&y.m.length>1?y.m.length:0;const lms=x=>{const m=x.l[0].m;return m&&m.length>1?m.map(c=>BYC.get(c)).filter(i=>i&&(i.th||i.im)).map(i=>i.th||i.im):[]};
   const ltag=y=>{const k=kind(y);return (lotn(y)?`<span class="lty lot">${lotn(y)}-slab lot &middot; one price</span>`:"")+(k==="auc"?`<span class="lty auc">Auction &middot; current bid</span><span class="lend">${y.b?y.b+" bid"+(y.b>1?"s":""):"No bids yet"}${y.e?" &middot; "+esc(LEFT(y.e)):""}</span>${y.bn?`<span class="lty bin">or Buy It Now ${esc(money(y.bn))}</span>`:""}`:k==="bin"?`<span class="lty bin">Buy It Now${y.o?" or Best Offer":""}</span>`:k==="fix"?`<span class="lty bin">Fixed price</span>`:"")};
   const when=t=>{if(!t)return"";const m=Math.max(1,Math.round((Date.now()/1000-t)/60));return m<90?m+" min ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago"};
   const band={"1":[0,25],"2":[25,100],"3":[100,500],"4":[500,1e9]};
@@ -1571,7 +1571,7 @@ paintFav();
   const lurl=y=>y.v?"https://www.vinted.co.uk/items/"+String(y.id).slice(1):"https://www.ebay.co.uk/itm/"+y.id;
   const grid=()=>{const r=rows();$("#lcount").textContent=r.length+" of "+L.length+" slabs";
     $("#lgrid").dataset.n=per||"";$("#lgrid").innerHTML=r.length?r.map(x=>{const u0=lurl(x.l[0]);
-      return `<div class="lcard"><a class="lim" href="${esc(u0)}" target="_blank" rel="noopener noreferrer" aria-label="Open listing"><img src="${esc(x.i)}" alt="" loading="lazy"></a>
+      return `<div class="lcard"><a class="lim${lms(x).length>1?" two":""}" href="${esc(u0)}" target="_blank" rel="noopener noreferrer" aria-label="Open listing">${lms(x).length>1?lms(x).map(m=>`<img src="${esc(m)}" alt="" loading="lazy">`).join(""):`<img src="${esc(x.i)}" alt="" loading="lazy">`}</a>
         <div class="lb2"><b class="lp">${x.l.length>1?"from ":""}${esc(money(x.p))}${lotn(x.l[0])?` <small>for ${lotn(x.l[0])}</small>`:""}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}${x.l.map(ltag).join("")}<a class="lt" href="${esc(u0)}" target="_blank" rel="noopener noreferrer">${esc(x.t)}</a>
         ${x.h.length?lhist(x):""}<small>${[...new Set(x.l.map(y=>y.v?"Vinted":"eBay"))].join(" + ")}${x.l.some(y=>y.v)?" (Vinted price includes the buyer fee)":""} &middot; this card is in the gallery</small>
         <span class="lbtns">${x.l.map(y=>`<a class="lgo" href="${esc(lurl(y))}" target="_blank" rel="noopener noreferrer">${kind(y)==="auc"?"Bid on":kind(y)?"Buy on":"View on"} ${y.v?"Vinted":"eBay"}${x.l.length>1?" "+esc(money(y.p)):""} &#8599;</a>${kind(y)==="auc"&&y.bn?`<a class="lgo" href="${esc(lurl(y))}" target="_blank" rel="noopener noreferrer">Buy now on eBay ${esc(money(y.bn))} &#8599;</a>`:""}`).join("")}<button type="button" class="lgal" data-c="${x.c}">See in gallery</button></span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
