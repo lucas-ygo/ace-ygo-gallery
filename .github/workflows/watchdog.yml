@@ -1,0 +1,30 @@
+# Offsite watchdog: GitHub checks every 15 minutes that your scanner is still publishing, and pings your phone if not.
+# Works even when your Mac is asleep or off, because it runs on GitHub's servers.
+name: scanner-watchdog
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Is the scanner alive?
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          [ -z "$NTFY_TOPIC" ] && { echo "NTFY_TOPIC secret not set"; exit 0; }
+          J=$(curl -fsS "https://lucas-ygo.github.io/ace-ygo-gallery/status.json?t=$(date +%s)") || { echo "could not read status.json"; exit 0; }
+          TS=$(echo "$J" | python3 -c "import sys,json;print(int(json.load(sys.stdin).get('scan_ts',0)))")
+          AGE=$(( $(date +%s) - TS ))
+          echo "scanner last read a cert $((AGE/60)) minutes ago (as of the last website push)"
+          # speak up at about 45 minutes of silence, again at about 3 hours, and again at about 24 hours
+          SPEAK=0
+          if [ $AGE -ge 2700 ] && [ $AGE -lt 3600 ]; then SPEAK=1; fi
+          if [ $AGE -ge 10800 ] && [ $AGE -lt 12600 ]; then SPEAK=1; fi
+          if [ $AGE -ge 86400 ] && [ $AGE -lt 87900 ]; then SPEAK=1; fi
+          if [ "$TS" -gt 0 ] && [ $SPEAK -eq 1 ]; then
+            curl -fsS -H "Title: ACE scanner has gone quiet" -H "Tags: warning" \
+              -d "No scan activity for about $((AGE/60)) minutes. Is the Mac asleep or the scanner stopped?" \
+              "https://ntfy.sh/$NTFY_TOPIC"
+          fi
