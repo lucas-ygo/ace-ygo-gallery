@@ -98,6 +98,35 @@
 :root[data-theme="5d"] .fbtog{background:rgba(255,255,255,.92)}
 :root[data-theme="5d"] .wipnote{border-left-color:#1d5fc4;background:#e3ecfa}
 :root[data-theme="5d"] .sbar .st i{background:#1d5fc4}
+/* ---------- Theme 5: Vault (display-cabinet look: spotlit cases, tilt-to-shine foil on the slab; unofficial, colours and type only) ---------- */
+:root[data-theme=vault]{
+  color-scheme:dark;
+  --abyss:#04070d; --case:#0a1019; --case-hi:#0e1623; --raise:#070b13;
+  --line:#1a2433; --foil:#eaf0f7; --mist:#8fa1b8; --gold:#d9ad5b; --gold-dim:#6e5a34;
+  --barbg:rgba(4,7,13,.94); --glow:#0e1623; --hi:#16202f; --ongold:#1a1205; --ongold2:#4a3510; --scrim:2,5,10;
+}
+:root[data-theme=vault] :is(h1,h2,.hstats b,.gr b,.stile b,.lb .big b,.cgrid .cg){font-weight:800}
+:root[data-theme=vault] h1{letter-spacing:.04em;text-transform:uppercase}
+:root[data-theme=vault] .eyebrow{letter-spacing:.2em}
+:root[data-theme=vault] .frieze{display:block;height:1px;margin:0;padding:0;font-size:0;border:0;overflow:visible;background:linear-gradient(90deg,transparent,rgba(217,173,91,.7),transparent)}
+:root[data-theme=vault] .card{background:linear-gradient(#0b121d,#070b13);border:1px solid rgba(255,255,255,.06);border-radius:16px}
+:root[data-theme=vault] .card:hover{border-color:rgba(217,173,91,.35)}
+:root[data-theme=vault] :is(.case,.card:hover .case,.lb .pic){position:relative;background:radial-gradient(ellipse 85% 60% at 50% 0%,rgba(255,244,214,.20) 0%,rgba(255,244,214,.05) 45%,transparent 70%),linear-gradient(#0b121d,#070b13)}
+:root[data-theme=vault] .card .case::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:#5b6b82;z-index:2}
+:root[data-theme=vault] .card:has(.gr b[data-g="10"]) .case::before{background:#d9ad5b}
+:root[data-theme=vault] .card:has(.gr b[data-g^="9"]) .case::before{background:#6aa7ff}
+:root[data-theme=vault] .card[data-top] .case::before{background:linear-gradient(90deg,#ff3b6b,#ffb02e,#f6ff4a,#37ffb1,#35b6ff,#9a5bff)}
+:root[data-theme=vault] :is(.case img,.lb .pic img){transform:perspective(700px) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .15s;filter:drop-shadow(0 14px 18px rgba(0,0,0,.65))}
+:root[data-theme=vault] .cgrid img{filter:drop-shadow(0 8px 12px rgba(0,0,0,.6))}
+:root[data-theme=vault] .case::after{content:"";position:absolute;pointer-events:none;z-index:1;mix-blend-mode:hard-light;opacity:var(--fo,0);
+  inset:12px;-webkit-mask-image:var(--m);mask-image:var(--m);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
+  background:conic-gradient(from calc(var(--a,0)*1deg) at var(--px,50%) var(--py,40%),#ff3b6b,#ffb02e,#f6ff4a,#37ffb1,#35b6ff,#9a5bff,#ff3b6b);
+  transform:perspective(700px) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .15s,opacity .2s}
+:root[data-theme=vault] .lb .pic::after{display:none}
+:root[data-theme=vault] .gr b{color:var(--gold)}
+:root[data-theme=vault] .card{position:relative}
+:root[data-theme=vault] .card[data-pop="1"] .nm::before{content:"\2605  ";color:var(--gold)}
+@media (prefers-reduced-motion:reduce){:root[data-theme=vault] :is(.case img,.lb .pic img,.case::after){transition:none;transform:none}}
 .tuning{display:inline-block;position:relative;width:18px;height:18px;margin-right:8px;vertical-align:-3px}
 .tuning:before,.tuning:after{content:"";position:absolute;inset:0;border:2px solid #2fa84f;border-radius:50%;animation:tunep 1s ease-in-out infinite}
 .tuning:after{animation-delay:.5s}
@@ -583,7 +612,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   .grid .cw .info{padding-bottom:46px}
 }
 </style>
-<script>window.__busy=function(b,t){if(document.documentElement.dataset.theme==="5d"){b.innerHTML='<span class="tuning" aria-hidden="true"></span>Tuning\u2026'}else{b.textContent=t}};try{var t=localStorage.getItem("theme");if(t==="light"){t="5d";try{localStorage.setItem("theme","5d")}catch(e){}}document.documentElement.dataset.theme=t==="duel"||t==="5d"||t==="gx"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<script>window.__busy=function(b,t){if(document.documentElement.dataset.theme==="5d"){b.innerHTML='<span class="tuning" aria-hidden="true"></span>Tuning\u2026'}else{b.textContent=t}};try{var t=localStorage.getItem("theme");if(t==="light"){t="5d";try{localStorage.setItem("theme","5d")}catch(e){}}document.documentElement.dataset.theme=t==="duel"||t==="5d"||t==="gx"||t==="vault"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script data-goatcounter="https://lucas-ygo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
@@ -813,7 +842,7 @@ html.restoring{background:#06172c}
   const row=(k,t,s,r)=>'<button type="button" class="mrow" data-m="'+k+'">'+IC[k]+'<span class="mt"><b>'+esc(t)+'</b><small>'+esc(s)+'</small></span>'+(r!=null&&r!==""?'<span class="mr">'+esc(r)+'</span>':'')+CH+'</button>';
   const shown=id=>{const e=$(id);return !!e&&!e.hidden};
   const href=id=>{const e=$(id);return e&&e.getAttribute("href")&&e.getAttribute("href")!=="#"?e.href:""};
-  const THN={dark:"ACE",duel:"Duel Monsters",gx:"GX","5d":"5D’s"};
+  const THN={dark:"ACE",duel:"Duel Monsters",gx:"GX","5d":"5D’s",vault:"Vault"};
   let meTimer=0;
   function meHTML(){
     const cnt=k=>{try{const v=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(v)?new Set(v.map(Number)).size:0}catch(e){return 0}},fv=cnt("fav"),ow=cnt("own"),a=$("#acct"),signed=!!a&&/^Signed in/.test(a.title||"");
@@ -826,7 +855,7 @@ html.restoring{background:#06172c}
     d.showModal()}
   function openMore(){const d=$("#mored");if(!d)return;
     d.innerHTML='<div class="mebox"><h2>More</h2>'+(shown("#setsbtn")?row("sets","Sets","Checklists for every set we hold a slab from"):"")+(shown("#statsbtn")?row("stats","Stats","Grades, sources and how the gallery is growing"):"")
-      +row("lead","Send a cert","Tell the scanner about a cert we are missing")+row("theme","Theme","Choose ACE, Duel Monsters, GX or 5D’s",THN[document.documentElement.dataset.theme]||"ACE")
+      +row("lead","Send a cert","Tell the scanner about a cert we are missing")+row("theme","Theme","Choose ACE, Duel Monsters, GX, 5D’s or Vault",THN[document.documentElement.dataset.theme]||"ACE")
       +(href("#igbtn")?row("ig","Instagram","Highlights and new finds"):"")+(href("#coffee")?row("cof","Buy me a coffee","Helps keep the scanner running"):"")+(shown("#installbtn")?row("inst","Install app","Add the gallery to your home screen"):"")+'</div>';
     d.showModal()}
   const flt=(id)=>{closeAll();const b=$(id);if(b&&b.getAttribute("aria-pressed")!=="true")b.click();top()};
@@ -856,7 +885,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=b5e55380aa"></script>
+<script src="data.js?v=4035a9b1a4"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1007,7 +1036,7 @@ function saveNotes(){try{localStorage.setItem("notes",JSON.stringify(notes))}cat
 const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
-  return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
+  return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""}${(i.pop===1&&i.ts>0)?' data-pop="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb${i.eb.every(x=>x.a)?" auc":""}" title="${i.eb.every(x=>x.a)?"This slab is in a live auction (current bid)":"This slab is for sale"}">${i.eb.every(x=>x.a)?"AUCTION":i.eb.every(x=>x.lot)?"LOT":"FOR SALE"} \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
     <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
@@ -1225,7 +1254,7 @@ function gridCard(list,title,thm){
   const mine=[...list].sort((a,b)=>gnum(b)-gnum(a)||(b.p||0)-(a.p||0));
   if(!mine.length)return Promise.reject(new Error("none"));
   const show=mine.slice(0,12),val=mine.reduce((a,i)=>a+(i.p||0),0),gems=mine.filter(i=>String(i.g)==="10").length;
-  const th=COLL[thm]?thm:(thm==="navy"?"dark":document.documentElement.dataset.theme),P=COLL[th]||COLL.dark,U=P.U,lab=show.length<=6;
+  const th0=COLL[thm]?thm:(thm==="navy"?"dark":document.documentElement.dataset.theme),th=COLL[th0]?th0:"dark",P=COLL[th],U=P.U,lab=show.length<=6;
   return shareFonts().then(()=>Promise.all(show.map(i=>new Promise(r=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>r(im);im.onerror=()=>r(null);im.src=i.im})))).then(imgs=>new Promise((res,rej)=>{
     try{
       storyCv((x,W,H)=>{
@@ -1423,9 +1452,20 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   setTimeout(show,25000);
 })();
 
+/* ---------- Vault theme: tilt + foil follows the pointer / finger ---------- */
+(function(){const root=document.documentElement;let cur=null;
+  const box=e=>e.target.closest&&e.target.closest(".case,.lb .pic");
+  const aim=(c,e)=>{const r=c.getBoundingClientRect(),x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)),s=c.style;
+    if(!c.__m){const im=c.querySelector("img");if(im&&(im.currentSrc||im.src)){c.__m='url("'+(im.currentSrc||im.src)+'")';s.setProperty("--m",c.__m)}}
+    s.setProperty("--ry",((x-.5)*22).toFixed(1)+"deg");s.setProperty("--rx",((.5-y)*16).toFixed(1)+"deg");s.setProperty("--px",(x*100).toFixed(0)+"%");s.setProperty("--py",(y*100).toFixed(0)+"%");s.setProperty("--a",Math.round(x*360));s.setProperty("--fo",".6")};
+  const rest=c=>{if(!c)return;const s=c.style;s.setProperty("--ry","0deg");s.setProperty("--rx","0deg");s.setProperty("--fo","0")};
+  const go=e=>{if(root.dataset.theme!=="vault")return;const c=box(e);if(cur&&cur!==c)rest(cur);cur=c;if(c)aim(c,e)};
+  document.addEventListener("pointermove",go,{passive:true});document.addEventListener("pointerdown",go,{passive:true});
+  const end=()=>{rest(cur);cur=null};document.addEventListener("pointerup",end,{passive:true});document.addEventListener("pointercancel",end,{passive:true});document.addEventListener("pointerleave",end,{passive:true});
+  window.__vaultAim=(c,x,y)=>{const r=c.getBoundingClientRect();aim(c,{clientX:r.left+x*r.width,clientY:r.top+y*r.height})}})();
 /* ---------- theme ---------- */
 (function(){const b=$("#theme"),root=document.documentElement;
-  const T=[["dark","ACE","#06172c","ACE"],["duel","DM","#1f130a","Duel Monsters"],["gx","GX","#0E1526","GX"],["5d","5D's","#f6f8fb","5D's"]];   // themes 1 to 4
+  const T=[["dark","ACE","#06172c","ACE"],["duel","DM","#1f130a","Duel Monsters"],["gx","GX","#0E1526","GX"],["5d","5D's","#f6f8fb","5D's"],["vault","Vault","#04070d","Vault"]];   // themes 1 to 5
   const G=["\u{13080}","\u{132F9}","\u{131A3}","\u{13183}","\u{131F3}","\u{130ED}","\u{132B9}","\u{13193}"];
   const row=Array.from({length:14},()=>G.join(" ")).join(" ");
   document.querySelectorAll(".frieze").forEach(f=>f.textContent=row);
@@ -1442,7 +1482,8 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   const P={dark:["#06172c","#0c2540","#1c3b5f","#eaf0f7","#d6ab5b","#d6ab5b","#201505",'"Big Shoulders Display","Arial Narrow",sans-serif'],
     duel:["#1f130a","#33200f","#6a4a28","#f7ebcf","#eab84e","#eab84e","#2a1704",'"Cinzel",Georgia,serif'],
     gx:["#0E1526","#182238","#2A3550","#F5F1E8","#F4B814","#2E5BEA","#ffffff",'"Anton",Impact,sans-serif'],
-    "5d":["#f6f8fb","#ffffff","#d3dae4","#16213e","#1d5fc4","#1d5fc4","#ffffff",'"Chakra Petch","Arial Narrow",sans-serif']};
+    "5d":["#f6f8fb","#ffffff","#d3dae4","#16213e","#1d5fc4","#1d5fc4","#ffffff",'"Chakra Petch","Arial Narrow",sans-serif'],
+    vault:["#04070d","#0b121d","#1a2433","#eaf0f7","#d9ad5b","#d9ad5b","#1a1205",'"Big Shoulders Display","Arial Narrow",sans-serif']};
   const td=$("#themed");
   b.addEventListener("click",()=>{
     if(!td){root.dataset.theme=T[(idx()+1)%T.length][0];try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}paint();window.__prefChanged&&window.__prefChanged();return}
