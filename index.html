@@ -887,7 +887,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=743655e2e9"></script>
+<script src="data.js?v=2a0fcd91e9"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1533,7 +1533,7 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     if(d.find_ts)parts.push(`Last Yu-Gi-Oh! slab found <b>${ago(d.find_ts)}</b>${d.find_name?" ("+esc(d.find_name)+")":""}.`);
     if(d.scan_ts)parts.push(`Scanner checked in ${ago(d.scan_ts)}.`);
     if(d.scan_ts&&d.scan_cert)parts.push(`Newest certs read up to <b>${fmt(d.scan_cert)}</b>.`);
-    if(d.scan_ts&&d.back_pct!=null)parts.push(d.back_pct>0?`Older certs: <b>${d.back_pct<1?"<1":Math.round(d.back_pct)}%</b> of the way back from ${fmt(d.back_from)} to ${fmt(d.back_to)}.`:`Older certs (back to ${fmt(d.back_to)}) come next.`);
+    if(d.scan_ts&&d.p2_pct!=null)parts.push(`${d.p1_pct>=99.9?`Phase 1 is complete (every cert from ${fmt(d.back_to)} to ${fmt(d.p2_from)}).`:`Phase 1: <b>${Math.round(d.p1_pct)}%</b> of ${fmt(d.back_to)} to ${fmt(d.p2_from)}.`} Phase 2, from ${fmt(d.p2_from)} up to the newest cert: <b>${d.p2_pct<1?"<1":Math.round(d.p2_pct)}%</b> read.`);else if(d.scan_ts&&d.back_pct!=null)parts.push(d.back_pct>0?`Older certs: <b>${d.back_pct<1?"<1":Math.round(d.back_pct)}%</b> of the way back from ${fmt(d.back_from)} to ${fmt(d.back_to)}.`:`Older certs (back to ${fmt(d.back_to)}) come next.`);
     if(!parts.length)return;const fresh=d.scan_ts&&Date.now()/1000-d.scan_ts<2.5*3600;
     el.innerHTML=`<span class="dot${fresh?"":" stale"}" aria-hidden="true"></span><span>${parts.join(" ")}</span>`;el.hidden=false}
   function load(){try{fetch("status.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(d)show(d)}).catch(()=>{})}catch(e){}}
