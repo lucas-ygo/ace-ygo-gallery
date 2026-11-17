@@ -117,6 +117,8 @@
 :root[data-theme=vault] .card:has(.gr b[data-g^="9"]) .case::before{background:#6aa7ff}
 :root[data-theme=vault] .card[data-top] .case::before{background:linear-gradient(90deg,#ff3b6b,#ffb02e,#f6ff4a,#37ffb1,#35b6ff,#9a5bff)}
 :root[data-theme=vault] :is(.case img,.lb .pic img){transform:perspective(700px) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .15s;filter:drop-shadow(0 14px 18px rgba(0,0,0,.65))}
+:root[data-theme=vault] .case img{pointer-events:none}
+:root[data-theme=vault] :is(.case img,.lb .pic img){-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 :root[data-theme=vault] .cgrid img{filter:drop-shadow(0 8px 12px rgba(0,0,0,.6))}
 :root[data-theme=vault] .case::after{content:"";position:absolute;pointer-events:none;z-index:1;mix-blend-mode:hard-light;opacity:var(--fo,0);
   inset:12px;-webkit-mask-image:var(--m);mask-image:var(--m);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
@@ -885,7 +887,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=2a959c0519"></script>
+<script src="data.js?v=7bb491469e"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1452,17 +1454,32 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
   setTimeout(show,25000);
 })();
 
-/* ---------- Vault theme: tilt + foil follows the pointer / finger ---------- */
-(function(){const root=document.documentElement;let cur=null;
+/* ---------- Vault theme: tilt + foil. Mouse: follows the pointer. Phone: follows scrolling and device tilt, and your finger while pressed ---------- */
+(function(){const root=document.documentElement,touch=matchMedia("(hover:none)");let cur=null;
   const box=e=>e.target.closest&&e.target.closest(".case,.lb .pic");
-  const aim=(c,e)=>{const r=c.getBoundingClientRect(),x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)),s=c.style;
-    if(!c.__m){const im=c.querySelector("img");if(im&&(im.currentSrc||im.src)){c.__m='url("'+(im.currentSrc||im.src)+'")';s.setProperty("--m",c.__m)}}
-    s.setProperty("--ry",((x-.5)*22).toFixed(1)+"deg");s.setProperty("--rx",((.5-y)*16).toFixed(1)+"deg");s.setProperty("--px",(x*100).toFixed(0)+"%");s.setProperty("--py",(y*100).toFixed(0)+"%");s.setProperty("--a",Math.round(x*360));s.setProperty("--fo",".6")};
-  const rest=c=>{if(!c)return;const s=c.style;s.setProperty("--ry","0deg");s.setProperty("--rx","0deg");s.setProperty("--fo","0")};
+  const mask=c=>{if(!c.__m){const im=c.querySelector("img");if(im&&(im.currentSrc||im.src)){c.__m='url("'+(im.currentSrc||im.src)+'")';c.style.setProperty("--m",c.__m)}}};
+  const aim=(c,e)=>{const r=c.getBoundingClientRect(),x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)),s=c.style;mask(c);
+    s.setProperty("--ry",((x-.5)*22).toFixed(1)+"deg");s.setProperty("--rx",((.5-y)*16).toFixed(1)+"deg");s.setProperty("--px",(x*100).toFixed(0)+"%");s.setProperty("--py",(y*100).toFixed(0)+"%");s.setProperty("--a",Math.round(x*360));s.setProperty("--fo",touch.matches?".4":".5")};
+  const rest=c=>{if(!c)return;const s=c.style;if(touch.matches){amb(c);return}s.setProperty("--ry","0deg");s.setProperty("--rx","0deg");s.setProperty("--fo","0")};
   const go=e=>{if(root.dataset.theme!=="vault")return;const c=box(e);if(cur&&cur!==c)rest(cur);cur=c;if(c)aim(c,e)};
   document.addEventListener("pointermove",go,{passive:true});document.addEventListener("pointerdown",go,{passive:true});
   const end=()=>{rest(cur);cur=null};document.addEventListener("pointerup",end,{passive:true});document.addEventListener("pointercancel",end,{passive:true});document.addEventListener("pointerleave",end,{passive:true});
-  window.__vaultAim=(c,x,y)=>{const r=c.getBoundingClientRect();aim(c,{clientX:r.left+x*r.width,clientY:r.top+y*r.height})}})();
+  // phones: a soft always-on shimmer that moves as you scroll or tilt the phone
+  const vis=new Set();let io=null,raf=0,gx=0,gy=0;
+  const amb=c=>{if(c===cur)return;const r=c.getBoundingClientRect(),H=innerHeight||800,W=innerWidth||400;if(r.bottom<0||r.top>H)return;mask(c);
+    const ny=(r.top+r.height/2)/H,nx=(r.left+r.width/2)/W,s=c.style;
+    s.setProperty("--ry",((nx-.5)*14+gx*.25).toFixed(1)+"deg");s.setProperty("--rx",((.5-ny)*12+gy*.2).toFixed(1)+"deg");
+    s.setProperty("--px",(nx*100+gx).toFixed(0)+"%");s.setProperty("--py",(ny*100+gy).toFixed(0)+"%");s.setProperty("--a",Math.round(ny*420+nx*120+gx*2));s.setProperty("--fo",".3")};
+  const tick=()=>{raf=0;if(root.dataset.theme!=="vault"||!touch.matches)return;vis.forEach(amb)};
+  const ask=()=>{if(!raf)raf=requestAnimationFrame(tick)};
+  const watch=()=>{if(!window.IntersectionObserver||io)return;io=new IntersectionObserver(es=>{es.forEach(e=>{e.isIntersecting?vis.add(e.target):vis.delete(e.target)});ask()},{rootMargin:"60px"});
+    const scan=()=>document.querySelectorAll("#grid .case").forEach(c=>{if(!c.__w){c.__w=1;io.observe(c)}});scan();
+    const g=document.getElementById("grid");if(g)new MutationObserver(scan).observe(g,{childList:true})};
+  addEventListener("scroll",ask,{passive:true});addEventListener("resize",ask,{passive:true});
+  addEventListener("deviceorientation",e=>{if(e.gamma==null)return;gx=Math.max(-30,Math.min(30,e.gamma));gy=Math.max(-30,Math.min(30,(e.beta||0)-45));ask()},{passive:true});
+  const boot=()=>{if(root.dataset.theme==="vault"&&touch.matches){watch();ask()}};
+  new MutationObserver(boot).observe(root,{attributes:true,attributeFilter:["data-theme"]});boot();
+  window.__vaultAim=(c,x,y)=>{const r=c.getBoundingClientRect();aim(c,{clientX:r.left+x*r.width,clientY:r.top+y*r.height})};window.__vaultAmb=()=>{watch();vis.clear();document.querySelectorAll("#grid .case").forEach(c=>vis.add(c));tick()}})();
 /* ---------- theme ---------- */
 (function(){const b=$("#theme"),root=document.documentElement;
   const T=[["dark","ACE","#06172c","ACE"],["duel","DM","#1f130a","Duel Monsters"],["gx","GX","#0E1526","GX"],["5d","5D's","#f6f8fb","5D's"],["vault","Vault","#04070d","Vault"]];   // themes 1 to 5
