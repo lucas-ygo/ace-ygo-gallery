@@ -903,7 +903,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=ff7323c110"></script>
+<script src="data.js?v=11529d068c"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1547,7 +1547,13 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
     const a=DATA.find(x=>x.c===d.p2_from)||DATA.find(x=>x.c===ORIGIN);let z=null;for(const x of DATA)if(!z||x.c>z.c)z=x;
     const pc=Math.max(0,Math.min(100,d.p2_pct)),pct=pc<1?"<1":Math.round(pc);
     const end=(x,lab,r)=>x?`<button type="button" class="pe${r?" r":""}" data-c="${x.c}" title="${esc(x.n)}"><img src="${esc(x.th)}" alt=""><span><small>${lab}</small><b>${fmt(x.c)}</b></span></button>`:"";
-    pb.innerHTML=end(a,"Phase 2 starts",0)+`<div class="pm"><div class="pt" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pc)}" aria-label="Phase 2 progress"><i style="width:${pc}%"></i></div><p class="pl"><b>${pct}%</b> of the certs from ${fmt(d.p2_from)} to the newest cert (${fmt(d.scan_cert)}) read.${d.p1_pct>=99.9?` Everything before it (from ${fmt(d.back_to)}) is done.`:""}</p></div>`+end(z,"Newest slab found",1);
+    const rc=d.rc;let msg=`<b>${pct}%</b> of the certs from ${fmt(d.p2_from)} to the newest cert (${fmt(d.scan_cert)}) read.${d.p1_pct>=99.9?` Everything before it (from ${fmt(d.back_to)}) is done.`:""}`,lab="Phase 2 progress",w=pc;
+    if(rc&&pc>=99.9){const ys=n=>n+" new Yu-Gi-Oh! slab"+(n===1?"":"s");
+      if(rc.run){w=rc.tot?Math.max(1,Math.min(100,Math.round(100*rc.pn/rc.tot))):0;lab="Re-check progress";
+        msg=`<b>Scan complete.</b> Now asking ACE again about numbers that were empty when first read (${rc.ph==="hot"?"stage 1 of 2, beside known slabs":"stage 2 of 2, newest first"}): <b>${w}%</b> of this stage. ${ys(rc.y)} found so far.`}
+      else if(rc.fin){w=100;lab="Re-check finished";const dl=Math.max(0,Math.ceil((rc.fin+7*86400-Date.now()/1000)/86400));
+        msg=`<b>Scan complete.</b> Last re-check of old empty numbers found ${ys(rc.y)}. Next re-check ${dl?"in about "+dl+" day"+(dl===1?"":"s"):"starts soon"}.`}}
+    pb.innerHTML=end(a,"Phase 2 starts",0)+`<div class="pm"><div class="pt" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(w)}" aria-label="${lab}"><i style="width:${w}%"></i></div><p class="pl">${msg}</p></div>`+end(z,"Newest slab found",1);
     pb.hidden=false}
   const pbEl=$("#pbar");if(pbEl)pbEl.addEventListener("click",e=>{const b=e.target.closest(".pe");if(!b)return;const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)});
   const ago=ts=>{const s=Math.max(0,Date.now()/1000-ts);if(s<90)return"just now";const m=Math.round(s/60);if(m<60)return m+" minute"+(m>1?"s":"")+" ago";
