@@ -332,6 +332,11 @@ main{min-width:0}
 #wishd .wform input,#wishd .wform select{width:100%;box-sizing:border-box;font:15px var(--ui);padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil)}
 #wishd .wform .wide{grid-column:1/-1}#wishd .wform button.gold{background:var(--gold);color:#17120a;border-color:var(--gold)}
 #wishd label{font-size:12px;color:var(--mist);display:block;margin-bottom:3px}
+#wishd .wide{position:relative}
+#wishd .wsug{margin-top:6px;background:var(--abyss);border:1px solid var(--gold);border-radius:10px;overflow:hidden;max-height:260px;overflow-y:auto}
+#wishd .wsug button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 12px;font:15px var(--ui);color:var(--foil);background:none}
+#wishd .wsug button small{display:block;color:var(--mist);font-size:12px;margin-top:2px}
+#wishd .wsug .wh{padding:6px 12px;font-size:11px;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;background:rgba(255,255,255,.03)}
 .sale{margin:12px 0}.sale h4{margin:0 0 8px}.sale .btn{display:inline-block;margin:0 8px 8px 0}
 .newb.inl{position:static;display:inline-block;vertical-align:middle;margin:0 8px 4px 0;font-size:12px}
 .tiny .newb{top:5px;right:5px;font-size:9px;padding:3px 6px}
@@ -917,7 +922,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="wishd" aria-label="My wishlist"></dialog>
 
-<script src="data.js?v=5228899737"></script>
+<script src="data.js?v=fabc1d0a8b"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1155,9 +1160,9 @@ function renderWish(){
   const langs=[...new Set(DATA.map(i=>i.l).filter(Boolean))].sort();
   wd.innerHTML=`<div class="cmpbox stat"><h3>My wishlist</h3><button class="x" type="button" id="wishx" aria-label="Close">&times;</button>
     <p class="note" style="margin-top:0">Add the cards you are after. Any slab that matches gets a \u2605 WISHLIST tag, and new matches show up the next time you visit. It is saved on this device, and syncs across your devices if you sign in. Only you can see it.</p>
-    ${wish.length?wish.map((w,k)=>`<div class="wrow"><div class="wt"><b>${esc(w.w)}</b><small>${esc(wishSub(w,k))}</small></div><div class="wb">${WMAP[k]&&WMAP[k].length?`<button type="button" data-show="${k}">Show</button>`:""}<button type="button" data-del="${k}" aria-label="Remove">\u2715</button></div></div>`).join("")
+    ${wish.length?wish.map((w,k)=>`<div class="wrow"><div class="wt"><b>${esc(w.t||w.w)}</b><small>${esc(wishSub(w,k))}</small></div><div class="wb">${WMAP[k]&&WMAP[k].length?`<button type="button" data-show="${k}">Show</button>`:""}<button type="button" data-del="${k}" aria-label="Remove">\u2715</button></div></div>`).join("")
       +(WM.size?`<p style="margin:10px 0 0"><button class="btn" type="button" data-showall="1">Show all ${WM.size} matching slab${WM.size>1?"s":""}</button></p>`:""):`<p class="note">Nothing on your wishlist yet.</p>`}
-    <form class="wform" id="wishf" autocomplete="off"><div class="wide"><label for="ww">Card name, number or set</label><input id="ww" maxlength="60" placeholder="e.g. dark magician girl" required></div>
+    <form class="wform" id="wishf" autocomplete="off"><div class="wide"><label for="ww">Card name, number or set</label><input id="ww" maxlength="60" placeholder="Start typing a card name or number" required autocomplete="off"><div id="wsug" class="wsug" hidden></div></div>
       <div><label for="wg">Grade</label><select id="wg">${WG.map(g=>`<option value="${g[0]}">${g[1]}</option>`).join("")}</select></div>
       <div><label for="wl">Language</label><select id="wl"><option value="">Any language</option>${langs.map(l=>`<option>${esc(l)}</option>`).join("")}</select></div>
       <div class="wide"><label for="wm">Only when for sale at or under (optional, \u00a3)</label><input id="wm" type="number" min="1" max="100000" inputmode="numeric" placeholder="no limit"></div>
@@ -1171,10 +1176,25 @@ wd.addEventListener("click",e=>{if(e.target===wd||e.target.id==="wishx"){wd.clos
   const show=cs=>{wd.close();st.only=new Set(cs);st.onlyLbl="Wishlist matches";apply();const g=$("#grid");g&&g.scrollIntoView({block:"start"})};
   if(b.dataset.show!=null){show(WMAP[+b.dataset.show]||[]);return}
   if(b.dataset.showall){show([...WM]);return}});
+let wpick=null;
+function wishSug(){const el=$("#wsug"),q=($("#ww").value||"").toLowerCase().split(/\s+/).filter(Boolean);
+  if(!q.length){el.hidden=true;el.innerHTML="";return}
+  const names=new Map(),prints=new Map();
+  for(const i of DATA){const h=(i.n+" "+i.no+" "+i.s+" "+(i.fn||"")).toLowerCase();if(!q.every(t=>h.includes(t)))continue;
+    const a=names.get(i.n)||{n:i.n,c:0};a.c++;names.set(i.n,a);
+    if(i.no){const k=i.no+"|"+i.n;if(!prints.has(k))prints.set(k,{n:i.n,no:i.no,s:i.s||""})}}
+  const N=[...names.values()].sort((a,b)=>b.c-a.c).slice(0,5),P=[...prints.values()].sort((a,b)=>a.no<b.no?-1:1).slice(0,5);
+  if(!N.length){el.innerHTML='<div class="wh">No slab with that name in the gallery yet. You can still add what you typed.</div>';el.hidden=false;return}
+  el.innerHTML='<div class="wh">Card names</div>'+N.map(a=>`<button type="button" data-w="${esc(a.n)}" data-t="${esc(a.n)}">${esc(a.n)}<small>${a.c} slab${a.c>1?"s":""} in the gallery</small></button>`).join("")
+    +(P.length?'<div class="wh">Specific printings</div>'+P.map(a=>`<button type="button" data-w="${esc(a.no)}" data-t="${esc(a.n+" \u00b7 "+a.no)}">${esc(a.n)}<small>${esc(a.no)}${a.s?" \u00b7 "+esc(a.s):""}</small></button>`).join(""):"");
+  el.hidden=false}
+wd.addEventListener("input",e=>{if(e.target.id==="ww"){wpick=null;wishSug()}});
+wd.addEventListener("click",e=>{const b=e.target.closest("#wsug button");if(!b)return;
+  $("#ww").value=b.dataset.w;wpick={w:b.dataset.w,t:b.dataset.t};$("#wsug").hidden=true;e.stopPropagation()},true);
 wd.addEventListener("submit",e=>{e.preventDefault();
   const w=$("#ww").value.replace(/[<>]/g,"").trim().slice(0,60);if(!w)return;
   if(wish.length>=20){alert("The wishlist holds 20 items. Remove one first.");return}
-  const o={w},g=parseFloat($("#wg").value),m=parseFloat($("#wm").value),l=$("#wl").value;
+  const o={w};if(wpick&&wpick.w===w&&wpick.t!==w)o.t=wpick.t;wpick=null;const g=parseFloat($("#wg").value),m=parseFloat($("#wm").value),l=$("#wl").value;
   if(g)o.g=g;if(l)o.l=l;if(m>0)o.m=Math.round(m);
   if(wish.some(x=>js2(x)===js2(o)))return;
   wish.push(o);saveWish();renderWish();apply(true)});
