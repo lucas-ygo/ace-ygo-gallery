@@ -347,6 +347,7 @@ main{min-width:0}
 .info{display:flex;justify-content:space-between;gap:8px;padding:10px 12px 12px;align-items:flex-start}
 .info .txt{min-width:0}
 .nm{font-weight:600;font-size:14px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.trd{margin-left:6px;font-size:.85em;font-weight:700;white-space:nowrap}.trd.up{color:#35b36b}.trd.dn{color:#e0614f}
 .sub.pr{color:var(--gold);font-weight:600}.sub.pr.none{color:var(--mist);font-weight:500;font-style:italic}
 .sub{color:var(--mist);font-size:12.5px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gr{text-align:center;flex:none;line-height:.9}
@@ -903,7 +904,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=ea320fc390"></script>
+<script src="data.js?v=cec1935c85"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1052,11 +1053,12 @@ let notes={};try{notes=JSON.parse(localStorage.getItem("notes")||"{}")||{}}catch
 function saveOwn(){try{localStorage.setItem("own",JSON.stringify([...own]))}catch(e){}if(syncHook)syncHook()}
 function saveNotes(){try{localStorage.setItem("notes",JSON.stringify(notes))}catch(e){}if(syncHook)syncHook()}
 const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
+const trendTag=t=>`<span class="trd ${t[0]>0?"up":"dn"}" title="Raw price ${t[0]>0?"up":"down"} ${Math.abs(t[0])}% (same price source only)">${t[0]>0?"\u25B2":"\u25BC"}${Math.abs(t[0])}%</span>`;
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""}${(i.pop===1&&i.ts>0)?' data-pop="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb${i.eb.every(x=>x.a)?" auc":""}" title="${i.eb.every(x=>x.a)?"This slab is in a live auction (current bid)":"This slab is for sale"}">${i.eb.every(x=>x.a)?"AUCTION":i.eb.every(x=>x.lot)?"LOT":"FOR SALE"} \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
-    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
+    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}${i.tr?trendTag(i.tr):""}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
     <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
     <button type="button" class="favb${fav.has(i.c)?" on":""}" data-c="${i.c}" aria-pressed="${fav.has(i.c)}" aria-label="Save ${esc(i.n)}" title="Save to my list">${fav.has(i.c)?"\u2665":"\u2661"}</button></div>`;
@@ -1595,7 +1597,7 @@ function sparkHTML(pq){
   const pts=pq.map(x=>((x[0]-d0)/dd*(w-8)+4).toFixed(1)+","+(h-4-(x[1]-lo)/sp*(h-8)).toFixed(1)).join(" ");
   const a=v[0],b=v[v.length-1],pc=a?Math.round((b-a)/a*100):0,when=new Date(d0*86400000).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
   return `<div class="ptr"><svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Raw price trend"><polyline points="${pts}"/></svg>
-    <p class="note" style="margin:0">Raw price ${b>=a?"up":"down"} ${Math.abs(pc)}% since ${esc(when)} (${esc(money(a))} to ${esc(money(b))}). We only started tracking in November 2026, and small moves are ignored.</p></div>`}
+    <p class="note" style="margin:0">Raw price ${b>=a?"up":"down"} ${Math.abs(pc)}% since ${esc(when)} (${esc(money(a))} to ${esc(money(b))}). We only compare prices from the same source, and small moves are ignored.</p></div>`}
 const SETC=new Map();
 async function loadSet(p){
   if(SETC.has(p))return SETC.get(p);
@@ -1994,6 +1996,7 @@ paintFav();
     const fin=[...tally(i=>i.t||[])].sort((a,b)=>b[1]-a[1]).slice(0,6);
     const lang=[...tally(i=>[i.l])].sort((a,b)=>b[1]-a[1]);
     const top=[...priced].sort((a,b)=>b.p-a.p).slice(0,5);
+    const mv=[],mvk=new Set();for(const i of [...DATA].filter(x=>x.tr&&x.th).sort((a,b)=>Math.abs(b.tr[0])-Math.abs(a.tr[0]))){const k=i.n+"|"+i.no+"|"+i.v;if(mvk.has(k))continue;mvk.add(k);mv.push(i);if(mv.length>=8)break}
     const dk=t=>{const d=new Date(t*1000);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
     const days=[];for(let k=13;k>=0;k--){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-k);days.push(d)}
     const per=new Map();for(const i of DATA)if(i.sd){const k=dk(i.sd);per.set(k,(per.get(k)||0)+1)}
@@ -2015,6 +2018,7 @@ paintFav();
       ${fin.length?`<h4>Finishes</h4>${bars(fin.map(([n,c])=>[n,c,n]),"f")}`:""}${lang.length>1?`<h4>Languages</h4>${bars(lang.map(([n,c])=>[n,c,n]),"l")}`:""}
       <h4>How they were found</h4>${bars(SRCORD.map(n=>[n,tally(i=>[SRCL[i.sc||"scan"]]).get(n)||0,n]).filter(r=>r[1]),"sr")}
       ${setHTML()}
+      ${mv.length?`<h4>Biggest raw price moves</h4><div class="orow">${mv.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b class="trd ${o.tr[0]>0?"up":"dn"}" style="margin:0">${o.tr[0]>0?"\u25B2":"\u25BC"}${Math.abs(o.tr[0])}%</b><small>${esc(o.n)}</small></button>`).join("")}</div><p class="note">Change in the raw (ungraded) price since we first saw it at its current price source. Moves under 10% are not shown.</p>`:""}
       ${top.length?`<h4>Highest raw value</h4><div class="orow">${top.map(o=>`<button type="button" class="oth" data-c="${o.c}" title="${esc(o.n)}"><img src="${esc(o.th)}" alt=""><b>${moneyWhole(o.p)}</b><small>${esc(o.n)}</small></button>`).join("")}</div>`:""}
       ${dayHTML}${unpHTML}
       <p class="note" style="margin-top:12px">Tap any bar to see those slabs. Raw values are for an ungraded copy; a graded slab can be worth more or less.</p></div>
