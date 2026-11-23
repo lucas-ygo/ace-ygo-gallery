@@ -922,7 +922,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="wishd" aria-label="My wishlist"></dialog>
 
-<script src="data.js?v=fabc1d0a8b"></script>
+<script src="data.js?v=45e0293582"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1723,11 +1723,11 @@ function openSetIndex(sortBy,q,cat){
     const b=e.target.closest(".setb");if(b)openSet(b.dataset.p)}}
 (function(){const b=$("#setsbtn");if(!b||!Object.keys(SETN).length)return;b.hidden=false;b.addEventListener("click",()=>openSetIndex())})();
 function cardPop(sd,j,c){
-  const id=String(c[3]||""),small=id?"cards/"+encodeURIComponent(id)+".webp":"";
+  const id=String(c[3]||""),small=id?(/^yt~/.test(id)?"cardsm/":"cards/")+encodeURIComponent(id)+".webp":"";
   let big="";if(/^yt~/.test(id)){const q=id.split("~");big=`https://card.yuyu-tei.jp/${q[1]}/front/${q[2]}/${q[3]}.jpg`}else if(/^\d+$/.test(id))big=`https://images.ygoprodeck.com/images/cards/${+id}.jpg`;
   const jp=/-JP|^RD\//i.test(c[0]);
   const o=document.createElement("div");o.className="cpop";
-  o.innerHTML=`<div class="cp" role="dialog" aria-label="${esc(c[1])}">${small||big?`<img alt="" src="${esc(small||big)}">`:""}<h4>${esc(c[1])}</h4><p class="st">${esc(c[0])}${c[2]&&!/no card number/i.test(c[2])?" · "+esc(c[2].replace(/,/g,", ")):""}</p><p>${esc(j.n)}${j.d?" · released "+esc(j.d):""}${jp?" · Japanese":""}</p><p><b>Not found yet.</b> We don&rsquo;t hold an ACE slab with this card number.</p><p style="font-size:11px">Picture is the normal card for reference; a slab may be a different finish.</p><button type="button" class="btn" data-cl="1">Close</button></div>`;
+  o.innerHTML=`<div class="cp" role="dialog" aria-label="${esc(c[1])}">${small||big?`<img alt="" src="${esc(small||big)}" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='cards/'+encodeURIComponent(this.dataset.id)+'.webp'}" data-id="${esc(id)}">`:""}<h4>${esc(c[1])}</h4><p class="st">${esc(c[0])}${c[2]&&!/no card number/i.test(c[2])?" · "+esc(c[2].replace(/,/g,", ")):""}</p><p>${esc(j.n)}${j.d?" · released "+esc(j.d):""}${jp?" · Japanese":""}</p><p><b>Not found yet.</b> We don&rsquo;t hold an ACE slab with this card number.</p><p style="font-size:11px">Picture is the normal card for reference; a slab may be a different finish.</p><button type="button" class="btn" data-cl="1">Close</button></div>`;
   const im=o.querySelector("img");
   if(im&&big&&big!==im.src){const p=new Image();p.referrerPolicy="no-referrer";p.onload=()=>{if(im.isConnected)im.src=big};p.src=big}
   const done=()=>{o.remove();document.removeEventListener("keydown",kd,true)};
