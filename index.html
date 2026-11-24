@@ -907,7 +907,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=4307a93bd5"></script>
+<script src="data.js?v=bb557d68e3"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1061,7 +1061,7 @@ function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""}${(i.pop===1&&i.ts>0)?' data-pop="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
     <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb${i.eb.every(x=>x.a)?" auc":""}" title="${i.eb.every(x=>x.a)?"This slab is in a live auction (current bid)":"This slab is for sale"}">${i.eb.every(x=>x.a)?"AUCTION":i.eb.every(x=>x.lot)?"LOT":"FOR SALE"} \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
-    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}${i.tr?trendTag(i.tr):""}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
+    <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${i.pm?"~":""}${money(i.p)}${i.tr?trendTag(i.tr):""}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
     <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
     <button type="button" class="favb${fav.has(i.c)?" on":""}" data-c="${i.c}" aria-pressed="${fav.has(i.c)}" aria-label="Save ${esc(i.n)}" title="Save to my list">${fav.has(i.c)?"\u2665":"\u2661"}</button></div>`;
@@ -1134,7 +1134,7 @@ function apply(keepScroll){
 /* ---------- lightbox ---------- */
 const dlg=$("#lb");let cur=-1;
 const GFEE=18;
-const gradeWorth=i=>{if(!(i.p>0))return"";
+const gradeWorth=i=>{if(!(i.p>0)||i.pm)return"";
   const sales=[].concat(...DATA.filter(x=>x.no===i.no&&x.n===i.n&&x.g===i.g&&x.sl&&x.sl.length).map(x=>x.sl.slice(0,3))).map(s=>s.p).filter(v=>v>0);
   const cost=i.p+GFEE,gr=i.gr?parseInt(i.gr,10):NaN;
   let h=`<div class="gw"><h4>Worth grading?</h4><dl><dt>Raw copy</dt><dd>${money(i.p)}</dd><dt>ACE Basic fee (30 days)</dt><dd>${money(GFEE)}</dd><dt>Cost to grade</dt><dd>${money(cost)}</dd>`;
@@ -1159,8 +1159,10 @@ function openLB(idx,item){
       <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card debut</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
-      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}${i.p?`<small class="psb">${i.pe?"eBay UK sold":esc(({"Yuyu-tei":"Yuyu-tei shop","TCGplayer":"TCGplayer market","YGOPRODeck":"YGOPRODeck"})[i.pn]||"price guide")}</small>`:""}</dd>${(i.p&&i.pl)?`<dt>Lowest listing</dt><dd>${money(i.pl)}</dd>`:""}</dl>
+      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}${i.p?`<small class="psb">${i.pe?"eBay UK sold":i.pm?"Estimate":esc(({"Yuyu-tei":"Yuyu-tei shop","TCGplayer":"TCGplayer market","YGOPRODeck":"YGOPRODeck"})[i.pn]||"price guide")}</small>`:""}</dd>${(i.p&&i.pl)?`<dt>Lowest listing</dt><dd>${money(i.pl)}</dd>`:""}</dl>
       ${i.p?`<p class="note">${i.pe?`Raw price is the median of the last ${i.pe} eBay UK sold listings of this exact printing, ungraded (${esc(money(i.pr[0]))} to ${esc(money(i.pr[1]))}${i.pb?"; some are Best Offer asking prices":""}).${i.po?` ${esc(({"Yuyu-tei":"Yuyu-tei","TCGplayer":"TCGplayer","YGOPRODeck":"YGOPRODeck"})[i.pos]||"The price guides")} lists ${esc(money(i.po))}.`:""}`:`Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price, from recent sales","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP).`}${i.pl?" Lowest listing is the cheapest copy for sale on TCGplayer right now (condition not specified).":""} A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
+      ${i.pm==="m"?`<p class="note"><b>Estimate.</b> No price site lists this exact printing, so this raw price was worked out by hand from price guides and sold listings. Treat it as a rough guide.</p>`:""}
+      ${i.pm==="a"?`<p class="note"><b>Estimate.</b> This card comes in several alternate artworks and ACE's label doesn't say which one this is. The price is the middle of the versions${i.pa?` (${esc(money(i.pa[0]))} to ${esc(money(i.pa[1]))})`:""}, so the real value could be well above or below it.</p>`:""}
       ${(i.pq&&i.pq.length>1)?sparkHTML(i.pq):""}
       ${gradeWorth(i)}
       ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
@@ -1971,7 +1973,7 @@ paintFav();
   /* deal flag: a fixed-price listing well under recent sales, or (never sold) under the raw card price. An estimate. */
   const dealOf=g=>{const y=g.l[0];if(kind(y)==="auc"||lotn(y)||!(g.p>0))return null;const it=BYC.get(g.c);
     if(g.h.length){const rc=g.h.slice(-3),ref=rc.reduce((a,b)=>a+b.p,0)/rc.length,d=1-g.p/ref;if(d>=.15)return{p:Math.round(d*100),w:"under recent sales"}}
-    else if(it&&it.p>=5&&g.p<it.p*.9)return{p:Math.round((1-g.p/it.p)*100),w:"under the raw card price"};return null};
+    else if(it&&it.p>=5&&!it.pm&&g.p<it.p*.9)return{p:Math.round((1-g.p/it.p)*100),w:"under the raw card price"};return null};
   for(const g of L)g.dl=dealOf(g);
   const rows=()=>{let r=L.filter(x=>(!q||(x.s2||"").includes(q)||x.l.some(y=>(y.t||"").toLowerCase().includes(q)))&&(!fg||(fg==="lo"?(parseFloat(x.g)||0)<9:String(parseFloat(x.g))===fg))&&(!fp||(x.p>=band[fp][0]&&x.p<band[fp][1]))&&(!fs||x.l.some(y=>fs==="v"?y.v:fs==="w"?y.w:!(y.v||y.w)))&&(!ft||x.l.some(y=>ft==="a"?kind(y)==="auc":(kind(y)!=="auc"||y.bn)))&&(!fh||x.h.length)&&(!fd||x.dl));
     const gnum=x=>parseFloat(x.g)||0;
