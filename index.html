@@ -321,22 +321,6 @@ main{min-width:0}
 .newb{position:absolute;top:9px;right:9px;z-index:2;background:var(--gold);color:var(--ongold);font:800 11px/1 var(--ui);letter-spacing:.09em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .saleb{position:absolute;top:9px;left:9px;z-index:2;background:#1b8a4a;color:#fff;font:800 11px/1 var(--ui);letter-spacing:.05em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .tiny .saleb{top:5px;left:5px;font-size:9px;padding:3px 6px}
-.wishb{position:absolute;bottom:9px;left:9px;z-index:2;background:var(--gold);color:#17120a;font:800 10px/1 var(--ui);letter-spacing:.05em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
-.tiny .wishb{bottom:5px;left:5px;font-size:8px;padding:3px 6px}
-#wishd .wrow{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;display:flex;gap:10px;align-items:center}
-#wishd .wrow .wt{flex:1;min-width:0}#wishd .wrow b{display:block;font-size:15px;overflow-wrap:anywhere}
-#wishd .wrow small{display:block;color:var(--mist);font-size:12.5px;margin-top:2px}
-#wishd .wrow .wb{display:flex;gap:6px;flex:none}
-#wishd .wrow button,#wishd .wform button{font:600 13px var(--ui);padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--foil);cursor:pointer}
-#wishd .wform{border-top:1px solid var(--line);margin-top:14px;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#wishd .wform input,#wishd .wform select{width:100%;box-sizing:border-box;font:15px var(--ui);padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil)}
-#wishd .wform .wide{grid-column:1/-1}#wishd .wform button.gold{background:var(--gold);color:#17120a;border-color:var(--gold)}
-#wishd label{font-size:12px;color:var(--mist);display:block;margin-bottom:3px}
-#wishd .wide{position:relative}
-#wishd .wsug{margin-top:6px;background:var(--abyss);border:1px solid var(--gold);border-radius:10px;overflow:hidden;max-height:260px;overflow-y:auto}
-#wishd .wsug button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 12px;font:15px var(--ui);color:var(--foil);background:none}
-#wishd .wsug button small{display:block;color:var(--mist);font-size:12px;margin-top:2px}
-#wishd .wsug .wh{padding:6px 12px;font-size:11px;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;background:rgba(255,255,255,.03)}
 .sale{margin:12px 0}.sale h4{margin:0 0 8px}.sale .btn{display:inline-block;margin:0 8px 8px 0}
 .newb.inl{position:static;display:inline-block;vertical-align:middle;margin:0 8px 4px 0;font-size:12px}
 .tiny .newb{top:5px;right:5px;font-size:9px;padding:3px 6px}
@@ -690,7 +674,6 @@ footer p{margin:0 0 6px;max-width:80ch}
   <div class="zoom" title="Slab size"><button type="button" id="zout" aria-label="Smaller slabs">−</button><input id="zoom" type="range" min="100" max="380" step="10" value="190" aria-label="Slab size"><button type="button" id="zin" aria-label="Larger slabs">+</button></div>
   <button class="iconbtn" id="bell" type="button" aria-label="Get notified about new slabs" title="Get notified about new slabs" hidden>&#128276;</button>
   <button class="iconbtn" id="favbtn" type="button" aria-label="Show only my saved slabs" title="My saved slabs" aria-pressed="false">&#9825;</button>
-  <button class="iconbtn" id="wishbtn" type="button" aria-label="My wishlist" title="My wishlist">&#9734;</button>
   <button class="iconbtn" id="ownbtn" type="button" aria-label="Show only slabs I own" title="My collection" aria-pressed="false">&#9745;</button>
   <button class="iconbtn" id="viewbtn" type="button" aria-label="Switch between grid and list view" title="Grid / list view" hidden></button>
   <button class="iconbtn" id="theme" type="button" aria-label="Switch colour theme" title="Colour theme"></button>
@@ -811,7 +794,7 @@ html.restoring{background:#06172c}
 (function(){
   const $=s=>document.querySelector(s),nav=$("#appnav");if(!nav)return;
   const SV=p=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';
-  const IC={wish:SV('<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9L3.5 9.7l5.9-.8z"/>'),gal:SV('<rect x="4" y="3" width="16" height="18" rx="2"/><rect x="7.5" y="6.5" width="9" height="7"/><path d="M8 17h8"/>'),
+  const IC={gal:SV('<rect x="4" y="3" width="16" height="18" rx="2"/><rect x="7.5" y="6.5" width="9" height="7"/><path d="M8 17h8"/>'),
     sale:SV('<path d="M3 4h2.5l2.3 11h10l2-8H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>'),
     sales:SV('<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.3"/>'),
     me:SV('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4-6.5 8-6.5s7 2 8 6.5"/>'),
@@ -883,7 +866,7 @@ html.restoring{background:#06172c}
   function meHTML(){
     const cnt=k=>{try{const v=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(v)?new Set(v.map(Number)).size:0}catch(e){return 0}},fv=cnt("fav"),ow=cnt("own"),a=$("#acct"),signed=!!a&&/^Signed in/.test(a.title||"");
     return '<div class="mebox"><h2>Me</h2>'+row("fav","Saved","Slabs you have hearted",fv)+row("own","Owned","Your collection and its raw value",ow)
-      +row("wish","Wishlist","Get a tag when a slab you want turns up",(()=>{try{const v=JSON.parse(localStorage.getItem("wish")||"[]");return Array.isArray(v)&&v.length?String(v.length):""}catch(e){return ""}})())+(shown("#bell")?row("bell","Alerts","Get notified about new slabs"):"")+row("pend","Pending at ACE","Track what you have sent in for grading")
+      +(shown("#bell")?row("bell","Alerts","Get notified about new slabs"):"")+row("pend","Pending at ACE","Track what you have sent in for grading")
       +row("acct","Account",signed?"Signed in. Your saved slabs sync across devices":"Sign in with Google to sync your saved slabs")+'</div>'}
   function openMe(){const d=$("#med");if(!d)return;
     d.innerHTML=meHTML();clearInterval(meTimer);
@@ -895,7 +878,7 @@ html.restoring{background:#06172c}
       +(href("#igbtn")?row("ig","Instagram","Highlights and new finds"):"")+(href("#coffee")?row("cof","Buy me a coffee","Helps keep the scanner running"):"")+(shown("#installbtn")?row("inst","Install app","Add the gallery to your home screen"):"")+'</div>';
     d.showModal()}
   const flt=(id)=>{closeAll();const b=$(id);if(b&&b.getAttribute("aria-pressed")!=="true")b.click();top()};
-  const MA={wish:()=>{closeAll();click("#wishbtn")},fav:()=>flt("#favbtn"),own:()=>flt("#ownbtn"),bell:()=>{closeAll();click("#bell")},pend:()=>{closeAll();window.__pendOpen=1;click("#acct")},acct:()=>{closeAll();click("#acct")},
+  const MA={fav:()=>flt("#favbtn"),own:()=>flt("#ownbtn"),bell:()=>{closeAll();click("#bell")},pend:()=>{closeAll();window.__pendOpen=1;click("#acct")},acct:()=>{closeAll();click("#acct")},
     sets:()=>{closeAll();click("#setsbtn")},stats:()=>{closeAll();click("#statsbtn")},lead:()=>{closeAll();top();click("#leadbtn")},theme:()=>{closeAll();click("#theme")},
     ig:()=>{const h=href("#igbtn");if(h)window.open(h,"_blank","noopener")},cof:()=>{const h=href("#coffee");if(h)window.open(h,"_blank","noopener")},inst:()=>{closeAll();click("#installbtn")}};
   function go(k){
@@ -920,9 +903,8 @@ html.restoring{background:#06172c}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
-<dialog id="wishd" aria-label="My wishlist"></dialog>
 
-<script src="data.js?v=93e9425634"></script>
+<script src="data.js?v=471e69512d"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1070,27 +1052,12 @@ let own=new Set();try{own=new Set(JSON.parse(localStorage.getItem("own")||"[]").
 let notes={};try{notes=JSON.parse(localStorage.getItem("notes")||"{}")||{}}catch(e){}
 function saveOwn(){try{localStorage.setItem("own",JSON.stringify([...own]))}catch(e){}if(syncHook)syncHook()}
 function saveNotes(){try{localStorage.setItem("notes",JSON.stringify(notes))}catch(e){}if(syncHook)syncHook()}
-/* ---------- wishlist (this device, synced when signed in) ---------- */
-let wish=[];try{const a=JSON.parse(localStorage.getItem("wish")||"[]");if(Array.isArray(a))wish=a.filter(w=>w&&typeof w.w==="string"&&w.w.trim()).slice(0,20)}catch(e){}
-const WM=new Set(),WMAP=[];
-function wishHit(w,i){
-  const h=(i.n+" "+i.no+" "+i.s+" "+i.v+" "+(i.l||"")+" "+(i.fn||"")+" "+i.c).toLowerCase();
-  for(const t of w.w.toLowerCase().split(/\s+/)){if(t&&!h.includes(t))return false}
-  if(w.g&&!(gnum(i)>=w.g))return false;
-  if(w.l&&String(i.l||"").toLowerCase()!==w.l.toLowerCase())return false;
-  if(w.m){if(!i.eb||!i.eb.length||Math.min(...i.eb.map(x=>x.p))>w.m)return false}
-  return true}
-function computeWish(){WM.clear();WMAP.length=0;wish.forEach(()=>WMAP.push([]));
-  for(const i of DATA)wish.forEach((w,k)=>{if(wishHit(w,i)){WMAP[k].push(i.c);WM.add(i.c)}})}
-function setWish(a){wish=a.slice(0,20);try{localStorage.setItem("wish",JSON.stringify(wish))}catch(e){}computeWish()}
-function saveWish(){setWish(wish);if(syncHook)syncHook()}
-computeWish();
 const cmp=new Set();const BYC=new Map(DATA.map(i=>[i.c,i]));
 const trendTag=t=>`<span class="trd ${t[0]>0?"up":"dn"}" title="Raw price ${t[0]>0?"up":"down"} ${Math.abs(t[0])}% (same price source only)">${t[0]>0?"\u25B2":"\u25BC"}${Math.abs(t[0])}%</span>`;
 function cardHTML(i,idx){
   const on=cmp.has(i.c);
   return `<div class="cw"><button type="button" class="card"${(gnum(i)===10&&i.p>=250)?' data-top="1"':""}${(i.pop===1&&i.ts>0)?' data-pop="1"':""} data-i="${idx}" aria-label="${esc(i.n)}, ACE ${esc(i.g)}">
-    <div class="case">${WM.has(i.c)?`<span class="wishb" title="Matches your wishlist">\u2605 WISHLIST</span>`:""}${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb${i.eb.every(x=>x.a)?" auc":""}" title="${i.eb.every(x=>x.a)?"This slab is in a live auction (current bid)":"This slab is for sale"}">${i.eb.every(x=>x.a)?"AUCTION":i.eb.every(x=>x.lot)?"LOT":"FOR SALE"} \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
+    <div class="case">${i.nw?`<span class="newb">NEW</span>`:(isFY(i)?`<span class="newb" title="Added since your last visit">NEW FOR YOU</span>`:"")}${i.eb?`<span class="saleb${i.eb.every(x=>x.a)?" auc":""}" title="${i.eb.every(x=>x.a)?"This slab is in a live auction (current bid)":"This slab is for sale"}">${i.eb.every(x=>x.a)?"AUCTION":i.eb.every(x=>x.lot)?"LOT":"FOR SALE"} \u00a3${Math.round(Math.min(...i.eb.map(x=>x.p)))}</span>`:""}${i.c===FIRST?`<span class="origin" title="The very first ACE Yu-Gi-Oh! slab" aria-hidden="true">\u265b</span>`:""}${i.c===ORIGIN?`<span class="origin" title="Where it all started" aria-hidden="true">\u2605</span>`:""}<img loading="lazy" decoding="async" width="360" height="480" src="${esc(i.th)}" alt="${esc(i.n)}"></div>
     <div class="info"><div class="txt"><div class="nm">${esc(i.n)}</div><div class="sub">${esc(i.no)}</div><div class="sub vr">${esc(i.v)}</div><div class="sub ct">Cert ${esc(i.c)}</div>${i.p?`<div class="sub pr">Raw ${money(i.p)}${i.tr?trendTag(i.tr):""}</div>`:`<div class="sub pr none" title="No price source has this printing yet">Price TBC</div>`}${i.sl&&i.sl.length?`<div class="sub so" title="Last recorded eBay sale">Sold ${moneyWhole(i.sl[0].p)}${i.sl[0].n?" (bundle)":""}</div>`:""}</div>
     <div class="gr"><b data-g="${esc(i.g)}">${esc(i.g)}</b><span>${esc((i.gn||"ACE").toUpperCase())}</span></div></div></button>
     <button type="button" class="cmpb${on?" on":""}" data-c="${i.c}" aria-pressed="${on}" aria-label="Compare ${esc(i.n)}" title="Add to compare">${on?"\u2713":"+"}</button>
@@ -1125,7 +1092,7 @@ function renderActive(){const el=$("#actv"),out=[];
   if(st.fav)out.push(ch("fav","","\u2665 My saved slabs"));
   if(st.own)out.push(ch("own","","\u2611 My collection"));
   if(st.notes)out.push(ch("notes","","\u270e My notes"));
-  if(st.only)out.push(ch("only","",(st.onlyLbl||"Shared list")+" ("+st.only.size+")"));
+  if(st.only)out.push(ch("only","","Shared list"+" ("+st.only.size+")"));
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
   el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button><button type="button" class="acl" data-sharefav="1">Share image</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
 $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
@@ -1149,56 +1116,6 @@ function apply(keepScroll){
   if(!keepScroll)window.scrollTo({top:0});
 }
 
-/* ---------- wishlist dialog ---------- */
-const wd=$("#wishd");
-const WG=[["","Any grade"],["10","ACE 10"],["9.5","ACE 9.5 or higher"],["9","ACE 9 or higher"],["8.5","ACE 8.5 or higher"],["8","ACE 8 or higher"],["7","ACE 7 or higher"],["5","ACE 5 or higher"]];
-function wishSub(w,k){const n=WMAP[k]?WMAP[k].length:0,fs=WMAP[k]?WMAP[k].map(c=>BYC.get(c)).filter(i=>i&&i.eb&&i.eb.length):[];
-  const bits=[];if(w.g)bits.push("ACE "+w.g+(w.g<10?"+":""));if(w.l)bits.push(w.l);if(w.m)bits.push("for sale up to "+moneyWhole(w.m));
-  const best=fs.length?Math.min(...fs.map(i=>Math.min(...i.eb.map(x=>x.p)))):0;
-  return (bits.length?bits.join(" \u00b7 ")+" \u00b7 ":"")+n+" in the gallery"+(fs.length?" \u00b7 "+fs.length+" for sale from "+moneyWhole(best):"")}
-function renderWish(){
-  const langs=[...new Set(DATA.map(i=>i.l).filter(Boolean))].sort();
-  wd.innerHTML=`<div class="cmpbox stat"><h3>My wishlist</h3><button class="x" type="button" id="wishx" aria-label="Close">&times;</button>
-    <p class="note" style="margin-top:0">Add the cards you are after. Any slab that matches gets a \u2605 WISHLIST tag, and new matches show up the next time you visit. It is saved on this device, and syncs across your devices if you sign in. Only you can see it.</p>
-    ${wish.length?wish.map((w,k)=>`<div class="wrow"><div class="wt"><b>${esc(w.t||w.w)}</b><small>${esc(wishSub(w,k))}</small></div><div class="wb">${WMAP[k]&&WMAP[k].length?`<button type="button" data-show="${k}">Show</button>`:""}<button type="button" data-del="${k}" aria-label="Remove">\u2715</button></div></div>`).join("")
-      +(WM.size?`<p style="margin:10px 0 0"><button class="btn" type="button" data-showall="1">Show all ${WM.size} matching slab${WM.size>1?"s":""}</button></p>`:""):`<p class="note">Nothing on your wishlist yet.</p>`}
-    <form class="wform" id="wishf" autocomplete="off"><div class="wide"><label for="ww">Card name, number or set</label><input id="ww" maxlength="60" placeholder="Start typing a card name or number" required autocomplete="off"><div id="wsug" class="wsug" hidden></div></div>
-      <div><label for="wg">Grade</label><select id="wg">${WG.map(g=>`<option value="${g[0]}">${g[1]}</option>`).join("")}</select></div>
-      <div><label for="wl">Language</label><select id="wl"><option value="">Any language</option>${langs.map(l=>`<option>${esc(l)}</option>`).join("")}</select></div>
-      <div class="wide"><label for="wm">Only when for sale at or under (optional, \u00a3)</label><input id="wm" type="number" min="1" max="100000" inputmode="numeric" placeholder="no limit"></div>
-      <div class="wide"><button class="gold" type="submit">Add to wishlist</button></div></form>
-    <p class="note">Prices come from eBay, Vinted and Whatnot listings we found, and may be out of date. Always check the listing.</p></div>`}
-function wishOpen(){renderWish();wd.showModal()}
-$("#wishbtn").addEventListener("click",wishOpen);
-wd.addEventListener("click",e=>{if(e.target===wd||e.target.id==="wishx"){wd.close();return}
-  const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.del!=null){wish.splice(+b.dataset.del,1);saveWish();renderWish();apply(true);return}
-  const show=cs=>{wd.close();st.only=new Set(cs);st.onlyLbl="Wishlist matches";apply();const g=$("#grid");g&&g.scrollIntoView({block:"start"})};
-  if(b.dataset.show!=null){show(WMAP[+b.dataset.show]||[]);return}
-  if(b.dataset.showall){show([...WM]);return}});
-let wpick=null;
-function wishSug(){const el=$("#wsug"),q=($("#ww").value||"").toLowerCase().split(/\s+/).filter(Boolean);
-  if(!q.length){el.hidden=true;el.innerHTML="";return}
-  const names=new Map(),prints=new Map();
-  for(const i of DATA){const h=(i.n+" "+i.no+" "+i.s+" "+(i.fn||"")).toLowerCase();if(!q.every(t=>h.includes(t)))continue;
-    const a=names.get(i.n)||{n:i.n,c:0};a.c++;names.set(i.n,a);
-    if(i.no){const k=i.no+"|"+i.n;if(!prints.has(k))prints.set(k,{n:i.n,no:i.no,s:i.s||""})}}
-  const N=[...names.values()].sort((a,b)=>b.c-a.c).slice(0,5),P=[...prints.values()].sort((a,b)=>a.no<b.no?-1:1).slice(0,5);
-  if(!N.length){el.innerHTML='<div class="wh">No slab with that name in the gallery yet. You can still add what you typed.</div>';el.hidden=false;return}
-  el.innerHTML='<div class="wh">Card names</div>'+N.map(a=>`<button type="button" data-w="${esc(a.n)}" data-t="${esc(a.n)}">${esc(a.n)}<small>${a.c} slab${a.c>1?"s":""} in the gallery</small></button>`).join("")
-    +(P.length?'<div class="wh">Specific printings</div>'+P.map(a=>`<button type="button" data-w="${esc(a.no)}" data-t="${esc(a.n+" \u00b7 "+a.no)}">${esc(a.n)}<small>${esc(a.no)}${a.s?" \u00b7 "+esc(a.s):""}</small></button>`).join(""):"");
-  el.hidden=false}
-wd.addEventListener("input",e=>{if(e.target.id==="ww"){wpick=null;wishSug()}});
-wd.addEventListener("click",e=>{const b=e.target.closest("#wsug button");if(!b)return;
-  $("#ww").value=b.dataset.w;wpick={w:b.dataset.w,t:b.dataset.t};$("#wsug").hidden=true;e.stopPropagation()},true);
-wd.addEventListener("submit",e=>{e.preventDefault();
-  const w=$("#ww").value.replace(/[<>]/g,"").trim().slice(0,60);if(!w)return;
-  if(wish.length>=20){alert("The wishlist holds 20 items. Remove one first.");return}
-  const o={w};if(wpick&&wpick.w===w&&wpick.t!==w)o.t=wpick.t;wpick=null;const g=parseFloat($("#wg").value),m=parseFloat($("#wm").value),l=$("#wl").value;
-  if(g)o.g=g;if(l)o.l=l;if(m>0)o.m=Math.round(m);
-  if(wish.some(x=>js2(x)===js2(o)))return;
-  wish.push(o);saveWish();renderWish();apply(true)});
-function js2(o){return JSON.stringify(o)}
 /* ---------- lightbox ---------- */
 const dlg=$("#lb");let cur=-1;
 function openLB(idx,item){
@@ -1862,9 +1779,8 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   function setFav(s){fav=s;ls("fav",js([...fav]));refresh()}
   function setOwn(s){own=s;ls("own",js([...own]));refresh()}
   function setNotes(o){notes=o;ls("notes",js(notes));const t=$("#lbnote");if(t&&document.activeElement!==t){const c=+($("#lbfav")||{dataset:{}}).dataset.c;t.value=notes[c]||""}}
-  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;p.pend=pend;p.wish=wish;return p}
+  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;p.pend=pend;return p}
   function applyPrefs(p,fst){if(!p)return;
-    if(Array.isArray(p.wish)){const nx=fst?[...p.wish,...wish.filter(x=>!p.wish.some(y=>js(y)===js(x)))]:p.wish;if(js(nx)!==js(wish)){setWish(nx);if(wd.open)renderWish();apply(true)}}
     if(Array.isArray(p.pend)){const nx=fst?[...p.pend,...pend.filter(x=>!p.pend.some(y=>y.id===x.id))]:p.pend;const mg=migratePend(nx);if(js(mg)!==js(pend)){setPend(mg);if(ad.open)renderPend()}}
     applying=true;try{
     if(p.theme&&p.theme!==(ls("theme")||"dark")&&window.__setTheme)window.__setTheme(p.theme);
@@ -1889,7 +1805,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
         const mf=trust?rf:new Set([...fav,...rf]),mo=trust?ro:new Set([...own,...ro]),mn=trust?rn:Object.assign({},rn,notes);
         if(!same(mf,fav))setFav(mf);if(!same(mo,own))setOwn(mo);if(js(mn)!==js(notes))setNotes(mn);
         applyPrefs(remotePrefs,true);   // a new device adopts the cloud settings
-        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length||js(pend)!==js(remotePrefs.pend||[])||js(wish)!==js(remotePrefs.wish||[]))push();
+        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length||js(pend)!==js(remotePrefs.pend||[]))push();
         if(ls("welcomed")!==uid){ls("welcomed",uid);setTimeout(welcome,400)}
         return}
       if(snap.metadata.hasPendingWrites||Date.now()<quiet)return;
