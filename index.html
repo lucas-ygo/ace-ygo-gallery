@@ -321,6 +321,8 @@ main{min-width:0}
 .newb{position:absolute;top:9px;right:9px;z-index:2;background:var(--gold);color:var(--ongold);font:800 11px/1 var(--ui);letter-spacing:.09em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .saleb{position:absolute;top:9px;left:9px;z-index:2;background:#1b8a4a;color:#fff;font:800 11px/1 var(--ui);letter-spacing:.05em;padding:4px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .tiny .saleb{top:5px;left:5px;font-size:9px;padding:3px 6px}
+.nsv{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:9px 12px;border:1px solid var(--gold);border-radius:12px;background:var(--raise)}.nsv span{flex:1;font-size:14px}.nsv b{color:var(--gold)}.nsv button{font:600 13px var(--ui);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--foil);cursor:pointer}.nsv button[data-s]{background:var(--gold);color:#17120a;border-color:var(--gold)}
+.pcal{display:inline-block;margin-top:6px;color:var(--gold);font-weight:600;font-size:13px;text-decoration:underline}
 .sale{margin:12px 0}.sale h4{margin:0 0 8px}.sale .btn{display:inline-block;margin:0 8px 8px 0}
 .newb.inl{position:static;display:inline-block;vertical-align:middle;margin:0 8px 4px 0;font-size:12px}
 .tiny .newb{top:5px;right:5px;font-size:9px;padding:3px 6px}
@@ -531,7 +533,7 @@ body.hastray{padding-bottom:90px}
 .lcard .lbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
 .lcard .lgo,.lcard .lgal{font:inherit;font-size:12px;font-weight:700;border:1px solid var(--gold);border-radius:999px;padding:5px 10px;color:var(--gold);background:transparent;text-decoration:none;cursor:pointer}
 .lcard .lgo{background:color-mix(in srgb,var(--gold) 18%,transparent)}
-.lcard .lty{font:800 10.5px/1 var(--ui);letter-spacing:.05em;text-transform:uppercase;align-self:flex-start;border-radius:999px;padding:4px 8px}.lcard .lty.bin{background:#1b8a4a;color:#fff}.lcard .lty.auc{background:#d9731f;color:#fff}.lcard .lend{font-size:12px;font-weight:700;color:#ff9f6b}
+.lcard .lty{font:800 10.5px/1 var(--ui);letter-spacing:.05em;text-transform:uppercase;align-self:flex-start;border-radius:999px;padding:4px 8px}.lcard .lty.bin{background:#1b8a4a;color:#fff}.lcard .lty.deal{background:var(--gold);color:#17120a}.lcard .lty.auc{background:#d9731f;color:#fff}.lcard .lend{font-size:12px;font-weight:700;color:#ff9f6b}
 .lgrid:is([data-n="3"],[data-n="4"]) .lcard .lty{font-size:9px;padding:3px 5px}.lgrid:is([data-n="3"],[data-n="4"]) .lcard .lend{font-size:10px}
 .saleb.auc{background:#d9731f}.lcard .lty.lot{background:#d9ad5b;color:#0b1b33}
 .lcard.cr{border:2px solid var(--gold);box-shadow:0 0 0 1px var(--gold),0 6px 22px rgba(214,171,91,.35);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 14%,var(--raise)),var(--raise))}.lcard .lty.cr{background:var(--gold);color:var(--ongold);font-size:11px;padding:5px 9px}.lcard .lcr{font-size:12px;line-height:1.3;color:var(--gold);font-weight:700}
@@ -904,7 +906,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=471e69512d"></script>
+<script src="data.js?v=358da0b3b7"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1092,7 +1094,7 @@ function renderActive(){const el=$("#actv"),out=[];
   if(st.fav)out.push(ch("fav","","\u2665 My saved slabs"));
   if(st.own)out.push(ch("own","","\u2611 My collection"));
   if(st.notes)out.push(ch("notes","","\u270e My notes"));
-  if(st.only)out.push(ch("only","","Shared list"+" ("+st.only.size+")"));
+  if(st.only)out.push(ch("only","",(st.onlyLbl||"Shared list")+" ("+st.only.size+")"));
   GROUPS.forEach(g=>st[g.k].forEach(v=>out.push(ch(g.k,v,(g.not?"Not ":"")+g.label(v),g.not))));
   el.hidden=!out.length;el.innerHTML=out.join("")+(st.own?ownSum():"")+(st.fav&&fav.size?'<button type="button" class="acl" data-share="1">Copy link to my list</button><button type="button" class="acl" data-sharefav="1">Share image</button>':"")+(out.length>1?'<button type="button" class="acl" data-clear="1">Clear all</button>':"")}
 $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.clear){clearAll();return}
@@ -1116,6 +1118,18 @@ function apply(keepScroll){
   if(!keepScroll)window.scrollTo({top:0});
 }
 
+/* ---------- new since your last visit ---------- */
+(function(){let pv=0;const now=Math.floor(Date.now()/1000);
+  try{pv=+sessionStorage.getItem("pv")||0;if(!pv){pv=+localStorage.getItem("lv")||0;sessionStorage.setItem("pv",String(pv||1))}localStorage.setItem("lv",String(now))}catch(e){return}
+  if(pv<=1)return;
+  const fresh=DATA.filter(i=>i.sd&&i.sd>pv);if(!fresh.length)return;
+  const g=$("#grid");if(!g||!g.parentNode)return;
+  const el=document.createElement("div");el.className="nsv";
+  el.innerHTML=`<span><b>${fresh.length}</b> new slab${fresh.length>1?"s":""} since your last visit (${esc(new Date(pv*1000).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))})</span><button type="button" data-s="1">Show</button><button type="button" data-x="1" aria-label="Dismiss">&times;</button>`;
+  g.parentNode.insertBefore(el,g);
+  el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    if(b.dataset.x){el.remove();return}
+    st.only=new Set(fresh.map(i=>i.c));st.onlyLbl="New since your last visit";apply();el.remove()})})();
 /* ---------- lightbox ---------- */
 const dlg=$("#lb");let cur=-1;
 function openLB(idx,item){
@@ -1624,15 +1638,15 @@ function openSetIndex(sortBy,q,cat){
   const cnt={all:all.length};for(const r of all)cnt[r.cat]=(cnt[r.cat]||0)+1;
   if(SETUI.c!=="all"&&!cnt[SETUI.c])SETUI.c="all";
   const rows=all.filter(r=>(SETUI.c==="all"||r.cat===SETUI.c)&&(!ql||(r.n+" "+r.p).toLowerCase().includes(ql)));
-  const cmp={new:(a,b)=>(b.d).localeCompare(a.d)||b.got-a.got||a.n.localeCompare(b.n),pct:(a,b)=>b.got/b.tot-a.got/a.tot||b.got-a.got,got:(a,b)=>b.got-a.got||a.n.localeCompare(b.n),az:(a,b)=>a.n.localeCompare(b.n)}[sb];
+  const cmp={new:(a,b)=>(b.d).localeCompare(a.d)||b.got-a.got||a.n.localeCompare(b.n),pct:(a,b)=>b.got/b.tot-a.got/a.tot||b.got-a.got,got:(a,b)=>b.got-a.got||a.n.localeCompare(b.n),az:(a,b)=>a.n.localeCompare(b.n),close:(a,b)=>{const ma=a.got>=a.tot?1e9:a.tot-a.got,mb=b.got>=b.tot?1e9:b.tot-b.got;return ma-mb||b.got-a.got||a.n.localeCompare(b.n)}}[sb];
   rows.sort(cmp);
   const cats=[["all","All"],["en","English"],["jp","Japanese"],["rush","Rush Duel"],["other","Other"]].filter(([k])=>cnt[k]);
   sd.innerHTML=`<div class="cmpbox"><h3>Sets</h3><button class="x" type="button" id="setx" aria-label="Close">&times;</button>
     <p class="note" style="margin:0">Every set we have an ACE slab from, with its full card list. Tap one to see which cards are found.</p>
     <input id="setq" type="search" placeholder="Search sets" value="${esc(SETUI.q)}" style="width:100%;margin:10px 0 6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit">
     <div class="scflt" data-g="c">${cats.map(([k,l])=>`<button type="button" data-c="${k}" aria-pressed="${k===SETUI.c}">${l} <small>${cnt[k]}</small></button>`).join("")}</div>
-    <div class="scflt" data-g="s">${[["new","Newest"],["pct","Most complete"],["got","Most found"],["az","A to Z"]].map(([k,l])=>`<button type="button" data-s="${k}" aria-pressed="${k===sb}">${l}</button>`).join("")}</div>
-    <div class="setgrid">${rows.map(r=>`<button type="button" class="setile setb${r.got>=r.tot?" done":""}" data-p="${esc(r.p)}"><span class="setcov">${setCover(r.e,r.p)}</span><b>${esc(r.n)}</b><small>${esc(r.p)}${r.d?" \u00b7 "+esc(r.d.slice(0,4)):""}</small><span class="scprog"><i style="width:${Math.min(100,r.got/Math.max(1,r.tot)*100)}%"></i></span><small>${r.got} of ${r.tot}${r.plus?"+":""}</small></button>`).join("")||`<p class="note">No sets match.</p>`}</div></div>`;
+    <div class="scflt" data-g="s">${[["new","Newest"],["close","Closest to done"],["pct","Most complete"],["got","Most found"],["az","A to Z"]].map(([k,l])=>`<button type="button" data-s="${k}" aria-pressed="${k===sb}">${l}</button>`).join("")}</div>
+    <div class="setgrid">${rows.map(r=>`<button type="button" class="setile setb${r.got>=r.tot?" done":""}" data-p="${esc(r.p)}"><span class="setcov">${setCover(r.e,r.p)}</span><b>${esc(r.n)}</b><small>${esc(r.p)}${r.d?" \u00b7 "+esc(r.d.slice(0,4)):""}</small><span class="scprog"><i style="width:${Math.min(100,r.got/Math.max(1,r.tot)*100)}%"></i></span><small>${r.got} of ${r.tot}${r.plus?"+":""}${sb==="close"&&r.got<r.tot?" \u00b7 "+(r.tot-r.got)+(r.plus?"+":"")+" to go":""}</small></button>`).join("")||`<p class="note">No sets match.</p>`}</div></div>`;
   if(!sd.open)sd.showModal();
   const inp=sd.querySelector("#setq");
   inp.addEventListener("input",()=>{const v=inp.value,pos=inp.selectionStart;openSetIndex(null,v);const n=$("#setq");n.focus();n.setSelectionRange(pos,pos)});
@@ -1763,7 +1777,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
         return `<details class="pfin"><summary>\u2713 ${ttl}<small>Done \u00b7 ${p.cards.length} card${p.cards.length===1?"":"s"}${got?" \u00b7 "+got+" in your collection":""}</small></summary><ul class="plist">${ro}</ul><div class="pact"><button type="button" class="btn" data-preopen="${id}">Reopen to edit</button>${del("data-pdel",p.id)}</div></details>`}
       return `<div class="pcard${allIn?" done":""}"><div class="phead"><b>ACE submission${p.sn?" #"+esc(p.sn):""}${p.d?" · "+esc(new Date(p.d).toLocaleDateString("en-GB",{day:"numeric",month:"short"})):""}</b>${del("data-pdel",p.id)}</div>
         <input class="psn" data-sn="${id}" maxlength="20" value="${esc(p.sn||"")}" placeholder="Submission # (optional)" aria-label="Submission number">
-        <div class="pdt"><label>Arrived at ACE<input type="date" data-ar="${id}" value="${esc(p.ar||"")}"></label><label>Service level<select data-tt="${id}"><option value="">Choose...</option>${SLV.map(s=>`<option value="${s[1]}"${!p.sl&&+p.tt===s[1]?" selected":""}>${s[0]} · ${s[1]} working days${s[2]?" (members)":""}</option>`).join("")}<option value="o"${p.sl||(p.tt&&!SLV.some(s=>s[1]===+p.tt))?" selected":""}>Other...</option></select></label></div>${p.sl||(p.tt&&!SLV.some(s=>s[1]===+p.tt))?`<div class="pdt"><label>Working days<input type="number" inputmode="numeric" min="1" max="120" data-tto="${id}" value="${esc(p.tt||"")}" placeholder="e.g. 20"></label></div>`:""}${(()=>{const dd=p.ar&&p.tt?dueDate(p.ar,+p.tt):null;if(!dd||(m&&got&&got===p.cards.length))return"";const lf=Math.round((dd-new Date(new Date().toDateString()+" 12:00"))/864e5);return `<div class="pdue">Expected back by ${esc(dd.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}))}<small>${lf>1?"About "+lf+" days to go.":lf===1?"Due tomorrow.":lf===0?"Due today.":"That date has passed, check your ACE account."} An estimate: weekdays only, UK bank holidays skipped.</small></div>`})()}
+        <div class="pdt"><label>Arrived at ACE<input type="date" data-ar="${id}" value="${esc(p.ar||"")}"></label><label>Service level<select data-tt="${id}"><option value="">Choose...</option>${SLV.map(s=>`<option value="${s[1]}"${!p.sl&&+p.tt===s[1]?" selected":""}>${s[0]} · ${s[1]} working days${s[2]?" (members)":""}</option>`).join("")}<option value="o"${p.sl||(p.tt&&!SLV.some(s=>s[1]===+p.tt))?" selected":""}>Other...</option></select></label></div>${p.sl||(p.tt&&!SLV.some(s=>s[1]===+p.tt))?`<div class="pdt"><label>Working days<input type="number" inputmode="numeric" min="1" max="120" data-tto="${id}" value="${esc(p.tt||"")}" placeholder="e.g. 20"></label></div>`:""}${(()=>{const dd=p.ar&&p.tt?dueDate(p.ar,+p.tt):null;if(!dd||(m&&got&&got===p.cards.length))return"";const lf=Math.round((dd-new Date(new Date().toDateString()+" 12:00"))/864e5);return `<div class="pdue">Expected back by ${esc(dd.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}))}<small>${lf>1?"About "+lf+" days to go.":lf===1?"Due tomorrow.":lf===0?"Due today.":"That date has passed, check your ACE account."} An estimate: weekdays only, UK bank holidays skipped.</small><a href="#" class="pcal" data-pcal="${id}">Add to calendar</a></div>`})()}
         <ul class="plist">${list||`<li class="pdet">No cards yet. Add them below.</li>`}</ul>
         ${p.c?"":`<form class="pcert padc" data-sid="${id}"><input maxlength="60" placeholder="Add a card to this submission" aria-label="Card name"><button class="btn" type="submit">Add</button></form><label class="pshot small">📷 Add from a screenshot<input type="file" class="pshotin" data-sid="${id}" accept="image/*" hidden></label>
         <div class="pstage" role="group" aria-label="Stage at ACE">${STAGES.map((s,k)=>`<button type="button" data-pst="${id}" data-v="${k}" class="${k<=(+p.st||0)?"on":""}${k===(+p.st||0)?" cur":""}">${s}</button>`).join("")}</div>`}
@@ -1843,7 +1857,12 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     const bd=$("#acctbadge");if(bd&&n){bd.hidden=false;bd.textContent="\u2605 "+(n>=25?"Slab legend":n>=10?"Slab hunter":n>=3?"Slab finder":"Slab spotter")+" \u00b7 "+n+" found"}
     box.innerHTML=`<p style="margin:0 0 6px">${fmt(list.length)} sent in, ${fmt(n)} became slabs in the gallery.</p>`+list.slice().reverse().map(r=>{const c=+r[0],it=BYC.get(c);
       return `<div class="subrow">${it?`<button type="button" data-c="${c}">${esc(it.n)} (${c})</button>`:`<span>${c}</span>`}<span>${it?"Slab found":(T[r[1]]||"Waiting in the queue")}</span></div>${(r[2]&&r[2].length)?`<div class="subnb">Also found because of it: ${r[2].map(k=>{const q=BYC.get(k);return q?`<button type="button" data-c="${k}">${esc(q.n)} (${k})</button>`:""}).filter(Boolean).join(", ")}</div>`:""}`}).join("")}
-  ad.addEventListener("click",e=>{const dn=e.target.closest("[data-pdone],[data-preopen]");if(dn){const p=pend.find(q=>q.id===(dn.dataset.pdone||dn.dataset.preopen));if(p){p.done=dn.dataset.pdone?1:0;savePend();renderPend()}return}
+  ad.addEventListener("click",e=>{const cl=e.target.closest("[data-pcal]");if(cl){e.preventDefault();
+    const p=pend.find(q=>q.id===cl.dataset.pcal),dd=p&&p.ar&&p.tt?dueDate(p.ar,+p.tt):null;
+    if(dd){const f=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.getDate()).padStart(2,"0"),nx=new Date(dd.getTime()+864e5);
+      const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//ACE Yu-Gi-Oh slab gallery//EN","BEGIN:VEVENT","UID:ace-"+p.id+"@lucas-ygo.github.io","DTSTAMP:"+new Date().toISOString().replace(/[-:]|\.\d+/g,""),"DTSTART;VALUE=DATE:"+f(dd),"DTEND;VALUE=DATE:"+f(nx),"SUMMARY:ACE submission due back (estimate)","DESCRIPTION:Estimated from your arrival date and service level. Check your ACE account for the real date.","END:VEVENT","END:VCALENDAR"].join("\r\n");
+      const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));a.download="ace-submission-due.ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}return}
+    const dn=e.target.closest("[data-pdone],[data-preopen]");if(dn){const p=pend.find(q=>q.id===(dn.dataset.pdone||dn.dataset.preopen));if(p){p.done=dn.dataset.pdone?1:0;savePend();renderPend()}return}
     const d=e.target.closest("[data-pdel]");if(d){pend=pend.filter(p=>p.id!==d.dataset.pdel);savePend();renderPend();return}
     const r=e.target.closest("[data-prm]");if(r){const [i,k]=r.dataset.prm.split(":"),p=pend.find(q=>q.id===i);if(p){p.cards.splice(+k,1);savePend();renderPend()}return}
     const y=e.target.closest("[data-pst]");if(y){const p=pend.find(q=>q.id===y.dataset.pst);if(p){p.st=+y.dataset.v;savePend();renderPend()}return}
@@ -1930,14 +1949,19 @@ paintFav();
   if(!btn||!ld||!L.length)return;btn.hidden=false;btn.insertAdjacentHTML('beforeend',`<span class="ms"><span class="dot"></span><b>${L.length}</b> slab${L.length>1?"s":""} listed now</span>`);
   const hk=i=>[i.n,i.no,i.v,i.l,i.s,i.g].map(x=>String(x||"").toLowerCase()).join("|");const HIST=new Map();{const sn=new Set();for(const i of DATA)for(const x of (i.sl||[])){const k=hk(i),u=k+"|"+x.d+"|"+x.p+"|"+(x.n||i.c);if(sn.has(u))continue;sn.add(u);if(!HIST.has(k))HIST.set(k,[]);HIST.get(k).push(x)}for(const a of HIST.values())a.sort((x,y)=>String(x.d).localeCompare(String(y.d)))}
   for(const g of L){const it=BYC.get(g.c);g.h=it?(HIST.get(hk(it))||[]):[];g.s2=it?[it.n,it.no,it.s,it.v].join(" ").toLowerCase():""}
-  let sort="new",q="",fg="",fp="",fs="",ft="",fh=false,per=2;try{per=+localStorage.getItem("ygoLper")||(innerWidth<700?2:0)}catch(e){}
+  let sort="new",q="",fg="",fp="",fs="",ft="",fh=false,fd=false,per=2;try{per=+localStorage.getItem("ygoLper")||(innerWidth<700?2:0)}catch(e){}
   const kind=y=>y.v?"fix":y.w?"":y.a?"auc":(y.n||y.o)?"bin":"";const lotn=y=>y.m&&y.m.length>1?y.m.length:0;const lms=x=>{const m=x.l[0].m;return m&&m.length>1?m.map(c=>BYC.get(c)).filter(i=>i&&(i.th||i.im)).map(i=>i.th||i.im):[]};
   const ltag=y=>{const k=kind(y);return (y.cr?`<span class="lty cr">&#9733; Sold by the creator</span>`:"")+(lotn(y)?`<span class="lty lot">${lotn(y)}-slab lot &middot; one price</span>`:"")+(k==="auc"?`<span class="lty auc">Auction &middot; current bid</span><span class="lend">${y.b?y.b+" bid"+(y.b>1?"s":""):"No bids yet"}${y.e?" &middot; "+esc(LEFT(y.e)):""}</span>${y.bn?`<span class="lty bin">or Buy It Now ${esc(money(y.bn))}</span>`:""}`:k==="bin"?`<span class="lty bin">Buy It Now${y.o?" or Best Offer":""}</span>`:k==="fix"?`<span class="lty bin">Fixed price</span>`:"")};
   const lfx=i=>{const sub=[i.no,i.v,i.s].filter(Boolean).join(" \u00b7 ");return `<b>${esc(i.n||"")}</b>${sub?`<br><span class="lsub">${esc(sub)}</span>`:""}`};
   const lfacts=x=>{const m=x.l[0].m,its=(m&&m.length>1?m:[x.c]).map(c=>BYC.get(c)).filter(Boolean);return its.length>1?its.map(i=>`<b>${esc(i.n||"")}</b> <span class="lsub">${esc(i.no||"")}</span>`).join("<br>"):its.length?lfx(its[0]):esc(x.t||"")};
   const when=t=>{if(!t)return"";const m=Math.max(1,Math.round((Date.now()/1000-t)/60));return m<90?m+" min ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago"};
   const band={"1":[0,25],"2":[25,100],"3":[100,500],"4":[500,1e9]};
-  const rows=()=>{let r=L.filter(x=>(!q||(x.s2||"").includes(q)||x.l.some(y=>(y.t||"").toLowerCase().includes(q)))&&(!fg||(fg==="lo"?(parseFloat(x.g)||0)<9:String(parseFloat(x.g))===fg))&&(!fp||(x.p>=band[fp][0]&&x.p<band[fp][1]))&&(!fs||x.l.some(y=>fs==="v"?y.v:fs==="w"?y.w:!(y.v||y.w)))&&(!ft||x.l.some(y=>ft==="a"?kind(y)==="auc":(kind(y)!=="auc"||y.bn)))&&(!fh||x.h.length));
+  /* deal flag: a fixed-price listing well under recent sales, or (never sold) under the raw card price. An estimate. */
+  const dealOf=g=>{const y=g.l[0];if(kind(y)==="auc"||lotn(y)||!(g.p>0))return null;const it=BYC.get(g.c);
+    if(g.h.length){const rc=g.h.slice(-3),ref=rc.reduce((a,b)=>a+b.p,0)/rc.length,d=1-g.p/ref;if(d>=.15)return{p:Math.round(d*100),w:"under recent sales"}}
+    else if(it&&it.p>=5&&g.p<it.p*.9)return{p:Math.round((1-g.p/it.p)*100),w:"under the raw card price"};return null};
+  for(const g of L)g.dl=dealOf(g);
+  const rows=()=>{let r=L.filter(x=>(!q||(x.s2||"").includes(q)||x.l.some(y=>(y.t||"").toLowerCase().includes(q)))&&(!fg||(fg==="lo"?(parseFloat(x.g)||0)<9:String(parseFloat(x.g))===fg))&&(!fp||(x.p>=band[fp][0]&&x.p<band[fp][1]))&&(!fs||x.l.some(y=>fs==="v"?y.v:fs==="w"?y.w:!(y.v||y.w)))&&(!ft||x.l.some(y=>ft==="a"?kind(y)==="auc":(kind(y)!=="auc"||y.bn)))&&(!fh||x.h.length)&&(!fd||x.dl));
     const gnum=x=>parseFloat(x.g)||0;
     r=r.slice().sort(sort==="plow"?(a,b)=>a.p-b.p:sort==="phigh"?(a,b)=>b.p-a.p:sort==="grade"?(a,b)=>gnum(b)-gnum(a)||a.p-b.p:(a,b)=>(b.f||0)-(a.f||0));const cr=x=>x.l.some(y=>y.cr)?1:0;r=r.sort((a,b)=>cr(b)-cr(a));return r};
   const lhist=x=>{const h=x.h,last=h[h.length-1],d=(x.p-last.p)/last.p,pc=Math.round(Math.abs(d)*100);
@@ -1958,19 +1982,19 @@ paintFav();
   const grid=()=>{const r=rows();$("#lcount").textContent=r.length+" of "+L.length+" slabs";
     $("#lgrid").dataset.n=per||"";$("#lgrid").innerHTML=r.length?r.map(x=>{const u0=lurl(x.l[0]);
       return `<div class="lcard${x.l.some(y=>y.cr)?" cr":""}"><a class="lim${lms(x).length>2?" many":lms(x).length>1?" two":""}"${lms(x).length>2?` style="--k:${lms(x).length===4?2:3}"`:""} href="${esc(u0)}" target="_blank" rel="noopener noreferrer" aria-label="Open listing">${lms(x).length>1?lms(x).map(m=>`<img src="${esc(m)}" alt="" loading="lazy">`).join(""):`<img src="${esc(x.i)}" alt="" loading="lazy">`}</a>
-        <div class="lb2"><b class="lp">${x.l.length>1?"from ":""}${esc(money(x.p))}${lotn(x.l[0])?` <small>for ${lotn(x.l[0])}</small>`:""}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}${x.l.map(ltag).join("")}<a class="lt" href="${esc(u0)}" target="_blank" rel="noopener noreferrer">${lfacts(x)}</a>
+        <div class="lb2"><b class="lp">${x.l.length>1?"from ":""}${esc(money(x.p))}${lotn(x.l[0])?` <small>for ${lotn(x.l[0])}</small>`:""}</b>${x.g?`<span class="lg" data-g="${esc(x.g)}">ACE ${esc(x.g)}</span>`:""}${x.dl?`<span class="lty deal" title="An estimate: check the listing">Deal &middot; ${x.dl.p}% ${x.dl.w}</span>`:""}${x.l.map(ltag).join("")}<a class="lt" href="${esc(u0)}" target="_blank" rel="noopener noreferrer">${lfacts(x)}</a>
         ${x.l.some(y=>y.cr)?`<span class="lcr">Listed by the creator of this gallery (@lucas__ygo). Buy direct from the person who runs the scanner.</span>`:""}${x.h.length?lhist(x):""}<small>${[...new Set(x.l.map(y=>y.w?"Whatnot":y.v?"Vinted":"eBay"))].join(" + ")}${x.l.some(y=>y.v)?" (Vinted price includes the buyer fee)":""} &middot; this card is in the gallery</small>
         <span class="lbtns">${x.l.map(y=>`<a class="lgo" href="${esc(lurl(y))}" target="_blank" rel="noopener noreferrer">${kind(y)==="auc"?(y.bn?"View on":"Bid on"):kind(y)?"Buy on":"View on"} ${y.w?"Whatnot":y.v?"Vinted":"eBay"}${x.l.length>1?" "+esc(money(y.p)):""} &#8599;</a>`).join("")}<button type="button" class="lgal" data-c="${x.c}">See in gallery</button></span></div></div>`}).join(""):`<p class="note">No listings match that search.</p>`};
   btn.addEventListener("click",()=>{
     ld.innerHTML=`<div class="cmpbox stat"><h3>For sale on eBay, Vinted &amp; Whatnot</h3><button class="x" type="button" id="listx" aria-label="Close">&times;</button>
-      <p class="note" style="margin-top:0">ACE-graded Yu-Gi-Oh! slabs listed on eBay UK, Vinted UK and Whatnot right now. <span id="lcount"></span>${LS.t?" &middot; checked "+esc(when(LS.t)):""}</p>
-      <div class="lbar"><input id="lq" type="search" placeholder="Search name, set or card number" aria-label="Search listings"><select id="ls" aria-label="Sort listings"><option value="new">Newest first</option><option value="plow">Price: low to high</option><option value="phigh">Price: high to low</option><option value="grade">Grade: high to low</option></select></div><div class="lfil"><select id="lfg" aria-label="Grade"><option value="">Any grade</option><option value="10">ACE 10</option><option value="9">ACE 9</option><option value="lo">Under 9</option></select><select id="lfp" aria-label="Price"><option value="">Any price</option><option value="1">Under \u00a325</option><option value="2">\u00a325 to \u00a3100</option><option value="3">\u00a3100 to \u00a3500</option><option value="4">\u00a3500+</option></select><select id="lfs" aria-label="Where"><option value="">All sites</option><option value="e">eBay only</option><option value="v">Vinted only</option><option value="w">Whatnot only</option></select><select id="lft" aria-label="Buying type"><option value="">Any type</option><option value="b">Buy It Now</option><option value="a">Auctions</option></select><label class="lchk"><input type="checkbox" id="lfh"> Sold before</label></div><div class="lbar" style="margin-top:0;align-items:center"><span class="lperl" style="color:var(--mist);font-size:13px;font-weight:600">Cards per row</span><span class="lper" role="group" aria-label="Cards per row">${[1,2,3,4].map(n=>`<button type="button" data-n="${n}" aria-pressed="${n===per}" title="${n} per row">${n}</button>`).join("")}</span></div>
+      <p class="note" style="margin-top:0">ACE-graded Yu-Gi-Oh! slabs listed on eBay UK, Vinted UK and Whatnot right now. <span id="lcount"></span>${LS.t?" &middot; checked "+esc(when(LS.t)):""}</p><p class="note" style="margin-top:0">&ldquo;Deal&rdquo; = a fixed price at least 15% under the average of the last 3 recorded sales, or (if it has never sold) 10% under the raw card price. These are estimates, so always check the listing.</p>
+      <div class="lbar"><input id="lq" type="search" placeholder="Search name, set or card number" aria-label="Search listings"><select id="ls" aria-label="Sort listings"><option value="new">Newest first</option><option value="plow">Price: low to high</option><option value="phigh">Price: high to low</option><option value="grade">Grade: high to low</option></select></div><div class="lfil"><select id="lfg" aria-label="Grade"><option value="">Any grade</option><option value="10">ACE 10</option><option value="9">ACE 9</option><option value="lo">Under 9</option></select><select id="lfp" aria-label="Price"><option value="">Any price</option><option value="1">Under \u00a325</option><option value="2">\u00a325 to \u00a3100</option><option value="3">\u00a3100 to \u00a3500</option><option value="4">\u00a3500+</option></select><select id="lfs" aria-label="Where"><option value="">All sites</option><option value="e">eBay only</option><option value="v">Vinted only</option><option value="w">Whatnot only</option></select><select id="lft" aria-label="Buying type"><option value="">Any type</option><option value="b">Buy It Now</option><option value="a">Auctions</option></select><label class="lchk"><input type="checkbox" id="lfh"> Sold before</label><label class="lchk"><input type="checkbox" id="lfd"> Deals only</label></div><div class="lbar" style="margin-top:0;align-items:center"><span class="lperl" style="color:var(--mist);font-size:13px;font-weight:600">Cards per row</span><span class="lper" role="group" aria-label="Cards per row">${[1,2,3,4].map(n=>`<button type="button" data-n="${n}" aria-pressed="${n===per}" title="${n} per row">${n}</button>`).join("")}</span></div>
       <div class="lgrid" id="lgrid"></div>
       <p class="note">Listings come from eBay, Vinted and Whatnot search results and are matched to gallery slabs by the cert number on the photos, so check the photos and the seller before buying. Vinted prices include its compulsory buyer protection fee (5% + 70p). Whatnot prices are shown as listed, before postage and any Whatnot fees. Auction prices are the current bid and can rise before the auction ends. Prices and availability change. This site is unofficial and is not connected to eBay, Vinted, Whatnot or ACE.</p></div>`;
-    $("#lq").value=q;$("#ls").value=sort;$("#lfg").value=fg;$("#lfp").value=fp;$("#lfs").value=fs;$("#lft").value=ft;$("#lfh").checked=fh;grid();ld.showModal()});
+    $("#lq").value=q;$("#ls").value=sort;$("#lfg").value=fg;$("#lfp").value=fp;$("#lfs").value=fs;$("#lft").value=ft;$("#lfh").checked=fh;$("#lfd").checked=fd;grid();ld.showModal()});
   ld.addEventListener("input",e=>{if(e.target.id==="lq"){q=e.target.value.trim().toLowerCase();grid()}});
   ld.addEventListener("click",e=>{const b=e.target.closest(".lper button");if(!b)return;per=+b.dataset.n;try{localStorage.setItem("ygoLper",per)}catch(x){}ld.querySelectorAll(".lper button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.n===per)));grid()});
-  ld.addEventListener("change",e=>{const t=e.target;if(t.id==="ls"){sort=t.value;grid()}else if(t.id==="lfg"){fg=t.value;grid()}else if(t.id==="lfp"){fp=t.value;grid()}else if(t.id==="lfs"){fs=t.value;grid()}else if(t.id==="lft"){ft=t.value;grid()}else if(t.id==="lfh"){fh=t.checked;grid()}});
+  ld.addEventListener("change",e=>{const t=e.target;if(t.id==="ls"){sort=t.value;grid()}else if(t.id==="lfg"){fg=t.value;grid()}else if(t.id==="lfp"){fp=t.value;grid()}else if(t.id==="lfs"){fs=t.value;grid()}else if(t.id==="lft"){ft=t.value;grid()}else if(t.id==="lfh"){fh=t.checked;grid()}else if(t.id==="lfd"){fd=t.checked;grid()}});
   ld.addEventListener("click",e=>{if(e.target.id==="listx"||e.target===ld){ld.close();return}
     const hb=e.target.closest(".lhist");if(hb){histOpen(+hb.dataset.c);return}
     const o=e.target.closest(".lgal");if(o){ld.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
