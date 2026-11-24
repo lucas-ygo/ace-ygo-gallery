@@ -538,6 +538,7 @@ body.hastray{padding-bottom:90px}
 .saleb.auc{background:#d9731f}.lcard .lty.lot{background:#d9ad5b;color:#0b1b33}
 .lcard.cr{border:2px solid var(--gold);box-shadow:0 0 0 1px var(--gold),0 6px 22px rgba(214,171,91,.35);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 14%,var(--raise)),var(--raise))}.lcard .lty.cr{background:var(--gold);color:var(--ongold);font-size:11px;padding:5px 9px}.lcard .lcr{font-size:12px;line-height:1.3;color:var(--gold);font-weight:700}
 .lcard .lg{font:800 12px/1 var(--display);letter-spacing:.04em;border:1px solid var(--line);border-radius:6px;padding:3px 6px;align-self:flex-start;color:var(--foil)}
+.gw{margin-top:12px}.gw h4{margin:0 0 6px}.psb{display:inline-block;margin-left:8px;padding:1px 7px;border:1px solid var(--gold-dim);border-radius:999px;font-size:11px;font-weight:600;color:var(--gold);vertical-align:middle}
 .fixn{margin:10px 0 0;padding:9px 11px;border-left:3px solid var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent);border-radius:6px;font-size:13px;line-height:1.45;color:var(--ink,inherit)}.fixn b{color:var(--gold);margin-right:4px}.sub.so{color:var(--mist);font-weight:600}.sold{margin-top:14px}.sold h4{margin:0 0 6px}.srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}.srow b{color:var(--gold);font-variant-numeric:tabular-nums}.srow span{color:var(--mist)}
 .unpd{margin-top:16px}.unpd summary{cursor:pointer;font:600 14px var(--ui);color:var(--foil)}
 .unpl{margin-top:6px;max-height:220px;overflow:auto}
@@ -906,7 +907,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=358da0b3b7"></script>
+<script src="data.js?v=924a73160f"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1132,6 +1133,16 @@ function apply(keepScroll){
     st.only=new Set(fresh.map(i=>i.c));st.onlyLbl="New since your last visit";apply();el.remove()})})();
 /* ---------- lightbox ---------- */
 const dlg=$("#lb");let cur=-1;
+const GFEE=22;
+const gradeWorth=i=>{if(!(i.p>0))return"";
+  const sales=[].concat(...DATA.filter(x=>x.no===i.no&&x.n===i.n&&x.g===i.g&&x.sl&&x.sl.length).map(x=>x.sl.slice(0,3))).map(s=>s.p).filter(v=>v>0);
+  const cost=i.p+GFEE,gr=i.gr?parseInt(i.gr,10):NaN;
+  let h=`<div class="gw"><h4>Worth grading?</h4><dl><dt>Raw copy</dt><dd>${money(i.p)}</dd><dt>ACE Standard fee</dt><dd>${money(GFEE)}</dd><dt>Cost to grade</dt><dd>${money(cost)}</dd>`;
+  if(!isNaN(gr))h+=`<dt>Gem rate (ACE 10)</dt><dd>${gr}%</dd>`;
+  if(sales.length){const avg=sales.reduce((a,b)=>a+b,0)/sales.length,d=avg-cost;
+    h+=`<dt>ACE ${esc(i.g)} sales (${sales.length})</dt><dd>${money(avg)}</dd><dt>If it grades ${esc(i.g)}</dt><dd><b>${d>=0?"+":"−"}${money(Math.abs(d))}</b></dd>`}
+  h+=`</dl><p class="note">${sales.length?"":"No recorded ACE "+esc(i.g)+" sales of this card yet, so there is nothing to compare against. "}Estimate only. It uses ACE's Standard fee (shipping, insurance and label extras not included), the raw price above, and recorded ACE sales of this card at this grade. Most raw copies will not come back as a ${esc(i.g)}${!isNaN(gr)?" (the gem rate is the share that reach 10)":""}.</p></div>`;
+  return h};
 function openLB(idx,item){
   const i=item||view[idx];if(!i)return;cur=idx;st.c=String(i.c);
   const others=DATA.filter(x=>x.c!==i.c&&x.no===i.no&&x.n===i.n).sort((a,b)=>gnum(b)-gnum(a)||b.c-a.c).slice(0,12);
@@ -1148,9 +1159,10 @@ function openLB(idx,item){
       <dt>Release year</dt><dd>${esc(i.y||"Unknown")}</dd>${i.dy&&i.dy!==i.y?`<dt>Card debut</dt><dd>${esc(i.dy)}</dd>`:""}<dt>Finish</dt><dd>${esc(i.v)}</dd>
       ${i.ed?`<dt>Edition</dt><dd>${esc(i.ed)}</dd>`:""}
       <dt>Language</dt><dd>${esc(i.l)}</dd><dt>Label</dt><dd>${esc(i.lb)}</dd><dt>Cert number</dt><dd>${esc(i.c)}</dd>
-      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}</dd>${(i.p&&i.pl)?`<dt>Lowest listing</dt><dd>${money(i.pl)}</dd>`:""}</dl>
+      <dt>Raw price</dt><dd>${i.p?money(i.p):"TBC"}${i.p?`<small class="psb">${i.pe?"eBay UK sold":esc(({"Yuyu-tei":"Yuyu-tei shop","TCGplayer":"TCGplayer market","YGOPRODeck":"YGOPRODeck"})[i.pn]||"price guide")}</small>`:""}</dd>${(i.p&&i.pl)?`<dt>Lowest listing</dt><dd>${money(i.pl)}</dd>`:""}</dl>
       ${i.p?`<p class="note">${i.pe?`Raw price is the median of the last ${i.pe} eBay UK sold listings of this exact printing, ungraded (${esc(money(i.pr[0]))} to ${esc(money(i.pr[1]))}${i.pb?"; some are Best Offer asking prices":""}).${i.po?` ${esc(({"Yuyu-tei":"Yuyu-tei","TCGplayer":"TCGplayer","YGOPRODeck":"YGOPRODeck"})[i.pos]||"The price guides")} lists ${esc(money(i.po))}.`:""}`:`Raw price is for an ungraded copy of this exact printing (${esc(({"Yuyu-tei":"Yuyu-tei shop price in Japan","TCGplayer":"TCGplayer market price, from recent sales","YGOPRODeck":"YGOPRODeck price"})[i.pn]||"market price")}, converted to GBP).`}${i.pl?" Lowest listing is the cheapest copy for sale on TCGplayer right now (condition not specified).":""} A graded slab can be worth more or less.</p>`:`<p class="note">No price source lists this exact printing yet, so there is no raw price to show.</p>`}
       ${(i.pq&&i.pq.length>1)?sparkHTML(i.pq):""}
+      ${gradeWorth(i)}
       ${i.xn?`<p class="fixn"><b>Correction</b> ${esc(i.xn)}</p>`:""}
       <p class="note">🔎 <b>Found by:</b> ${esc(SRCL[i.sc||"scan"])}${i.sn&&i.sn!==SRCL[i.sc||"scan"]?` (${esc(i.sn)})`:""}${i.cr&&i.cr!=="the creator"?` ✨ thanks to <b>${esc(i.cr)}${/icy\s*prime/i.test(i.cr)?` <button type="button" class="icyb" data-icy aria-label="Stay frosty">\u{1F9CA}</button>`:""}</b>`:""}</p>
       ${(i.ts!=null&&i.ts>0)?`<dl><dt>Graded ACE ${esc(i.g)}</dt><dd>${i.pop==null?"Unknown":fmt(i.pop)}</dd><dt>Graded higher</dt><dd>${i.ph==null?"Unknown":fmt(i.ph)}</dd>
