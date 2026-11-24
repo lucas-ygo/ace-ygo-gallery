@@ -907,7 +907,7 @@ html.restoring{background:#06172c}
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
 
-<script src="data.js?v=924a73160f"></script>
+<script src="data.js?v=4307a93bd5"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1133,15 +1133,15 @@ function apply(keepScroll){
     st.only=new Set(fresh.map(i=>i.c));st.onlyLbl="New since your last visit";apply();el.remove()})})();
 /* ---------- lightbox ---------- */
 const dlg=$("#lb");let cur=-1;
-const GFEE=22;
+const GFEE=18;
 const gradeWorth=i=>{if(!(i.p>0))return"";
   const sales=[].concat(...DATA.filter(x=>x.no===i.no&&x.n===i.n&&x.g===i.g&&x.sl&&x.sl.length).map(x=>x.sl.slice(0,3))).map(s=>s.p).filter(v=>v>0);
   const cost=i.p+GFEE,gr=i.gr?parseInt(i.gr,10):NaN;
-  let h=`<div class="gw"><h4>Worth grading?</h4><dl><dt>Raw copy</dt><dd>${money(i.p)}</dd><dt>ACE Standard fee</dt><dd>${money(GFEE)}</dd><dt>Cost to grade</dt><dd>${money(cost)}</dd>`;
+  let h=`<div class="gw"><h4>Worth grading?</h4><dl><dt>Raw copy</dt><dd>${money(i.p)}</dd><dt>ACE Basic fee (30 days)</dt><dd>${money(GFEE)}</dd><dt>Cost to grade</dt><dd>${money(cost)}</dd>`;
   if(!isNaN(gr))h+=`<dt>Gem rate (ACE 10)</dt><dd>${gr}%</dd>`;
   if(sales.length){const avg=sales.reduce((a,b)=>a+b,0)/sales.length,d=avg-cost;
     h+=`<dt>ACE ${esc(i.g)} sales (${sales.length})</dt><dd>${money(avg)}</dd><dt>If it grades ${esc(i.g)}</dt><dd><b>${d>=0?"+":"−"}${money(Math.abs(d))}</b></dd>`}
-  h+=`</dl><p class="note">${sales.length?"":"No recorded ACE "+esc(i.g)+" sales of this card yet, so there is nothing to compare against. "}Estimate only. It uses ACE's Standard fee (shipping, insurance and label extras not included), the raw price above, and recorded ACE sales of this card at this grade. Most raw copies will not come back as a ${esc(i.g)}${!isNaN(gr)?" (the gem rate is the share that reach 10)":""}.</p></div>`;
+  h+=`</dl><p class="note">${sales.length?"":"No recorded ACE "+esc(i.g)+" sales of this card yet, so there is nothing to compare against. "}Estimate only. It uses ACE's lowest fee for everyone, Basic at 30 working days (shipping, insurance and label extras not included), the raw price above, and recorded ACE sales of this card at this grade. Most raw copies will not come back as a ${esc(i.g)}${!isNaN(gr)?" (the gem rate is the share that reach 10)":""}.</p></div>`;
   return h};
 function openLB(idx,item){
   const i=item||view[idx];if(!i)return;cur=idx;st.c=String(i.c);
