@@ -632,6 +632,24 @@ footer p{margin:0 0 6px;max-width:80ch}
   .grid .cw>.cmpb{left:calc(50% - 37px)}.grid .cw>.favb{left:calc(50% + 5px)}
   .grid .cw .info{padding-bottom:46px}
 }
+  /* send-to-ACE shortlist */
+  #slistd .cmpbox{max-width:760px}
+  .slf{display:grid;gap:8px;margin:10px 0 14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
+  .slf .r{display:flex;flex-wrap:wrap;gap:8px}
+  .slf input,.slf select{flex:1 1 140px;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit}
+  .slh{display:flex;gap:12px;align-items:flex-start}
+  .slh img,.sli img{width:64px;height:auto;aspect-ratio:421/614;object-fit:cover;border-radius:4px;background:var(--abyss);flex:none}
+  .slh b,.sli b{display:block}
+  .sli{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+  .sli .tx{flex:1;min-width:0}.sli small{display:block;color:var(--mute,#9aa);overflow-wrap:anywhere}
+  .sli input[type=checkbox]{width:20px;height:20px;margin-top:4px;flex:none;accent-color:var(--gold)}
+  .slpick{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+  .slpick button{display:block;width:100%;text-align:left;padding:8px 12px;border:0;border-top:1px solid var(--line);background:none;color:var(--foil);font:inherit;cursor:pointer}
+  .slpick button:first-child{border-top:0}.slpick button:hover{background:var(--raise)}
+  .slbar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px;padding:10px 0;background:var(--abyss);border-top:1px solid var(--gold-dim)}
+  .slbar input{flex:1 1 180px;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit}
+  #slistd details{border-top:1px solid var(--line);padding:8px 0}#slistd summary{cursor:pointer}
+  #slistd .btn.sm{padding:6px 10px;font-size:13px}
 </style>
 <script>window.__busy=function(b,t){if(document.documentElement.dataset.theme==="5d"){b.innerHTML='<span class="tuning" aria-hidden="true"></span>Tuning\u2026'}else{b.textContent=t}};try{var t=localStorage.getItem("theme");if(t==="light"){t="5d";try{localStorage.setItem("theme","5d")}catch(e){}}document.documentElement.dataset.theme=t==="duel"||t==="5d"||t==="gx"||t==="vault"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script data-goatcounter="https://lucas-ygo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -648,6 +666,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   <div class="hlinks"><button class="coffee" id="leadbtn" type="button">&#128269; Send a cert</button>
   <button class="coffee" id="statsbtn" type="button" hidden>&#128202; Stats</button>
   <button class="coffee" id="setsbtn" type="button" hidden>&#128218; Sets</button>
+  <button class="coffee" id="slbtn" type="button">&#128230; ACE shortlist</button>
   <a class="coffee" id="coffee" href="#" target="_blank" rel="noopener noreferrer" title="Buy me a coffee" hidden>&#9749;<span class="lbl"> Buy me a coffee</span></a>
   <a class="coffee" id="igbtn" href="#" target="_blank" rel="noopener noreferrer" title="Instagram" hidden>&#128247;<span class="lbl"> Instagram</span></a>
   <button class="coffee" id="installbtn" type="button" hidden>&#10133; Install app</button></div>
@@ -756,7 +775,7 @@ html.restoring{background:#06172c}
   .brand .eyebrow:before,.brand .eyebrow:after{display:none}
   header.top .brand h1{font-size:25px!important;line-height:1!important;white-space:nowrap;letter-spacing:.02em}
   header.top .hlinks,header.top .hlinks.hmain{display:contents!important}
-  #listbtn{order:1}#salesbtn{order:2}#statsbtn{order:3}#setsbtn{order:4}#leadbtn{order:5}
+  #listbtn{order:1}#salesbtn{order:2}#statsbtn{order:3}#setsbtn{order:4}#slbtn{order:4}#leadbtn{order:5}
   #igbtn{order:7}#coffee{order:8}#installbtn{order:9}header.top .gbtn{order:10}
   header.top .coffee,header.top .mtile,header.top .hlinks.hmain .mtile{margin:0;min-height:0;flex-direction:row;align-items:center;gap:6px;padding:8px 11px;border:0;border-radius:8px;background:none;box-shadow:none;color:var(--foil);font:600 14px/1 var(--ui);transform:none}
   header.top .coffee:hover,header.top .mtile:hover{background:var(--raise);color:var(--gold);transform:none;box-shadow:none}
@@ -778,6 +797,7 @@ html.restoring{background:#06172c}
   header.top [aria-current=page]{background:var(--raise);color:var(--gold)}
   .brand h1{cursor:pointer}
   html.tabopen{overflow:hidden;scrollbar-gutter:stable}
+
   dialog.tabp{position:fixed;inset:var(--navh,56px) 0 0 0;margin:0;width:auto;max-width:none;height:auto;max-height:none;background:var(--abyss);z-index:25;overflow:auto;border-radius:0}
   dialog.tabp .cmpbox{max-width:1200px;max-height:none;margin:0 auto;border:0;border-radius:0;background:transparent;padding:26px 20px 80px;overflow:visible}
   dialog.tabp .cmpbox>.x{display:none}
@@ -809,6 +829,7 @@ html.restoring{background:#06172c}
     acct:SV('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4-6.5 8-6.5s7 2 8 6.5"/>'),
     sets:SV('<path d="M4 5h6v14H4zM14 5h6v14h-6z"/>'),
     stats:SV('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
+    sl:SV('<path d="M6 4h12v16l-6-4-6 4z"/>'),
     lead:SV('<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>'),
     theme:SV('<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>'),
     ig:SV('<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17" cy="7" r=".6"/>'),
@@ -877,12 +898,12 @@ html.restoring{background:#06172c}
     d.showModal()}
   function openMore(){const d=$("#mored");if(!d)return;
     d.innerHTML='<div class="mebox"><h2>More</h2>'+(shown("#setsbtn")?row("sets","Sets","Checklists for every set we hold a slab from"):"")+(shown("#statsbtn")?row("stats","Stats","Grades, sources and how the gallery is growing"):"")
-      +row("lead","Send a cert","Tell the scanner about a cert we are missing")+row("theme","Theme","Choose ACE, Duel Monsters, GX, 5D’s or Vault",THN[document.documentElement.dataset.theme]||"ACE")
+      +row("sl","Send to ACE shortlist","Cards you are thinking of grading, by set code")+row("lead","Send a cert","Tell the scanner about a cert we are missing")+row("theme","Theme","Choose ACE, Duel Monsters, GX, 5D’s or Vault",THN[document.documentElement.dataset.theme]||"ACE")
       +(href("#igbtn")?row("ig","Instagram","Highlights and new finds"):"")+(href("#coffee")?row("cof","Buy me a coffee","Helps keep the scanner running"):"")+(shown("#installbtn")?row("inst","Install app","Add the gallery to your home screen"):"")+'</div>';
     d.showModal()}
   const flt=(id)=>{closeAll();const b=$(id);if(b&&b.getAttribute("aria-pressed")!=="true")b.click();top()};
   const MA={fav:()=>flt("#favbtn"),own:()=>flt("#ownbtn"),bell:()=>{closeAll();click("#bell")},pend:()=>{closeAll();window.__pendOpen=1;click("#acct")},acct:()=>{closeAll();click("#acct")},
-    sets:()=>{closeAll();click("#setsbtn")},stats:()=>{closeAll();click("#statsbtn")},lead:()=>{closeAll();top();click("#leadbtn")},theme:()=>{closeAll();click("#theme")},
+    sets:()=>{closeAll();click("#setsbtn")},sl:()=>{closeAll();click("#slbtn")},stats:()=>{closeAll();click("#statsbtn")},lead:()=>{closeAll();top();click("#leadbtn")},theme:()=>{closeAll();click("#theme")},
     ig:()=>{const h=href("#igbtn");if(h)window.open(h,"_blank","noopener")},cof:()=>{const h=href("#coffee");if(h)window.open(h,"_blank","noopener")},inst:()=>{closeAll();click("#installbtn")}};
   function go(k){
     if(k==="gal"){closeAll();try{const d=history.state&&history.state.t&&history.state.d;if(d){quiet=true;history.go(-d);setTimeout(()=>{quiet=false},300)}}catch(e){}top()}
@@ -906,8 +927,9 @@ html.restoring{background:#06172c}
 <dialog id="acctd" aria-label="My account"></dialog>
 <dialog id="themed" aria-label="Choose a theme"></dialog>
 <dialog id="setd" aria-label="Set checklist"></dialog>
+<dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=50c2aa5ef1"></script>
+<script src="data.js?v=1e7827204b"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1709,6 +1731,97 @@ async function openSet(p){
     const m=e.target.closest(".sci:not(.got)");if(m){const cc=j.c.find(x=>x[0]===m.dataset.no);if(cc)cardPop(sd,j,cc);return}
     const c=e.target.closest(".sci.got");if(c){sd.close();const n=+c.dataset.c,k=view.findIndex(x=>x.c===n);openLB(k,k<0?BYC.get(n):undefined)}}}
 dlg.addEventListener("click",e=>{const b=e.target.closest("#lbset");if(b){dlg.close();openSet(b.dataset.p)}});
+
+
+/* ---------- send to ACE shortlist (saved on this device only) ---------- */
+(function(){
+const SLK="ygoShortlist1";let SL={l:[],s:[]};
+try{const j=JSON.parse(localStorage.getItem(SLK)||"null");if(j&&Array.isArray(j.l)&&Array.isArray(j.s))SL=j}catch(e){}
+const slSave=()=>{try{localStorage.setItem(SLK,JSON.stringify(SL))}catch(e){}};
+const RL={common:"Common",rare:"Rare",super:"Super Rare",ultra:"Ultra Rare",secret:"Secret Rare",ultimate:"Ultimate Rare",ghost:"Ghost Rare",gold:"Gold Rare",goldsecret:"Gold Secret Rare",platinum:"Platinum Rare",platinumsecret:"Platinum Secret Rare",premiumgold:"Premium Gold Rare",starlight:"Starlight Rare",collectors:"Collector's Rare",collector:"Collector's Rare",prismatic:"Prismatic Secret Rare",prismaticsecret:"Prismatic Secret Rare","25thsecret":"Quarter Century Secret Rare",quartercentury:"Quarter Century Secret Rare",quartercenturysecret:"Quarter Century Secret Rare",extrasecret:"Extra Secret Rare",shatterfoil:"Shatterfoil Rare",mosaic:"Mosaic Rare",starfoil:"Starfoil Rare",parallel:"Parallel Rare",ultraparallel:"Ultra Parallel Rare",secretparallel:"Secret Parallel Rare",duelterminal:"Duel Terminal Rare",pharaohs:"Pharaoh's Rare",kcrare:"KC Rare",kcultra:"KC Ultra Rare",tenthousand:"10000 Secret Rare",grandmaster:"Grand Master Rare",ultimategold:"Ultimate Gold Rare"};
+const rl=c=>{const k=String(c||"").trim().toLowerCase();return RL[k]||(k?k.replace(/[_-]/g," ").replace(/\b\w/g,m=>m.toUpperCase()):"")};
+const ED=["Not sure","1st Edition","Unlimited","Limited Edition"];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const SLC=new Map();
+async function slLoad(p){
+  if(SLC.has(p))return SLC.get(p);
+  const f=p.replace(/\//g,"_")+".json";let j=null;
+  for(const d of ["sets/","sl/"]){try{const r=await fetch(d+f);if(r.ok){j=await r.json();break}}catch(e){}}
+  SLC.set(p,j);return j}
+function slPics(pid){pid=String(pid||"");
+  if(/^yt~/.test(pid)){const q=pid.split("~");return[`https://card.yuyu-tei.jp/${q[1]}/front/${q[2]}/${q[3]}.jpg`,"cardsm/"+encodeURIComponent(pid)+".webp"]}
+  if(/^\d+$/.test(pid))return[`https://images.ygoprodeck.com/images/cards/${+pid}.jpg`,"cards/"+encodeURIComponent(pid)+".webp"];
+  return["",""]}
+const slImg=pid=>{const[a,b]=slPics(pid);return a?`<img alt="" referrerpolicy="no-referrer" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
+function slPrice(it){
+  const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return"";
+  const w=(it.rar||"").toLowerCase().replace(/ rare$/,"");
+  const ex=w&&m.find(x=>String(x.v||"").toLowerCase().includes(w));
+  if(ex)return`<small>Raw about ${esc(money(ex.p))} <span title="From our price check of an ACE slab of this card in this rarity. An estimate, not a quote.">(estimate)</span></small>`;
+  const o=m[0];return`<small>No price for this rarity yet. An ACE slab of the same card (${esc(o.v||"other rarity")}) is about ${esc(money(o.p))} raw.</small>`}
+const tcg=it=>`https://www.tcgplayer.com/search/yugioh/product?productLineName=yugioh&q=${encodeURIComponent(it.name+" "+it.code)}&view=grid`;
+const line=it=>[it.code,it.name,it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ");
+let S={res:null,pick:null,msg:"",sel:new Set(),subName:"",open:""};
+function card(it,box){return`<div class="sli">${box?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid)}<div class="tx"><b>${esc(it.name)}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small><small>${esc([it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ")||"Rarity not chosen")}</small>${it.note?`<small>Note: ${esc(it.note)}</small>`:""}${slPrice(it)}${box!==false&&box!==undefined?`<small><a href="${esc(tcg(it))}" target="_blank" rel="noopener noreferrer">Check TCGplayer</a> &middot; <a href="#" data-rm="${esc(it.id)}">Remove</a></small>`:""}</div></div>`}
+function draw(){
+  const d=$("#slistd");if(!d)return;
+  const keep=d.querySelector("#slq")?d.querySelector("#slq").value:"";
+  const r=S.res;
+  const form=r?`<div class="slh">${slImg(r.c[3])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
+    <div class="r"><select id="slrar" aria-label="Rarity">${[...new Set(String(r.c[2]||"").split(",").map(x=>x.trim()).filter(Boolean))].map(x=>`<option>${esc(rl(x))}</option>`).join("")}<option>Not sure</option></select>
+    <select id="sled" aria-label="Edition">${ED.map(x=>`<option>${x}</option>`).join("")}</select></div>
+    <div class="r"><input id="slnote" maxlength="120" placeholder="Note or reason (optional)" aria-label="Note"><button class="btn" type="button" id="sladd">Add to shortlist</button><button class="btn" type="button" id="slclr">Cancel</button></div>`
+    :`<div class="r"><input id="slq" placeholder="Set code, e.g. RA03-EN041" value="${esc(keep)}" autocapitalize="characters" autocomplete="off" aria-label="Set code"><button class="btn" type="button" id="slgo">Look up</button></div>`;
+  const pick=S.pick&&!r?`<input id="slf" placeholder="Filter ${esc(S.pick.j.n)} by name" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"><div class="slpick" id="slpk"></div>`:"";
+  const items=SL.l,sel=items.filter(i=>S.sel.has(i.id)).length;
+  d.innerHTML=`<div class="cmpbox"><h3>Send to ACE shortlist</h3><button class="x" type="button" id="slx" aria-label="Close">&times;</button>
+    <p class="note" style="margin:0">Cards you are thinking of sending to ACE for grading. Type a card's set code and it is added with its card art. This list is saved on this device only, so it is private to you and is not shared or synced.</p>
+    <div class="slf">${form}${S.msg?`<p class="note" style="margin:0">${esc(S.msg)}</p>`:""}${pick}</div>
+    <h4 style="margin:6px 0">Shortlist${items.length?` (${items.length})`:""}</h4>
+    ${items.length?items.map(i=>card(i,true)).join(""):`<p class="note">Nothing on the shortlist yet.</p>`}
+    ${items.length?`<div class="slbar"><input id="slsn" maxlength="60" placeholder="Submission name, e.g. ACE order number" value="${esc(S.subName)}" aria-label="Submission name"><button class="btn" type="button" id="slsent"${sel?"":" disabled"}>Mark ${sel||""} as sent</button><button class="btn" type="button" id="slcp">Copy list</button></div>`:""}
+    ${SL.s.length?`<h4 style="margin:14px 0 4px">Sent to ACE</h4>${SL.s.map(s=>`<details data-sub="${esc(s.id)}"${S.open===s.id?" open":""}><summary><b>${esc(s.name)}</b> &middot; ${s.items.length} card${s.items.length===1?"":"s"} &middot; ${esc(new Date(s.t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))}</summary>${s.items.map(i=>card(i,false)).join("")}<div class="r" style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" type="button" data-cps="${esc(s.id)}">Copy list</button><button class="btn sm" type="button" data-back="${esc(s.id)}">Move back to shortlist</button><button class="btn sm" type="button" data-del="${esc(s.id)}">${S.del===s.id?"Tap again to delete":"Delete"}</button></div></details>`).join("")}`:""}</div>`;
+  if(S.pick&&!r)fillPick();
+  d.querySelectorAll("img[data-fb]").forEach(im=>{im.addEventListener("error",()=>{if(im.dataset.fb&&im.getAttribute("src")!==im.dataset.fb){im.removeAttribute("referrerpolicy");im.src=im.dataset.fb}else im.style.visibility="hidden"},{once:false})})}
+function fillPick(){const b=$("#slpk");if(!b)return;const q=(($("#slf")||{}).value||"").toLowerCase();
+  const l=S.pick.j.c.filter(c=>!q||(c[1]+" "+c[0]).toLowerCase().includes(q)).slice(0,60);
+  b.innerHTML=l.map(c=>`<button type="button" data-pk="${esc(c[0])}"><b>${esc(c[1])}</b> <small>${esc(c[0])}</small></button>`).join("")||`<p class="note" style="padding:8px 12px;margin:0">No match.</p>`}
+const norm=q=>String(q||"").toUpperCase().replace(/\s+/g,"");
+async function lookup(raw){
+  const q=norm(raw);S.msg="";S.pick=null;
+  if(!q){S.msg="Type a set code first, for example RA03-EN041.";return draw()}
+  const m=/^(.*?[A-Z])-?(\d+)$/.exec(q);
+  let cands=[];
+  if(m){const p=m[1];cands.push(p);const hy=p.replace(/([A-Z0-9])(JP|EN|E|J|KR|SP|DE|FR|IT|PT|AE|SC|TC)$/,"$1-$2");if(hy!==p)cands.push(hy)}
+  else cands.push(q,q.replace(/([A-Z0-9])(JP|EN|E|J|KR|SP|DE|FR|IT|PT|AE|SC|TC)$/,"$1-$2"));
+  for(const p of cands){
+    const j=await slLoad(p);if(!j)continue;
+    if(!m){S.pick={p,j};S.msg="Pick the card from "+j.n+".";return draw()}
+    const n=+m[2];let c=j.c.find(x=>x[0].toUpperCase()===p+m[2])||j.c.find(x=>x[0].toUpperCase()===q)||j.c.find(x=>{const mm=/^(.*?[A-Za-z])(\d+)$/.exec(x[0]);return mm&&mm[1].toUpperCase()===p&&+mm[2]===n});
+    if(c){S.res={c,j,p};return draw()}
+    S.pick={p,j};S.msg=`${p}${m[2]} is not in the ${j.n} list we have. Pick it from the list instead.`;return draw()}
+  S.msg=`We don't have a card list for "${q}". Include the language part of the code, like RA03-EN041 or LOB-E005.`;draw()}
+function copy(text){const ok=()=>{S.msg="Copied.";draw()};try{navigator.clipboard.writeText(text).then(ok,()=>{S.msg="Couldn't copy here, select the text by hand.";draw()})}catch(e){ok()}}
+function open(){
+  const d=$("#slistd");if(!d)return;S.res=null;S.pick=null;S.msg="";draw();if(!d.open)d.showModal();
+  d.onclick=e=>{
+    const t=e.target;if(t.id==="slx"||t===d){d.close();return}
+    if(t.id==="slgo"){lookup($("#slq").value);return}
+    if(t.id==="slclr"){S.res=null;S.msg="";draw();return}
+    if(t.id==="sladd"&&S.res){const r=S.res;SL.l.unshift({id:uid(),code:r.c[0].toUpperCase(),name:r.c[1],set:r.j.n,pid:String(r.c[3]||""),rar:$("#slrar").value==="Not sure"?"":$("#slrar").value,ed:$("#sled").value,note:$("#slnote").value.trim(),t:Date.now()});slSave();S.res=null;S.pick=null;S.msg="Added.";draw();return}
+    const pk=t.closest("[data-pk]");if(pk&&S.pick){const c=S.pick.j.c.find(x=>x[0]===pk.dataset.pk);if(c){S.res={c,j:S.pick.j,p:S.pick.p};S.pick=null;S.msg="";draw()}return}
+    const rm=t.closest("[data-rm]");if(rm){e.preventDefault();SL.l=SL.l.filter(i=>i.id!==rm.dataset.rm);S.sel.delete(rm.dataset.rm);slSave();S.msg="";draw();return}
+    if(t.id==="slsent"){const ids=SL.l.filter(i=>S.sel.has(i.id));if(!ids.length)return;const nm=($("#slsn").value||"").trim()||("Submission "+new Date().toLocaleDateString("en-GB"));
+      const sid=uid();SL.s.unshift({id:sid,name:nm,t:Date.now(),items:ids});SL.l=SL.l.filter(i=>!S.sel.has(i.id));S.sel.clear();S.subName="";S.open=sid;slSave();S.msg=ids.length+" card"+(ids.length===1?"":"s")+" moved to “"+nm+"”.";draw();return}
+    if(t.id==="slcp"){copy(SL.l.map(line).join("\n"));return}
+    const cs=t.closest("[data-cps]");if(cs){const s=SL.s.find(x=>x.id===cs.dataset.cps);if(s)copy(s.items.map(line).join("\n"));return}
+    const bk=t.closest("[data-back]");if(bk){const s=SL.s.find(x=>x.id===bk.dataset.back);if(s){SL.l=s.items.concat(SL.l);SL.s=SL.s.filter(x=>x!==s);slSave();S.msg="Moved back to the shortlist.";draw()}return}
+    const dl=t.closest("[data-del]");if(dl){if(S.del===dl.dataset.del){SL.s=SL.s.filter(x=>x.id!==dl.dataset.del);S.del="";slSave()}else S.del=dl.dataset.del;draw();return}};
+  d.onchange=e=>{const c=e.target.closest("[data-sel]");if(c){c.checked?S.sel.add(c.dataset.sel):S.sel.delete(c.dataset.sel);const b=$("#slsent");if(b){const n=SL.l.filter(i=>S.sel.has(i.id)).length;b.disabled=!n;b.textContent="Mark "+(n||"")+" as sent"}}};
+  d.oninput=e=>{if(e.target.id==="slf")fillPick();if(e.target.id==="slsn")S.subName=e.target.value};
+  d.onkeydown=e=>{if(e.key==="Enter"&&e.target.id==="slq"){e.preventDefault();lookup(e.target.value)}}}
+const b=$("#slbtn");if(b)b.addEventListener("click",open);
+window.__slOpen=open})();
 
 /* ---------- saved slabs ---------- */
 let favDirty=false;
