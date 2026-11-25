@@ -929,7 +929,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=1e7827204b"></script>
+<script src="data.js?v=af11b3f7c8"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1761,7 +1761,7 @@ function slPrice(it){
   const o=m[0];return`<small>No price for this rarity yet. An ACE slab of the same card (${esc(o.v||"other rarity")}) is about ${esc(money(o.p))} raw.</small>`}
 const tcg=it=>`https://www.tcgplayer.com/search/yugioh/product?productLineName=yugioh&q=${encodeURIComponent(it.name+" "+it.code)}&view=grid`;
 const line=it=>[it.code,it.name,it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ");
-let S={res:null,pick:null,msg:"",sel:new Set(),subName:"",open:""};
+let S={res:null,pick:null,msg:"",sel:new Set(),subName:"",open:"",hits:null,sets:null};
 function card(it,box){return`<div class="sli">${box?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid)}<div class="tx"><b>${esc(it.name)}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small><small>${esc([it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ")||"Rarity not chosen")}</small>${it.note?`<small>Note: ${esc(it.note)}</small>`:""}${slPrice(it)}${box!==false&&box!==undefined?`<small><a href="${esc(tcg(it))}" target="_blank" rel="noopener noreferrer">Check TCGplayer</a> &middot; <a href="#" data-rm="${esc(it.id)}">Remove</a></small>`:""}</div></div>`}
 function draw(){
   const d=$("#slistd");if(!d)return;
@@ -1771,8 +1771,9 @@ function draw(){
     <div class="r"><select id="slrar" aria-label="Rarity">${[...new Set(String(r.c[2]||"").split(",").map(x=>x.trim()).filter(Boolean))].map(x=>`<option>${esc(rl(x))}</option>`).join("")}<option>Not sure</option></select>
     <select id="sled" aria-label="Edition">${ED.map(x=>`<option>${x}</option>`).join("")}</select></div>
     <div class="r"><input id="slnote" maxlength="120" placeholder="Note or reason (optional)" aria-label="Note"><button class="btn" type="button" id="sladd">Add to shortlist</button><button class="btn" type="button" id="slclr">Cancel</button></div>`
-    :`<div class="r"><input id="slq" placeholder="Set code, e.g. RA03-EN041" value="${esc(keep)}" autocapitalize="characters" autocomplete="off" aria-label="Set code"><button class="btn" type="button" id="slgo">Look up</button></div>`;
-  const pick=S.pick&&!r?`<input id="slf" placeholder="Filter ${esc(S.pick.j.n)} by name" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"><div class="slpick" id="slpk"></div>`:"";
+    :`<div class="r"><input id="slq" placeholder="Set code (RA03-EN041) or set and card name (RA03 Snipe)" value="${esc(keep)}" autocapitalize="characters" autocomplete="off" aria-label="Set code"><button class="btn" type="button" id="slgo">Look up</button></div>`;
+  const hl=!r&&S.hits?`<div class="slpick">${S.hits.map((h,i)=>`<button type="button" data-hit="${i}"><b>${esc(h.c[1])}</b> <small>${esc(h.c[0])} \u00b7 ${esc(h.j.n)}</small></button>`).join("")}</div>`:!r&&S.sets?`<div class="slpick">${S.sets.map(x=>`<button type="button" data-set="${esc(x.p)}"><b>${esc(x.n)}</b> <small>${esc(x.p)}</small></button>`).join("")}</div>`:"";
+  const pick=(S.pick&&!r?`<input id="slf" placeholder="Filter ${esc(S.pick.j.n)} by name" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"><div class="slpick" id="slpk"></div>`:"")+hl;
   const items=SL.l,sel=items.filter(i=>S.sel.has(i.id)).length;
   d.innerHTML=`<div class="cmpbox"><h3>Send to ACE shortlist</h3><button class="x" type="button" id="slx" aria-label="Close">&times;</button>
     <p class="note" style="margin:0">Cards you are thinking of sending to ACE for grading. Type a card's set code and it is added with its card art. This list is saved on this device only, so it is private to you and is not shared or synced.</p>
@@ -1787,8 +1788,23 @@ function fillPick(){const b=$("#slpk");if(!b)return;const q=(($("#slf")||{}).val
   const l=S.pick.j.c.filter(c=>!q||(c[1]+" "+c[0]).toLowerCase().includes(q)).slice(0,60);
   b.innerHTML=l.map(c=>`<button type="button" data-pk="${esc(c[0])}"><b>${esc(c[1])}</b> <small>${esc(c[0])}</small></button>`).join("")||`<p class="note" style="padding:8px 12px;margin:0">No match.</p>`}
 const norm=q=>String(q||"").toUpperCase().replace(/\s+/g,"");
+let SLI=null;
+async function slIndex(){if(SLI)return SLI;try{const r=await fetch("sl/index.json");SLI=r.ok?await r.json():{}}catch(e){SLI={}}
+  for(const[p,e]of Object.entries(SETN||{}))if(!SLI[p])SLI[p]=[e[1]||p,""];return SLI}
+async function freeText(raw){
+  const w=String(raw).toLowerCase().split(/[\s,]+/).filter(Boolean),ix=await slIndex(),ent=Object.entries(ix);
+  for(let k=w.length;k>=1;k--){
+    const sets=ent.filter(([p,e])=>{const h=(p+" "+(e[0]||"")).toLowerCase();return w.slice(0,k).every(t=>h.includes(t))});
+    if(!sets.length)continue;
+    sets.sort((a,b)=>(/-E/i.test(a[0])?0:1)-(/-E/i.test(b[0])?0:1)||String(b[1][1]).localeCompare(String(a[1][1])));
+    const rest=w.slice(k);
+    if(!rest.length){S.sets=sets.slice(0,30).map(([p,e])=>({p,n:e[0]||p}));S.msg=sets.length+" set"+(sets.length===1?"":"s")+" match. Pick one, or add part of the card name.";return true}
+    const hits=[];
+    for(const[p]of sets.slice(0,8)){const j=await slLoad(p);if(!j)continue;for(const c of j.c)if(rest.every(t=>c[1].toLowerCase().includes(t)))hits.push({c,j,p})}
+    if(hits.length){S.hits=hits.slice(0,40);S.msg=hits.length+" card"+(hits.length===1?"":"s")+" found. Pick yours.";return true}}
+  return false}
 async function lookup(raw){
-  const q=norm(raw);S.msg="";S.pick=null;
+  const q=norm(raw);S.msg="";S.pick=null;S.hits=null;S.sets=null;
   if(!q){S.msg="Type a set code first, for example RA03-EN041.";return draw()}
   const m=/^(.*?[A-Z])-?(\d+)$/.exec(q);
   let cands=[];
@@ -1800,16 +1816,19 @@ async function lookup(raw){
     const n=+m[2];let c=j.c.find(x=>x[0].toUpperCase()===p+m[2])||j.c.find(x=>x[0].toUpperCase()===q)||j.c.find(x=>{const mm=/^(.*?[A-Za-z])(\d+)$/.exec(x[0]);return mm&&mm[1].toUpperCase()===p&&+mm[2]===n});
     if(c){S.res={c,j,p};return draw()}
     S.pick={p,j};S.msg=`${p}${m[2]} is not in the ${j.n} list we have. Pick it from the list instead.`;return draw()}
-  S.msg=`We don't have a card list for "${q}". Include the language part of the code, like RA03-EN041 or LOB-E005.`;draw()}
+  if(await freeText(raw))return draw();
+  S.msg=`Nothing found for "${String(raw).trim()}". Try a set code like RA03-EN041 or LOB-E005, or the set name and card name.`;draw()}
 function copy(text){const ok=()=>{S.msg="Copied.";draw()};try{navigator.clipboard.writeText(text).then(ok,()=>{S.msg="Couldn't copy here, select the text by hand.";draw()})}catch(e){ok()}}
 function open(){
   const d=$("#slistd");if(!d)return;S.res=null;S.pick=null;S.msg="";draw();if(!d.open)d.showModal();
   d.onclick=e=>{
     const t=e.target;if(t.id==="slx"||t===d){d.close();return}
     if(t.id==="slgo"){lookup($("#slq").value);return}
-    if(t.id==="slclr"){S.res=null;S.msg="";draw();return}
+    if(t.id==="slclr"){S.res=null;S.msg="";S.hits=null;S.sets=null;draw();return}
     if(t.id==="sladd"&&S.res){const r=S.res;SL.l.unshift({id:uid(),code:r.c[0].toUpperCase(),name:r.c[1],set:r.j.n,pid:String(r.c[3]||""),rar:$("#slrar").value==="Not sure"?"":$("#slrar").value,ed:$("#sled").value,note:$("#slnote").value.trim(),t:Date.now()});slSave();S.res=null;S.pick=null;S.msg="Added.";draw();return}
     const pk=t.closest("[data-pk]");if(pk&&S.pick){const c=S.pick.j.c.find(x=>x[0]===pk.dataset.pk);if(c){S.res={c,j:S.pick.j,p:S.pick.p};S.pick=null;S.msg="";draw()}return}
+    const ht=t.closest("[data-hit]");if(ht&&S.hits){const h=S.hits[+ht.dataset.hit];if(h){S.res={c:h.c,j:h.j,p:h.p};S.hits=null;S.msg="";draw()}return}
+    const st=t.closest("[data-set]");if(st){slLoad(st.dataset.set).then(j=>{if(j){S.pick={p:st.dataset.set,j};S.sets=null;S.msg="Pick the card from "+j.n+".";draw()}});return}
     const rm=t.closest("[data-rm]");if(rm){e.preventDefault();SL.l=SL.l.filter(i=>i.id!==rm.dataset.rm);S.sel.delete(rm.dataset.rm);slSave();S.msg="";draw();return}
     if(t.id==="slsent"){const ids=SL.l.filter(i=>S.sel.has(i.id));if(!ids.length)return;const nm=($("#slsn").value||"").trim()||("Submission "+new Date().toLocaleDateString("en-GB"));
       const sid=uid();SL.s.unshift({id:sid,name:nm,t:Date.now(),items:ids});SL.l=SL.l.filter(i=>!S.sel.has(i.id));S.sel.clear();S.subName="";S.open=sid;slSave();S.msg=ids.length+" card"+(ids.length===1?"":"s")+" moved to “"+nm+"”.";draw();return}
