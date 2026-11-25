@@ -929,7 +929,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=7ec97ee3f6"></script>
+<script src="data.js?v=76f0830bca"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1755,20 +1755,29 @@ function slPics(pid){pid=String(pid||"");
 const slImg=pid=>{const[a,b]=slPics(pid);return a?`<img alt="" referrerpolicy="no-referrer" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
 function slPrice(it){
   const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return"";
-  const w=(it.rar||"").toLowerCase().replace(/ rare$/,"");
-  const ex=w&&m.find(x=>String(x.v||"").toLowerCase().includes(w));
-  if(ex)return`<small>Raw about ${esc(money(ex.p))} <span title="From our price check of an ACE slab of this card in this rarity. An estimate, not a quote.">(estimate)</span></small>`;
-  const o=m[0];return`<small>No price for this rarity yet. An ACE slab of the same card (${esc(o.v||"other rarity")}) is about ${esc(money(o.p))} raw.</small>`}
+  const w=(it.rar||"").toLowerCase().replace(/ rare$/,""),V=x=>String(x.v||"").toLowerCase();
+  const ex=w&&(m.find(x=>V(x)===(it.rar||"").toLowerCase())||m.find(x=>V(x).startsWith(w))||m.find(x=>V(x).includes(w)));
+  if(ex)return`<small>Raw about ${esc(money(ex.p))} <span title="From our price check of an ACE slab of this card. An estimate, not a quote.">(estimate${ex.v?", "+esc(ex.v):""})</span></small>`;
+  const o=m.slice().sort((x,y)=>y.p-x.p)[0];
+  if(!w)return`<small>Raw about ${esc(money(o.p))} <span title="From our price check of an ACE slab of this card. An estimate, not a quote.">(estimate, ${esc(o.v||"this card")})</span></small>`;
+  return`<small>No price for this rarity yet. The same card as ${esc(o.v||"another rarity")} is about ${esc(money(o.p))} raw.</small>`}
 const tcg=it=>`https://www.tcgplayer.com/search/yugioh/product?productLineName=yugioh&q=${encodeURIComponent(it.name+" "+it.code)}&view=grid`;
 const line=it=>[it.code,it.name,it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ");
 let S={res:null,pick:null,msg:"",sel:new Set(),subName:"",open:"",hits:null,sets:null,names:null,alt:null};
 function card(it,box){return`<div class="sli">${box?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid)}<div class="tx"><b>${esc(it.name)}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small><small>${esc([it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ")||"Rarity not chosen")}</small>${it.note?`<small>Note: ${esc(it.note)}</small>`:""}${slPrice(it)}${box!==false&&box!==undefined?`<small><a href="${esc(tcg(it))}" target="_blank" rel="noopener noreferrer">Check TCGplayer</a> &middot; <a href="#" data-rm="${esc(it.id)}">Remove</a></small>`:""}</div></div>`}
+const GEN=["Common","Rare","Super Rare","Ultra Rare","Secret Rare","Ultimate Rare","Prismatic Secret Rare","Quarter Century Secret Rare","Collector's Rare","Gold Rare","Ghost Rare","Starlight Rare","Other (put it in the note)"];
+function rarOpts(r){const out=[],seen=new Set(),add=x=>{x=String(x||"").trim();const k=x.toLowerCase();if(x&&!seen.has(k)){seen.add(k);out.push(x)}};
+  /no card number/i.test(r.c[2]||"")?add("Manga-style (no card number)"):String(r.c[2]||"").split(",").forEach(x=>add(rl(x.trim())));
+  const code=String(r.c[0]).toUpperCase();
+  DATA.filter(x=>skn(x)===code&&x.v).forEach(x=>add(String(x.v).toLowerCase().replace(/\b\w/g,m=>m.toUpperCase())));
+  if(out.length<2)GEN.forEach(add);
+  return out}
 function draw(){
   const d=$("#slistd");if(!d)return;
   const keep=d.querySelector("#slq")?d.querySelector("#slq").value:"";
   const r=S.res;
   const form=r?`<div class="slh">${slImg(r.c[3])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
-    <div class="r"><select id="slrar" aria-label="Rarity">${[...new Set(String(r.c[2]||"").split(",").map(x=>x.trim()).filter(Boolean))].map(x=>`<option>${esc(rl(x))}</option>`).join("")}<option>Not sure</option></select>
+    <div class="r"><select id="slrar" aria-label="Rarity">${rarOpts(r).map(x=>`<option>${esc(x)}</option>`).join("")}<option>Not sure</option></select>
     <select id="sled" aria-label="Edition">${ED.map(x=>`<option>${x}</option>`).join("")}</select></div>
     <div class="r"><input id="slnote" maxlength="120" placeholder="Note or reason (optional)" aria-label="Note"><button class="btn" type="button" id="sladd">Add to shortlist</button><button class="btn" type="button" id="slclr">Cancel</button></div>`
     :`<div class="r"><input id="slq" placeholder="Card name (Jinzo) or set code (RA03-EN041)" value="${esc(keep)}" autocapitalize="characters" autocomplete="off" aria-label="Set code"><button class="btn" type="button" id="slgo">Look up</button></div>`;
@@ -1786,7 +1795,7 @@ function draw(){
   if(S.pick&&!r)fillPick();
   d.querySelectorAll("img[data-fb]").forEach(im=>{im.addEventListener("error",()=>{if(im.dataset.fb&&im.getAttribute("src")!==im.dataset.fb){im.removeAttribute("referrerpolicy");im.src=im.dataset.fb}else im.style.visibility="hidden"},{once:false})})}
 function fillPick(){const b=$("#slpk");if(!b)return;const q=(($("#slf")||{}).value||"").toLowerCase();
-  const l=S.pick.j.c.filter(c=>!q||(c[1]+" "+c[0]).toLowerCase().includes(q)).slice(0,60);
+  const l=S.pick.j.c.filter(c=>!q||(c[1]+" "+c[0]).toLowerCase().includes(q)).slice(0,300);
   b.innerHTML=l.map(c=>`<button type="button" data-pk="${esc(c[0])}"><b>${esc(c[1])}</b> <small>${esc(c[0])}</small></button>`).join("")||`<p class="note" style="padding:8px 12px;margin:0">No match.</p>`}
 const norm=q=>String(q||"").toUpperCase().replace(/\s+/g,"");
 let SLI=null;
