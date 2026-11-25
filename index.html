@@ -650,6 +650,12 @@ footer p{margin:0 0 6px;max-width:80ch}
   .slbar input{flex:1 1 180px;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit}
   #slistd details{border-top:1px solid var(--line);padding:8px 0}#slistd summary{cursor:pointer}
   #slistd .btn.sm{padding:6px 10px;font-size:13px}
+  #slistd .lnk{background:none;border:0;padding:0;color:var(--gold);font:inherit;text-decoration:underline;cursor:pointer;text-align:left}
+  .slq{color:var(--gold);font-weight:700}
+  .slc{margin:4px 0}.slc select{flex:1 1 130px;min-width:0;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit;font-size:13px}
+  .slst{display:inline-flex;align-items:center;gap:6px;flex:none}.slst button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit;font-size:16px;cursor:pointer}
+  .slnt{width:100%;margin:2px 0 4px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit;font-size:13px}
+  .slbt{margin:4px 0 6px}.slbt select,.slbt input{flex:1 1 120px;min-width:0;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit}
 </style>
 <script>window.__busy=function(b,t){if(document.documentElement.dataset.theme==="5d"){b.innerHTML='<span class="tuning" aria-hidden="true"></span>Tuning\u2026'}else{b.textContent=t}};try{var t=localStorage.getItem("theme");if(t==="light"){t="5d";try{localStorage.setItem("theme","5d")}catch(e){}}document.documentElement.dataset.theme=t==="duel"||t==="5d"||t==="gx"||t==="vault"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script data-goatcounter="https://lucas-ygo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -929,7 +935,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=26860fa605"></script>
+<script src="data.js?v=9c01c80444"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1733,14 +1739,16 @@ async function openSet(p){
 dlg.addEventListener("click",e=>{const b=e.target.closest("#lbset");if(b){dlg.close();openSet(b.dataset.p)}});
 
 
-/* ---------- send to ACE shortlist (saved on this device only) ---------- */
+/* ---------- send to ACE shortlist (saved on this device; synced when signed in) ---------- */
 (function(){
-const SLK="ygoShortlist1";let SL={l:[],s:[]};
-try{const j=JSON.parse(localStorage.getItem(SLK)||"null");if(j&&Array.isArray(j.l)&&Array.isArray(j.s))SL=j}catch(e){}
-const slSave=()=>{try{localStorage.setItem(SLK,JSON.stringify(SL))}catch(e){}};
+const SLK="ygoShortlist1";let SL={l:[],s:[],u:0};
+try{const j=JSON.parse(localStorage.getItem(SLK)||"null");if(j&&Array.isArray(j.l)&&Array.isArray(j.s)){SL=j;SL.u=+j.u||0}}catch(e){}
+const store=()=>{try{localStorage.setItem(SLK,JSON.stringify(SL))}catch(e){}};
+const slSave=()=>{SL.u=Date.now();store();try{if(window.__prefChanged)window.__prefChanged()}catch(e){}};
 const RL={common:"Common",rare:"Rare",super:"Super Rare",ultra:"Ultra Rare",secret:"Secret Rare",ultimate:"Ultimate Rare",ghost:"Ghost Rare",gold:"Gold Rare",goldsecret:"Gold Secret Rare",platinum:"Platinum Rare",platinumsecret:"Platinum Secret Rare",premiumgold:"Premium Gold Rare",starlight:"Starlight Rare",collectors:"Collector's Rare",collector:"Collector's Rare",prismatic:"Prismatic Secret Rare",prismaticsecret:"Prismatic Secret Rare","25thsecret":"Quarter Century Secret Rare",quartercentury:"Quarter Century Secret Rare",quartercenturysecret:"Quarter Century Secret Rare",extrasecret:"Extra Secret Rare",shatterfoil:"Shatterfoil Rare",mosaic:"Mosaic Rare",starfoil:"Starfoil Rare",parallel:"Parallel Rare",ultraparallel:"Ultra Parallel Rare",secretparallel:"Secret Parallel Rare",duelterminal:"Duel Terminal Rare",pharaohs:"Pharaoh's Rare",kcrare:"KC Rare",kcultra:"KC Ultra Rare",tenthousand:"10000 Secret Rare",grandmaster:"Grand Master Rare",ultimategold:"Ultimate Gold Rare"};
 const rl=c=>{const k=String(c||"").trim().toLowerCase();return RL[k]||(k?k.replace(/[_-]/g," ").replace(/\b\w/g,m=>m.toUpperCase()):"")};
 const ED=["Not sure","1st Edition","Unlimited","Limited Edition"];
+const GEN=["Common","Rare","Super Rare","Ultra Rare","Secret Rare","Ultimate Rare","Prismatic Secret Rare","Quarter Century Secret Rare","Collector's Rare","Gold Rare","Ghost Rare","Starlight Rare","Other (put it in the note)"];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const SLC=new Map();
 async function slLoad(p){
@@ -1753,65 +1761,57 @@ function slPics(pid){pid=String(pid||"");
   if(/^\d+$/.test(pid))return[`https://images.ygoprodeck.com/images/cards/${+pid}.jpg`,"cards/"+encodeURIComponent(pid)+".webp"];
   return["",""]}
 const slImg=pid=>{const[a,b]=slPics(pid);return a?`<img alt="" referrerpolicy="no-referrer" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
-function slPrice(it){
-  const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return"";
+/* price: from our own price check of an ACE slab of the same card number. ok=1 when it matches the chosen rarity (or none chosen) */
+function slPx(it){
+  const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return null;
   const w=(it.rar||"").toLowerCase().replace(/ rare$/,""),V=x=>String(x.v||"").toLowerCase();
   const ex=w&&(m.find(x=>V(x)===(it.rar||"").toLowerCase())||m.find(x=>V(x).startsWith(w))||m.find(x=>V(x).includes(w)));
-  if(ex)return`<small>Raw about ${esc(money(ex.p))} <span title="From our price check of an ACE slab of this card. An estimate, not a quote.">(estimate${ex.v?", "+esc(ex.v):""})</span></small>`;
-  const o=m.slice().sort((x,y)=>y.p-x.p)[0];
-  if(!w)return`<small>Raw about ${esc(money(o.p))} <span title="From our price check of an ACE slab of this card. An estimate, not a quote.">(estimate, ${esc(o.v||"this card")})</span></small>`;
-  return`<small>No price for this rarity yet. The same card as ${esc(o.v||"another rarity")} is about ${esc(money(o.p))} raw.</small>`}
+  if(ex)return{p:ex.p,v:ex.v,ok:1};
+  const o=m.slice().sort((x,y)=>y.p-x.p)[0];return{p:o.p,v:o.v,ok:w?0:1}}
+function slPrice(it){const x=slPx(it);if(!x)return"";
+  if(x.ok)return`<small>Raw about ${esc(money(x.p))}${it.q>1?" each":""} <span title="From our price check of an ACE slab of this card. An estimate, not a quote.">(estimate${x.v?", "+esc(x.v):""})</span></small>`;
+  return`<small>No price for this rarity yet. The same card as ${esc(x.v||"another rarity")} is about ${esc(money(x.p))} raw.</small>`}
+function slSlabs(it){const m=DATA.filter(x=>skn(x)===it.code);if(!m.length)return"";const top=Math.max(...m.map(gnum));
+  return`<small><button type="button" class="lnk" data-slab="${esc(it.code)}">On the gallery: ${m.length} ACE slab${m.length===1?"":"s"}, top grade ${top%1?top.toFixed(1):top}</button></small>`}
 const tcg=it=>`https://www.tcgplayer.com/search/yugioh/product?productLineName=yugioh&q=${encodeURIComponent(it.name+" "+it.code)}&view=grid`;
-const line=it=>[it.code,it.name,it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ");
-let S={res:null,pick:null,msg:"",sel:new Set(),subName:"",open:"",hits:null,sets:null,names:null,alt:null};
-function card(it,box){return`<div class="sli">${box?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid)}<div class="tx"><b>${esc(it.name)}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small><small>${esc([it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ")||"Rarity not chosen")}</small>${it.note?`<small>Note: ${esc(it.note)}</small>`:""}${slPrice(it)}${box!==false&&box!==undefined?`<small><a href="${esc(tcg(it))}" target="_blank" rel="noopener noreferrer">Check TCGplayer</a> &middot; <a href="#" data-rm="${esc(it.id)}">Remove</a></small>`:""}</div></div>`}
-const GEN=["Common","Rare","Super Rare","Ultra Rare","Secret Rare","Ultimate Rare","Prismatic Secret Rare","Quarter Century Secret Rare","Collector's Rare","Gold Rare","Ghost Rare","Starlight Rare","Other (put it in the note)"];
+const ln=it=>[(it.q>1?it.q+"x ":"")+it.code,it.name,it.rar,it.ed&&it.ed!=="Not sure"?it.ed:"",it.note].filter(Boolean).join(" · ");
+const csvq=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+function csvOf(items){const rows=[["Code","Name","Set","Rarity","Edition","Qty","Note","Raw GBP (estimate)"]];
+  items.forEach(it=>{const x=slPx(it);rows.push([it.code,it.name,it.set,it.rar,it.ed&&it.ed!=="Not sure"?it.ed:"",it.q||1,it.note,x&&x.ok?x.p:""])});
+  return rows.map(r=>r.map(csvq).join(",")).join("\r\n")}
+function dl(name,text,type){try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){}}
 function rarOpts(r){const out=[],seen=new Set(),add=x=>{x=String(x||"").trim();const k=x.toLowerCase();if(x&&!seen.has(k)){seen.add(k);out.push(x)}};
   /no card number/i.test(r.c[2]||"")?add("Manga-style (no card number)"):String(r.c[2]||"").split(",").forEach(x=>add(rl(x.trim())));
   const code=String(r.c[0]).toUpperCase();
   DATA.filter(x=>skn(x)===code&&x.v).forEach(x=>add(String(x.v).toLowerCase().replace(/\b\w/g,m=>m.toUpperCase())));
   if(out.length<2)GEN.forEach(add);
   return out}
-function draw(){
-  const d=$("#slistd");if(!d)return;
-  const keep=d.querySelector("#slq")?d.querySelector("#slq").value:"";
-  const r=S.res;
-  const form=r?`<div class="slh">${slImg(r.c[3])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
-    <div class="r"><select id="slrar" aria-label="Rarity">${rarOpts(r).map(x=>`<option>${esc(x)}</option>`).join("")}<option>Not sure</option></select>
-    <select id="sled" aria-label="Edition">${ED.map(x=>`<option>${x}</option>`).join("")}</select></div>
-    <div class="r"><input id="slnote" maxlength="120" placeholder="Note or reason (optional)" aria-label="Note"><button class="btn" type="button" id="sladd">Add to shortlist</button><button class="btn" type="button" id="slclr">Cancel</button></div>`
-    :`<div class="r"><input id="slq" placeholder="Card name (Jinzo) or set code (RA03-EN041)" value="${esc(keep)}" autocapitalize="characters" autocomplete="off" aria-label="Set code"><button class="btn" type="button" id="slgo">Look up</button></div>`;
-  const hl=!r&&S.names?`<div class="slpick">${S.names.map((x,i)=>`<button type="button" data-nm="${i}"><b>${esc(x.n)}</b> <small>${x.k} printing${x.k===1?"":"s"}</small></button>`).join("")}</div>`:!r&&S.hits?`<div class="slpick">${S.hits.map((h,i)=>`<button type="button" data-hit="${i}"><b>${esc(h.c?h.c[1]:h.name)}</b> <small>${esc(h.c?h.c[0]:h.code)} \u00b7 ${esc(h.c?h.j.n:h.sn)}</small></button>`).join("")}</div>`:!r&&S.sets?`<div class="slpick">${S.sets.map(x=>`<button type="button" data-set="${esc(x.p)}"><b>${esc(x.n)}</b> <small>${esc(x.p)}</small></button>`).join("")}</div>`:"";
-  const alt=!r&&S.hits&&S.alt?`<p class="note" style="margin:8px 0 2px">Other cards with this name in them:</p><div class="slpick" style="max-height:140px">${S.alt.map((x,i)=>`<button type="button" data-alt="${i}"><b>${esc(x.n)}</b> <small>${x.k} printing${x.k===1?"":"s"}</small></button>`).join("")}</div>`:"";
-  const pick=(S.pick&&!r?`<input id="slf" placeholder="Filter ${esc(S.pick.j.n)} by name" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"><div class="slpick" id="slpk"></div>`:"")+hl+alt;
-  const items=SL.l,sel=items.filter(i=>S.sel.has(i.id)).length;
-  d.innerHTML=`<div class="cmpbox"><h3>Send to ACE shortlist</h3><button class="x" type="button" id="slx" aria-label="Close">&times;</button>
-    <p class="note" style="margin:0">Cards you are thinking of sending to ACE for grading. Type a card's set code and it is added with its card art. This list is saved on this device only, so it is private to you and is not shared or synced.</p>
-    <div class="slf">${form}${S.msg?`<p class="note" style="margin:0">${esc(S.msg)}</p>`:""}${pick}</div>
-    <h4 style="margin:6px 0">Shortlist${items.length?` (${items.length})`:""}</h4>
-    ${items.length?items.map(i=>card(i,true)).join(""):`<p class="note">Nothing on the shortlist yet.</p>`}
-    ${items.length?`<div class="slbar"><input id="slsn" maxlength="60" placeholder="Submission name, e.g. ACE order number" value="${esc(S.subName)}" aria-label="Submission name"><button class="btn" type="button" id="slsent"${sel?"":" disabled"}>Mark ${sel||""} as sent</button><button class="btn" type="button" id="slcp">Copy list</button></div>`:""}
-    ${SL.s.length?`<h4 style="margin:14px 0 4px">Sent to ACE</h4>${SL.s.map(s=>`<details data-sub="${esc(s.id)}"${S.open===s.id?" open":""}><summary><b>${esc(s.name)}</b> &middot; ${s.items.length} card${s.items.length===1?"":"s"} &middot; ${esc(new Date(s.t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))}</summary>${s.items.map(i=>card(i,false)).join("")}<div class="r" style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" type="button" data-cps="${esc(s.id)}">Copy list</button><button class="btn sm" type="button" data-back="${esc(s.id)}">Move back to shortlist</button><button class="btn sm" type="button" data-del="${esc(s.id)}">${S.del===s.id?"Tap again to delete":"Delete"}</button></div></details>`).join("")}`:""}</div>`;
-  if(S.pick&&!r)fillPick();
-  d.querySelectorAll("img[data-fb]").forEach(im=>{im.addEventListener("error",()=>{if(im.dataset.fb&&im.getAttribute("src")!==im.dataset.fb){im.removeAttribute("referrerpolicy");im.src=im.dataset.fb}else im.style.visibility="hidden"},{once:false})})}
-function fillPick(){const b=$("#slpk");if(!b)return;const q=(($("#slf")||{}).value||"").toLowerCase();
-  const l=S.pick.j.c.filter(c=>!q||(c[1]+" "+c[0]).toLowerCase().includes(q)).slice(0,300);
-  b.innerHTML=l.map(c=>`<button type="button" data-pk="${esc(c[0])}"><b>${esc(c[1])}</b> <small>${esc(c[0])}</small></button>`).join("")||`<p class="note" style="padding:8px 12px;margin:0">No match.</p>`}
-const norm=q=>String(q||"").toUpperCase().replace(/\s+/g,"");
+let S={res:null,pick:null,msg:"",undo:null,sel:new Set(),subName:"",open:"",hits:null,sets:null,names:null,alt:null,sort:"new",flt:"",lastEd:"Not sure",track:true,focus:0,del:""};
+/* ---- lookup ---- */
 let SLI=null;
 async function slIndex(){if(SLI)return SLI;try{const r=await fetch("sl/index.json");SLI=r.ok?await r.json():{}}catch(e){SLI={}}
   for(const[p,e]of Object.entries(SETN||{}))if(!SLI[p])SLI[p]=[e[1]||p,""];return SLI}
 let SLN=null;
 async function slNames(){if(SLN)return SLN;try{const r=await fetch("sl/names.json");SLN=r.ok?await r.json():{n:[],d:[]}}catch(e){SLN={n:[],d:[]}}return SLN}
 const spfx=c=>{const m=/^(.*?[A-Za-z])(\d+)$/.exec(String(c).toUpperCase());return m?m[1]:""};
+const HY=/([A-Z0-9])(JP|EN|E|J|KR|SP|DE|FR|IT|PT|AE|SC|TC)$/;
+/* a code -> {c,j,p}; a set without a number or a missing number -> {set:{p,j}}; nothing -> null */
+async function byCode(q){
+  const m=/^(.*?[A-Z])-?(\d+)$/.exec(q);const cands=[];
+  if(m){cands.push(m[1]);const hy=m[1].replace(HY,"$1-$2");if(hy!==m[1])cands.push(hy)}else cands.push(q,q.replace(HY,"$1-$2"));
+  for(const p of cands){const j=await slLoad(p);if(!j)continue;
+    if(!m)return{set:{p,j}};
+    const n=+m[2],c=j.c.find(x=>x[0].toUpperCase()===p+m[2])||j.c.find(x=>x[0].toUpperCase()===q)||j.c.find(x=>{const mm=/^(.*?[A-Za-z])(\d+)$/.exec(x[0]);return mm&&mm[1].toUpperCase()===p&&+mm[2]===n});
+    return c?{c,j,p}:{set:{p,j},miss:p+m[2]}}
+  return null}
 async function nameSearch(raw){
   const N=await slNames();if(!N.n.length)return false;
-  let w=String(raw).toLowerCase().replace(/[^a-z0-9\u00c0-\u024f' &#!-]+/g," ").split(/\s+/).filter(Boolean);
+  let w=String(raw).toLowerCase().replace(/[^a-z0-9À-ɏ' &#!-]+/g," ").split(/\s+/).filter(Boolean);
   while(w.length){
     const idx=[];for(let i=0;i<N.n.length;i++){const h=N.n[i].toLowerCase();if(w.every(t=>h.includes(t)))idx.push(i)}
     if(idx.length){
       idx.sort((a,b)=>{const ea=N.n[a].toLowerCase()===w.join(" ")?0:1,eb=N.n[b].toLowerCase()===w.join(" ")?0:1;return ea-eb||N.d[b][1].length-N.d[a][1].length});
-      if(idx.length===1||N.n[idx[0]].toLowerCase()===w.join(" ")){S.names=null;await showPrints(idx[0]);if(idx.length>1){S.alt=idx.slice(1,25).map(i=>({i,n:N.n[i],k:N.d[i][1].length}))}}
+      if(idx.length===1||N.n[idx[0]].toLowerCase()===w.join(" ")){S.names=null;await showPrints(idx[0]);if(idx.length>1)S.alt=idx.slice(1,25).map(i=>({i,n:N.n[i],k:N.d[i][1].length}))}
       else{S.names=idx.slice(0,40).map(i=>({i,n:N.n[i],k:N.d[i][1].length}));S.msg=idx.length+" cards match. Pick one."}
       return true}
     w=w.slice(0,-1)}
@@ -1832,49 +1832,137 @@ async function freeText(raw){
     for(const[p]of sets.slice(0,8)){const j=await slLoad(p);if(!j)continue;for(const c of j.c)if(rest.every(t=>c[1].toLowerCase().includes(t)))hits.push({c,j,p})}
     if(hits.length){S.hits=hits.slice(0,40);S.msg=hits.length+" card"+(hits.length===1?"":"s")+" found. Pick yours.";return true}}
   return false}
+const norm=q=>String(q||"").toUpperCase().replace(/\s+/g,"");
 async function lookup(raw){
   const q=norm(raw);S.msg="";S.pick=null;S.hits=null;S.sets=null;S.names=null;S.alt=null;
-  if(!q){S.msg="Type a card name or set code first, for example Jinzo or RA03-EN041.";return draw()}
-  if(/\s/.test(String(raw).trim())||!/\d/.test(q)){if(await nameSearch(raw)||await freeText(raw))return draw();S.msg=`Nothing found for "${String(raw).trim()}". Try the card name, or a set code like RA03-EN041.`;return draw()}
-  const m=/^(.*?[A-Z])-?(\d+)$/.exec(q);
-  let cands=[];
-  if(m){const p=m[1];cands.push(p);const hy=p.replace(/([A-Z0-9])(JP|EN|E|J|KR|SP|DE|FR|IT|PT|AE|SC|TC)$/,"$1-$2");if(hy!==p)cands.push(hy)}
-  else cands.push(q,q.replace(/([A-Z0-9])(JP|EN|E|J|KR|SP|DE|FR|IT|PT|AE|SC|TC)$/,"$1-$2"));
-  for(const p of cands){
-    const j=await slLoad(p);if(!j)continue;
-    if(!m){S.pick={p,j};S.msg="Pick the card from "+j.n+".";return draw()}
-    const n=+m[2];let c=j.c.find(x=>x[0].toUpperCase()===p+m[2])||j.c.find(x=>x[0].toUpperCase()===q)||j.c.find(x=>{const mm=/^(.*?[A-Za-z])(\d+)$/.exec(x[0]);return mm&&mm[1].toUpperCase()===p&&+mm[2]===n});
-    if(c){S.res={c,j,p};return draw()}
-    S.pick={p,j};S.msg=`${p}${m[2]} is not in the ${j.n} list we have. Pick it from the list instead.`;return draw()}
-  if(await nameSearch(raw)||await freeText(raw))return draw();
-  S.msg=`Nothing found for "${String(raw).trim()}". Try a set code like RA03-EN041 or LOB-E005, or the set name and card name.`;draw()}
-function copy(text){const ok=()=>{S.msg="Copied.";draw()};try{navigator.clipboard.writeText(text).then(ok,()=>{S.msg="Couldn't copy here, select the text by hand.";draw()})}catch(e){ok()}}
+  if(!q){S.msg="Type a card name or set code first, for example Jinzo or RA03-EN041.";return drawForm()}
+  if(/\s/.test(String(raw).trim())||!/\d/.test(q)){if(await nameSearch(raw)||await freeText(raw))return drawForm();S.msg=`Nothing found for "${String(raw).trim()}". Try the card name, or a set code like RA03-EN041.`;return drawForm()}
+  const r=await byCode(q);
+  if(r&&r.c){S.res=r;return drawForm()}
+  if(r&&r.set){S.pick=r.set;S.msg=r.miss?`${r.miss} is not in the ${r.set.j.n} list we have. Pick it from the list instead.`:"Pick the card from "+r.set.j.n+".";return drawForm()}
+  if(await nameSearch(raw)||await freeText(raw))return drawForm();
+  S.msg=`Nothing found for "${String(raw).trim()}". Try a set code like RA03-EN041 or LOB-E005, or the card name.`;drawForm()}
+/* ---- list actions ---- */
+function addItem(r,o){o=o||{};const rar=o.rar||"",ed=o.ed||S.lastEd||"Not sure",q=Math.max(1,Math.min(99,+o.q||1));
+  const code=r.c[0].toUpperCase(),ex=SL.l.find(i=>i.code===code&&(i.rar||"")===rar&&(i.ed||"Not sure")===ed&&!(o.note&&i.note&&i.note!==o.note));
+  if(ex){ex.q=Math.min(99,(ex.q||1)+q);if(o.note&&!ex.note)ex.note=o.note;return ex}
+  const it={id:uid(),code,name:r.c[1],set:r.j.n,pid:String(r.c[3]||""),rar,ed,note:o.note||"",q,t:Date.now(),ro:rarOpts(r)};SL.l.unshift(it);return it}
+async function resolveLine(t){
+  const q=norm(t);if(/^[A-Z0-9_\/]+-?[A-Z]*\d{1,4}$/.test(q)&&!/\s/.test(t.trim())){const r=await byCode(q);return r&&r.c?r:null}
+  const N=await slNames(),k=t.trim().toLowerCase(),i=N.n.findIndex(x=>x.toLowerCase()===k);if(i<0)return null;
+  const r=await byCode(norm(N.d[i][1][0]));return r&&r.c?r:null}
+async function bulk(text){
+  const lines=String(text).split(/\n+/).map(x=>x.trim()).filter(Boolean).slice(0,150);let ok=0;const bad=[];
+  for(const l of lines){let q=1,t=l,m=/^(\d{1,2})\s*x\s*(.+)$/i.exec(t);
+    if(m){q=+m[1];t=m[2]}else if((m=/^(.+?)\s*x\s*(\d{1,2})$/i.exec(t))){q=+m[2];t=m[1]}
+    const r=await resolveLine(t.trim());if(r){addItem(r,{q});ok++}else bad.push(l)}
+  slSave();S.msg=`Added ${ok} of ${lines.length} line${lines.length===1?"":"s"}.`+(bad.length?" Couldn't find: "+bad.slice(0,6).join("; ")+(bad.length>6?"…":"")+". Use a set code or the exact card name.":"");draw()}
+function sorted(){let l=SL.l.slice();const f=S.flt.trim().toLowerCase();
+  if(f)l=l.filter(i=>(i.name+" "+i.code+" "+i.set+" "+(i.rar||"")+" "+(i.note||"")).toLowerCase().includes(f));
+  const cmp={new:(a,b)=>b.t-a.t,name:(a,b)=>a.name.localeCompare(b.name),set:(a,b)=>a.code.localeCompare(b.code),price:(a,b)=>((slPx(b)||{}).p||0)-((slPx(a)||{}).p||0)}[S.sort]||(()=>0);
+  return l.sort(cmp)}
+/* ---- drawing ---- */
+function card(it,edit){
+  const ro=[...new Set([...(it.ro||[]),it.rar].filter(Boolean))];
+  return`<div class="sli">${edit?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid)}<div class="tx"><b>${esc(it.name)}${it.q>1?` <span class="slq">×${it.q}</span>`:""}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small>
+    ${edit?`<div class="r slc"><select data-rar="${esc(it.id)}" aria-label="Rarity"><option value="">Rarity not chosen</option>${ro.map(x=>`<option${x===it.rar?" selected":""}>${esc(x)}</option>`).join("")}</select><select data-ed="${esc(it.id)}" aria-label="Edition">${ED.map(x=>`<option${x===(it.ed||"Not sure")?" selected":""}>${x}</option>`).join("")}</select>
+    <span class="slst"><button type="button" data-q="${esc(it.id)}:-1" aria-label="One fewer">−</button><b>${it.q||1}</b><button type="button" data-q="${esc(it.id)}:1" aria-label="One more">+</button></span></div>
+    <input class="slnt" data-nt="${esc(it.id)}" maxlength="120" value="${esc(it.note||"")}" placeholder="Note" aria-label="Note">`
+    :`<small>${esc([it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ")||"Rarity not chosen")}${it.note?" · "+esc(it.note):""}</small>`}
+    ${slPrice(it)}${slSlabs(it)}${edit?`<small><a href="${esc(tcg(it))}" target="_blank" rel="noopener noreferrer">Check TCGplayer</a> &middot; <a href="#" data-rm="${esc(it.id)}">Remove</a></small>`:""}</div></div>`}
+function drawForm(){
+  const f=$("#slform");if(!f)return;const r=S.res;
+  const keep=f.querySelector("#slq")?f.querySelector("#slq").value:"";
+  const form=r?`<div class="slh">${slImg(r.c[3])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
+    <div class="r"><select id="slrar" aria-label="Rarity">${rarOpts(r).map(x=>`<option>${esc(x)}</option>`).join("")}<option>Not sure</option></select>
+    <select id="sled" aria-label="Edition">${ED.map(x=>`<option${x===S.lastEd?" selected":""}>${x}</option>`).join("")}</select>
+    <input id="slqty" type="number" min="1" max="99" value="1" aria-label="How many" style="flex:0 1 80px"></div>
+    <div class="r"><input id="slnote" maxlength="120" placeholder="Note or reason (optional)" aria-label="Note"><button class="btn" type="button" id="sladd">Add to shortlist</button><button class="btn" type="button" id="slclr">Cancel</button></div>`
+    :`<div class="r"><input id="slq" placeholder="Card name or set code" value="${esc(keep)}" autocapitalize="off" autocomplete="off" aria-label="Card name or set code"><button class="btn" type="button" id="slgo">Look up</button></div>`;
+  const hl=!r&&S.names?`<div class="slpick">${S.names.map((x,i)=>`<button type="button" data-nm="${i}"><b>${esc(x.n)}</b> <small>${x.k} printing${x.k===1?"":"s"}</small></button>`).join("")}</div>`:!r&&S.hits?`<div class="slpick">${S.hits.map((h,i)=>`<button type="button" data-hit="${i}"><b>${esc(h.c?h.c[1]:h.name)}</b> <small>${esc(h.c?h.c[0]:h.code)} · ${esc(h.c?h.j.n:h.sn)}</small></button>`).join("")}</div>`:!r&&S.sets?`<div class="slpick">${S.sets.map(x=>`<button type="button" data-set="${esc(x.p)}"><b>${esc(x.n)}</b> <small>${esc(x.p)}</small></button>`).join("")}</div>`:"";
+  const alt=!r&&S.hits&&S.alt?`<p class="note" style="margin:8px 0 2px">Other cards with this name in them:</p><div class="slpick" style="max-height:140px">${S.alt.map((x,i)=>`<button type="button" data-alt="${i}"><b>${esc(x.n)}</b> <small>${x.k} printing${x.k===1?"":"s"}</small></button>`).join("")}</div>`:"";
+  const pick=(S.pick&&!r?`<input id="slf" placeholder="Filter ${esc(S.pick.j.n)} by name" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"><div class="slpick" id="slpk"></div>`:"");
+  f.innerHTML=`<div class="slf">${form}${S.msg?`<p class="note" style="margin:0">${esc(S.msg)}${S.undo?` <button type="button" class="lnk" id="slundo">Undo</button>`:""}</p>`:""}${pick}${hl}${alt}
+    ${r?"":`<details><summary class="note" style="cursor:pointer">Paste a list of cards</summary><textarea id="slbulk" rows="5" placeholder="One per line: set codes or exact card names.&#10;RA03-EN041&#10;2x Jinzo&#10;LOB-E005 x3" style="width:100%;margin-top:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"></textarea><button class="btn" type="button" id="slbulkgo" style="margin-top:6px">Add them all</button></details>`}</div>`;
+  if(S.pick&&!r)fillPick();
+  f.querySelectorAll("img[data-fb]").forEach(im=>im.addEventListener("error",()=>{if(im.dataset.fb&&im.getAttribute("src")!==im.dataset.fb){im.removeAttribute("referrerpolicy");im.src=im.dataset.fb}else im.style.visibility="hidden"}));
+  if(S.focus&&!r){S.focus=0;const q=$("#slq");if(q)try{q.focus()}catch(e){}}}
+function fillPick(){const b=$("#slpk");if(!b)return;const q=(($("#slf")||{}).value||"").toLowerCase();
+  const l=S.pick.j.c.filter(c=>!q||(c[1]+" "+c[0]).toLowerCase().includes(q)).slice(0,300);
+  b.innerHTML=l.map(c=>`<button type="button" data-pk="${esc(c[0])}"><b>${esc(c[1])}</b> <small>${esc(c[0])}</small></button>`).join("")||`<p class="note" style="padding:8px 12px;margin:0">No match.</p>`}
+function drawList(){
+  const box=$("#sllist");if(!box)return;const items=SL.l,vis=sorted();
+  let n=0,val=0,priced=0;items.forEach(i=>{const q=i.q||1;n+=q;const x=slPx(i);if(x&&x.ok){val+=x.p*q;priced+=q}});
+  const sel=items.filter(i=>S.sel.has(i.id)).length,pend=!!window.__pendAdd;
+  box.innerHTML=`<h4 style="margin:6px 0 2px">Shortlist${items.length?` (${n} card${n===1?"":"s"})`:""}</h4>
+    ${items.length?`<p class="note" style="margin:0 0 6px">${priced?`Raw value about ${esc(money(val))} for the ${priced} card${priced===1?"":"s"} we can price${priced<n?` (${n-priced} not priced)`:""}. An estimate from our ACE slab prices, not a quote.`:"We have no raw price for these yet."}</p>
+    <div class="r slbt"><select id="slsort" aria-label="Sort">${[["new","Newest first"],["name","Name A to Z"],["set","Set code"],["price","Highest value"]].map(([k,l])=>`<option value="${k}"${S.sort===k?" selected":""}>${l}</option>`).join("")}</select>${items.length>5?`<input id="slflt" placeholder="Filter this list" value="${esc(S.flt)}" aria-label="Filter">`:""}<button class="btn sm" type="button" id="slall">${vis.length&&vis.every(i=>S.sel.has(i.id))?"Clear ticks":"Tick all"}</button></div>`:""}
+    ${vis.length?vis.map(i=>card(i,true)).join(""):`<p class="note">${items.length?"Nothing matches that filter.":"Nothing on the shortlist yet."}</p>`}
+    ${items.length?`<div class="slbar"><input id="slsn" maxlength="60" placeholder="Submission name, e.g. ACE order number" value="${esc(S.subName)}" aria-label="Submission name"><button class="btn" type="button" id="slsent"${sel?"":" disabled"}>Mark ${sel||""} as sent</button>${pend?`<label class="note" style="flex:1 1 100%;margin:0"><input type="checkbox" id="sltrack"${S.track?" checked":""}> Also track it in My account, Pending at ACE</label>`:""}<button class="btn sm" type="button" id="slcp">Copy list</button><button class="btn sm" type="button" id="slcsv">Download CSV</button></div>`:""}`}
+function drawSubs(){
+  const box=$("#slsubs");if(!box)return;
+  box.innerHTML=`${SL.s.length?`<h4 style="margin:14px 0 4px">Sent to ACE</h4>${SL.s.map(s=>`<details data-sub="${esc(s.id)}"${S.open===s.id?" open":""}><summary><b>${esc(s.name)}</b> &middot; ${s.items.reduce((a,i)=>a+(i.q||1),0)} card${s.items.reduce((a,i)=>a+(i.q||1),0)===1?"":"s"} &middot; ${esc(new Date(s.t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))}</summary>${s.items.map(i=>card(i,false)).join("")}<div class="r" style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" type="button" data-cps="${esc(s.id)}">Copy list</button><button class="btn sm" type="button" data-csvs="${esc(s.id)}">CSV</button><button class="btn sm" type="button" data-back="${esc(s.id)}">Move back to shortlist</button><button class="btn sm" type="button" data-del="${esc(s.id)}">${S.del===s.id?"Tap again to delete":"Delete"}</button></div></details>`).join("")}`:""}
+    <details style="margin-top:14px"><summary class="note" style="cursor:pointer">Back up or move this list</summary><p class="note" style="margin:6px 0">Your list lives in this browser${window.__slSynced?" and syncs to your account":". Sign in with Google (top of the page) to sync it between devices"}. This text is a backup you can paste into another browser.</p>
+    <div class="r" style="display:flex;gap:8px"><button class="btn sm" type="button" id="slbk">Copy backup</button></div><textarea id="slrestore" rows="3" placeholder="Paste a backup here" style="width:100%;margin-top:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--abyss);color:var(--foil);font:inherit"></textarea><button class="btn sm" type="button" id="slrest" style="margin-top:6px">Restore (adds to this list)</button></details>`}
+function draw(){const d=$("#slistd");if(!d)return;
+  if(!d.querySelector("#slform")){d.innerHTML=`<div class="cmpbox"><h3>Send to ACE shortlist</h3><button class="x" type="button" id="slx" aria-label="Close">&times;</button>
+    <p class="note" style="margin:0">Cards you are thinking of sending to ACE for grading. Add them by card name or set code, with card art. Your list stays private: it is saved in this browser, and syncs between your devices if you sign in.</p><div id="slform"></div><div id="sllist"></div><div id="slsubs"></div></div>`}
+  drawForm();drawList();drawSubs()}
+function copy(text,done){const ok=()=>{S.msg=done||"Copied.";S.undo=null;drawForm()};try{navigator.clipboard.writeText(text).then(ok,()=>{S.msg="Couldn't copy here, select the text by hand.";drawForm()})}catch(e){ok()}}
 function open(){
-  const d=$("#slistd");if(!d)return;S.res=null;S.pick=null;S.msg="";draw();if(!d.open)d.showModal();
+  const d=$("#slistd");if(!d)return;S.res=null;S.pick=null;S.msg="";S.undo=null;S.hits=S.names=S.sets=S.alt=null;draw();if(!d.open)d.showModal();
   d.onclick=e=>{
     const t=e.target;if(t.id==="slx"||t===d){d.close();return}
     if(t.id==="slgo"){lookup($("#slq").value);return}
-    if(t.id==="slclr"){S.res=null;S.msg="";S.hits=null;S.sets=null;S.names=null;S.alt=null;draw();return}
-    if(t.id==="sladd"&&S.res){const r=S.res;SL.l.unshift({id:uid(),code:r.c[0].toUpperCase(),name:r.c[1],set:r.j.n,pid:String(r.c[3]||""),rar:$("#slrar").value==="Not sure"?"":$("#slrar").value,ed:$("#sled").value,note:$("#slnote").value.trim(),t:Date.now()});slSave();S.res=null;S.pick=null;S.msg="Added.";draw();return}
-    const pk=t.closest("[data-pk]");if(pk&&S.pick){const c=S.pick.j.c.find(x=>x[0]===pk.dataset.pk);if(c){S.res={c,j:S.pick.j,p:S.pick.p};S.pick=null;S.msg="";draw()}return}
-    const al=t.closest("[data-alt]");if(al&&S.alt){const x=S.alt[+al.dataset.alt];S.alt=null;showPrints(x.i).then(draw);return}
-    const nm=t.closest("[data-nm]");if(nm&&S.names){const x=S.names[+nm.dataset.nm];S.names=null;showPrints(x.i).then(draw);return}
+    if(t.id==="slclr"){S.res=null;S.msg="";S.hits=S.sets=S.names=S.alt=null;drawForm();return}
+    if(t.id==="sladd"&&S.res){const r=S.res,rar=$("#slrar").value;S.lastEd=$("#sled").value;
+      addItem(r,{rar:rar==="Not sure"?"":rar,ed:S.lastEd,note:$("#slnote").value.trim(),q:$("#slqty").value});slSave();
+      S.msg="Added "+r.c[1]+". Add another?";S.undo=null;S.res=null;S.pick=null;S.hits=S.sets=S.names=S.alt=null;S.focus=1;draw();return}
+    if(t.id==="slbulkgo"){const v=$("#slbulk").value;if(v.trim()){t.disabled=true;bulk(v)}return}
+    const al=t.closest("[data-alt]");if(al&&S.alt){const x=S.alt[+al.dataset.alt];S.alt=null;showPrints(x.i).then(drawForm);return}
+    const nm=t.closest("[data-nm]");if(nm&&S.names){const x=S.names[+nm.dataset.nm];S.names=null;showPrints(x.i).then(drawForm);return}
     const ht=t.closest("[data-hit]");if(ht&&S.hits){const h=S.hits[+ht.dataset.hit];if(!h)return;
-      if(h.c){S.res={c:h.c,j:h.j,p:h.p};S.hits=null;S.msg="";draw();return}
-      slLoad(h.p).then(j=>{const c=j&&j.c.find(x=>x[0].toUpperCase()===h.code.toUpperCase());if(c){S.res={c,j,p:h.p};S.hits=null;S.msg=""}else S.msg="Couldn't load that printing.";draw()});return}
-    const st=t.closest("[data-set]");if(st){slLoad(st.dataset.set).then(j=>{if(j){S.pick={p:st.dataset.set,j};S.sets=null;S.msg="Pick the card from "+j.n+".";draw()}});return}
-    const rm=t.closest("[data-rm]");if(rm){e.preventDefault();SL.l=SL.l.filter(i=>i.id!==rm.dataset.rm);S.sel.delete(rm.dataset.rm);slSave();S.msg="";draw();return}
+      if(h.c){S.res={c:h.c,j:h.j,p:h.p};S.hits=null;S.msg="";drawForm();return}
+      slLoad(h.p).then(j=>{const c=j&&j.c.find(x=>x[0].toUpperCase()===h.code.toUpperCase());if(c){S.res={c,j,p:h.p};S.hits=null;S.msg=""}else S.msg="Couldn't load that printing.";drawForm()});return}
+    const st=t.closest("[data-set]");if(st){slLoad(st.dataset.set).then(j=>{if(j){S.pick={p:st.dataset.set,j};S.sets=null;S.msg="Pick the card from "+j.n+".";drawForm()}});return}
+    const pk=t.closest("[data-pk]");if(pk&&S.pick){const c=S.pick.j.c.find(x=>x[0]===pk.dataset.pk);if(c){S.res={c,j:S.pick.j,p:S.pick.p};S.pick=null;S.msg="";drawForm()}return}
+    const rm=t.closest("[data-rm]");if(rm){e.preventDefault();const i=SL.l.findIndex(x=>x.id===rm.dataset.rm);if(i>=0){S.undo={it:SL.l[i],i};SL.l.splice(i,1);S.sel.delete(rm.dataset.rm);slSave();S.msg="Removed "+S.undo.it.name+".";drawForm();drawList()}return}
+    if(t.id==="slundo"&&S.undo){SL.l.splice(Math.min(S.undo.i,SL.l.length),0,S.undo.it);S.undo=null;S.msg="Put back.";slSave();drawForm();drawList();return}
+    const qb=t.closest("[data-q]");if(qb){const[id,dv]=qb.dataset.q.split(":"),it=SL.l.find(x=>x.id===id);if(it){it.q=Math.max(1,Math.min(99,(it.q||1)+ +dv));slSave();drawList()}return}
+    const sb=t.closest("[data-slab]");if(sb){const code=sb.dataset.slab,it=DATA.filter(x=>skn(x)===code).sort((a,b)=>gnum(b)-gnum(a))[0];if(it){d.close();const k=view.findIndex(x=>x.c===it.c);openLB(k,k<0?BYC.get(it.c):undefined)}return}
+    if(t.id==="slall"){const vis=sorted(),all=vis.every(i=>S.sel.has(i.id));vis.forEach(i=>all?S.sel.delete(i.id):S.sel.add(i.id));drawList();return}
     if(t.id==="slsent"){const ids=SL.l.filter(i=>S.sel.has(i.id));if(!ids.length)return;const nm=($("#slsn").value||"").trim()||("Submission "+new Date().toLocaleDateString("en-GB"));
-      const sid=uid();SL.s.unshift({id:sid,name:nm,t:Date.now(),items:ids});SL.l=SL.l.filter(i=>!S.sel.has(i.id));S.sel.clear();S.subName="";S.open=sid;slSave();S.msg=ids.length+" card"+(ids.length===1?"":"s")+" moved to “"+nm+"”.";draw();return}
-    if(t.id==="slcp"){copy(SL.l.map(line).join("\n"));return}
-    const cs=t.closest("[data-cps]");if(cs){const s=SL.s.find(x=>x.id===cs.dataset.cps);if(s)copy(s.items.map(line).join("\n"));return}
+      const sid=uid();SL.s.unshift({id:sid,name:nm,t:Date.now(),items:ids});SL.l=SL.l.filter(i=>!S.sel.has(i.id));S.sel.clear();S.subName="";S.open=sid;S.undo=null;
+      let tr="";if(window.__pendAdd&&S.track){tr=window.__pendAdd(nm,ids.map(i=>({n:(i.q>1?i.q+"x ":"")+i.name,x:[i.code,i.rar,i.ed&&i.ed!=="Not sure"?i.ed:""].filter(Boolean).join(" · ")})))?" It is now under My account, Pending at ACE.":" Couldn't add it to Pending at ACE (the limit is 12 submissions)."}
+      slSave();S.msg=ids.reduce((a,i)=>a+(i.q||1),0)+" card(s) moved to “"+nm+"”."+tr;draw();return}
+    if(t.id==="slcp"){copy(SL.l.map(ln).join("\n"));return}
+    if(t.id==="slcsv"){dl("ace-shortlist.csv",csvOf(SL.l),"text/csv");return}
+    const cs=t.closest("[data-cps]");if(cs){const s=SL.s.find(x=>x.id===cs.dataset.cps);if(s)copy(s.items.map(ln).join("\n"));return}
+    const cv=t.closest("[data-csvs]");if(cv){const s=SL.s.find(x=>x.id===cv.dataset.csvs);if(s)dl("ace-submission.csv",csvOf(s.items),"text/csv");return}
     const bk=t.closest("[data-back]");if(bk){const s=SL.s.find(x=>x.id===bk.dataset.back);if(s){SL.l=s.items.concat(SL.l);SL.s=SL.s.filter(x=>x!==s);slSave();S.msg="Moved back to the shortlist.";draw()}return}
-    const dl=t.closest("[data-del]");if(dl){if(S.del===dl.dataset.del){SL.s=SL.s.filter(x=>x.id!==dl.dataset.del);S.del="";slSave()}else S.del=dl.dataset.del;draw();return}};
-  d.onchange=e=>{const c=e.target.closest("[data-sel]");if(c){c.checked?S.sel.add(c.dataset.sel):S.sel.delete(c.dataset.sel);const b=$("#slsent");if(b){const n=SL.l.filter(i=>S.sel.has(i.id)).length;b.disabled=!n;b.textContent="Mark "+(n||"")+" as sent"}}};
-  d.oninput=e=>{if(e.target.id==="slf")fillPick();if(e.target.id==="slsn")S.subName=e.target.value};
-  d.onkeydown=e=>{if(e.key==="Enter"&&e.target.id==="slq"){e.preventDefault();lookup(e.target.value)}}}
+    const dd=t.closest("[data-del]");if(dd){if(S.del===dd.dataset.del){SL.s=SL.s.filter(x=>x.id!==dd.dataset.del);S.del="";slSave()}else S.del=dd.dataset.del;drawSubs();return}
+    if(t.id==="slbk"){copy("YGOSL1:"+btoa(unescape(encodeURIComponent(JSON.stringify({l:SL.l,s:SL.s})))),"Backup copied. Paste it into the restore box in another browser.");return}
+    if(t.id==="slrest"){try{let v=($("#slrestore").value||"").trim().replace(/^YGOSL1:/,"");const j=JSON.parse(decodeURIComponent(escape(atob(v))));if(!j||!Array.isArray(j.l)||!Array.isArray(j.s))throw 0;
+      const have=new Set([...SL.l,...SL.s].map(x=>x.id));let n=0;j.l.forEach(x=>{if(x&&x.id&&x.code&&!have.has(x.id)){SL.l.push(x);have.add(x.id);n++}});j.s.forEach(x=>{if(x&&x.id&&Array.isArray(x.items)&&!have.has(x.id)){SL.s.push(x);have.add(x.id);n++}});slSave();S.msg=n?"Restored "+n+" item"+(n===1?"":"s")+".":"Nothing new in that backup.";draw()}catch(x){S.msg="That doesn't look like a backup from this page.";drawForm()}return}};
+  d.onchange=e=>{const t=e.target;
+    if(t.dataset.sel){t.checked?S.sel.add(t.dataset.sel):S.sel.delete(t.dataset.sel);const b=$("#slsent");if(b){const n=SL.l.filter(i=>S.sel.has(i.id)).length;b.disabled=!n;b.textContent="Mark "+(n||"")+" as sent"}return}
+    if(t.dataset.rar){const it=SL.l.find(x=>x.id===t.dataset.rar);if(it){it.rar=t.value;slSave();drawList()}return}
+    if(t.dataset.ed){const it=SL.l.find(x=>x.id===t.dataset.ed);if(it){it.ed=t.value;slSave();drawList()}return}
+    if(t.dataset.nt){const it=SL.l.find(x=>x.id===t.dataset.nt);if(it){it.note=t.value.trim();slSave()}return}
+    if(t.id==="slsort"){S.sort=t.value;drawList();return}
+    if(t.id==="sltrack"){S.track=t.checked}};
+  d.oninput=e=>{const t=e.target;if(t.id==="slf")fillPick();if(t.id==="slsn")S.subName=t.value;if(t.id==="slflt"){S.flt=t.value;const pos=t.selectionStart;drawList();const n=$("#slflt");if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}};
+  d.onkeydown=e=>{if(e.key!=="Enter")return;const t=e.target;if(t.id==="slq"){e.preventDefault();lookup(t.value)}else if(t.id==="slnote"||t.id==="slqty"){e.preventDefault();const b=$("#sladd");if(b)b.click()}}}
 const b=$("#slbtn");if(b)b.addEventListener("click",open);
-window.__slOpen=open})();
+window.__slOpen=open;
+/* sync hooks used by the sign-in code */
+window.__slGet=()=>JSON.parse(JSON.stringify(SL));
+window.__slSig=()=>JSON.stringify(SL);
+window.__slApply=(r,first)=>{if(!r||!Array.isArray(r.l)||!Array.isArray(r.s))return;
+  if(first){const have=new Set([...SL.l,...SL.s].map(x=>x.id));r.l.forEach(x=>{if(x&&x.id&&!have.has(x.id)){SL.l.push(x);have.add(x.id)}});r.s.forEach(x=>{if(x&&x.id&&!have.has(x.id)){SL.s.push(x);have.add(x.id)}});SL.u=Math.max(+SL.u||0,+r.u||0)}
+  else if((+r.u||0)>(+SL.u||0)){SL={l:r.l,s:r.s,u:+r.u}}else return;
+  store();const d=$("#slistd");if(d&&d.open)draw()};
+})();
 
 /* ---------- saved slabs ---------- */
 let favDirty=false;
@@ -1913,6 +2001,9 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   const STAGES=["Sent","Received","Grading","Shipped back"];
   function setPend(a){pend=a.slice(0,30);ls("pend",js(pend))}
   function savePend(){setPend(pend);if(syncHook)syncHook()}
+  window.__pendAdd=(name,cards)=>{if(pend.length>=12)return false;const cs=[];(cards||[]).forEach(c=>{if(cs.length<40)cs.push({n:String(c.n).slice(0,60),x:String(c.x||"").slice(0,120)})});
+    const sub={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),st:0,d:new Date().toISOString().slice(0,10),cards:cs};if(/^[A-Za-z0-9-]{3,14}$/.test(String(name||"").trim()))sub.sn=String(name).trim().toUpperCase();
+    pend.push(sub);savePend();return true};
   function parseAce(text){
     let t=String(text||"").replace(/[\u2013\u2014]/g,"-");const k=t.search(/Card Details/i);if(k>=0)t=t.slice(k);
     t=t.replace(/Card Details|Selected Label/gi," ").replace(/\s*\n\s*/g," ").replace(/(\S)- (?=[A-Za-z0-9])/g,"$1-").replace(/\b2[0O]2(\d) - /g,"202$1 - ");
@@ -1965,7 +2056,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
         :`<form class="pcert" data-pid="${id}"><input inputmode="numeric" maxlength="7" placeholder="Cert number" aria-label="Cert number"><button class="btn" type="submit">Send cert</button></form><p class="pdet" style="margin:6px 0 0">Once ACE assigns your certs, send just one from this submission. We'll find the rest.</p>`}</div>`}).join("");
     box.innerHTML=(rows||`<p class="note" style="margin:0 0 10px">Group the cards you've sent to ACE into a submission. They share one stage, and once ACE gives you certs you only need to send one. The scanner finds the others next to it.</p>`)+`<div class="padd"><div class="plab">New submission</div><button type="button" class="btn" id="pendnew" style="width:100%;margin-top:8px">＋ Start a submission</button><label class="pshot">📷 Add from a screenshot of your ACE submission<input type="file" id="pendshot" accept="image/*" hidden></label><p id="pendmsg" class="note" style="margin:8px 0 0"></p></div>`}
   async function hashOf(uid){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(uid));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,16)}catch(e){return""}}
-  function paint(){const on=!!user;btn.classList.toggle("on",on);$("#acctl").textContent=on?"My account \u25be":"Sign in with Google";
+  function paint(){const on=!!user;window.__slSynced=on;btn.classList.toggle("on",on);$("#acctl").textContent=on?"My account \u25be":"Sign in with Google";
     $("#accti").innerHTML=on&&user.photoURL?'<img alt="" referrerpolicy="no-referrer" src="'+user.photoURL.replace(/"/g,"")+'">':GSVG;
     btn.title=on?"Signed in as "+(user.email||user.displayName||"you")+". Tap for your account.":"Sign in with Google to sync your saved slabs across devices"}
   function refresh(){document.querySelectorAll(".favb").forEach(b=>{const o=fav.has(+b.dataset.c);b.classList.toggle("on",o);b.setAttribute("aria-pressed",o);b.textContent=o?"♥":"♡"});
@@ -1973,8 +2064,9 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
   function setFav(s){fav=s;ls("fav",js([...fav]));refresh()}
   function setOwn(s){own=s;ls("own",js([...own]));refresh()}
   function setNotes(o){notes=o;ls("notes",js(notes));const t=$("#lbnote");if(t&&document.activeElement!==t){const c=+($("#lbfav")||{dataset:{}}).dataset.c;t.value=notes[c]||""}}
-  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;p.pend=pend;return p}
+  function curPrefs(){const p={theme:ls("theme")||"dark",view:ls("view")||"grid"},t=+ls("tile"),c=+ls("cols");if(t)p.tile=t;if(c)p.cols=c;p.pend=pend;if(window.__slGet)p.sl=window.__slGet();return p}
   function applyPrefs(p,fst){if(!p)return;
+    if(p.sl&&window.__slApply)window.__slApply(p.sl,fst);
     if(Array.isArray(p.pend)){const nx=fst?[...p.pend,...pend.filter(x=>!p.pend.some(y=>y.id===x.id))]:p.pend;const mg=migratePend(nx);if(js(mg)!==js(pend)){setPend(mg);if(ad.open)renderPend()}}
     applying=true;try{
     if(p.theme&&p.theme!==(ls("theme")||"dark")&&window.__setTheme)window.__setTheme(p.theme);
@@ -1999,7 +2091,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
         const mf=trust?rf:new Set([...fav,...rf]),mo=trust?ro:new Set([...own,...ro]),mn=trust?rn:Object.assign({},rn,notes);
         if(!same(mf,fav))setFav(mf);if(!same(mo,own))setOwn(mo);if(js(mn)!==js(notes))setNotes(mn);
         applyPrefs(remotePrefs,true);   // a new device adopts the cloud settings
-        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length||js(pend)!==js(remotePrefs.pend||[]))push();
+        if(!snap.exists()||!same(mf,rf)||!same(mo,ro)||js(mn)!==js(rn)||!Object.keys(remotePrefs).length||js(pend)!==js(remotePrefs.pend||[])||(window.__slGet&&js(window.__slGet())!==js(remotePrefs.sl||null)))push();
         if(ls("welcomed")!==uid){ls("welcomed",uid);setTimeout(welcome,400)}
         return}
       if(snap.metadata.hasPendingWrites||Date.now()<quiet)return;
