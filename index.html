@@ -756,6 +756,14 @@ html.restoring{background:#06172c}
   .appnav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:52px;background:none;border:0;border-radius:10px;color:var(--mist);font:600 11px/1 inherit;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
   .appnav button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
   .appnav button[aria-current=page]{color:var(--gold)}
+  .appnav button[data-tab=gal]{flex:1.25;font-weight:700;color:var(--fg,inherit)}
+  .appnav button[data-tab=gal] svg{width:30px;height:30px;stroke-width:1.9}
+  .appnav button[data-tab=gal][aria-current=page]{color:var(--gold)}
+  .mktsheet{position:fixed;z-index:61;left:8px;right:8px;bottom:calc(72px + env(safe-area-inset-bottom));background:var(--raise);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.45);padding:6px;display:flex;flex-direction:column}
+  .mktsheet button{display:flex;align-items:center;gap:12px;padding:12px;background:none;border:0;border-radius:10px;color:var(--fg,inherit);font:inherit;text-align:left;cursor:pointer}
+  .mktsheet button:active{background:var(--case)}
+  .mktsheet svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .mktsheet span{display:flex;flex-direction:column;gap:3px}.mktsheet small{color:var(--mist);font-size:12px}
   .appnav button:active{background:var(--case)}
   body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
   header.top .hlinks,.bar #bell,.bar #ownbtn,.bar #theme{display:none!important}
@@ -854,10 +862,10 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
     cof:SV('<path d="M5 8h11v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 9h2a2 2 0 0 1 0 5h-2M8 3v2M12 3v2"/>'),
     inst:SV('<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 20h14"/>')};
   const CH=SV('<path d="M9 6l6 6-6 6"/>').replace('<svg ','<svg class="chev" ');
-  const TABS=[["gal","Gallery"],["sale","For sale"],["sales","Sales"],["me","Me"],["more","More"]];
+  const TABS=[["sale","Market"],["sl","Shortlist"],["gal","Gallery"],["sets","Sets"],["more","More"]];
   const navHTML=()=>TABS.map(t=>'<button type="button" data-tab="'+t[0]+'" aria-label="'+t[1]+'">'+IC[t[0]]+'<span>'+t[1]+'</span></button>').join("");
   nav.innerHTML=navHTML();
-  const TABD=["listd","saled","med","mored","statd","setd","acctd","slistd"],OWN={listd:"sale",saled:"sales",med:"me",mored:"more",statd:"more",setd:"more",acctd:"me",slistd:"more"};
+  const TABD=["listd","saled","med","mored","statd","setd","acctd","slistd"],OWN={listd:"sale",saled:"sale",med:"more",mored:"more",statd:"more",setd:"sets",acctd:"more",slistd:"sl"};
   const active=()=>{for(const id of TABD){const d=document.getElementById(id);if(d&&d.open)return OWN[id]}return"gal"};
   let RES=null;try{RES=sessionStorage.getItem("apptab")}catch(e){}
   let armed=false;
@@ -926,20 +934,29 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
     meTimer=setInterval(()=>{if(!d.open){clearInterval(meTimer);return}const m=d.querySelector(".mebox"),h=meHTML();if(m&&m.outerHTML!==h)m.outerHTML=h},800);
     d.showModal()}
   function openMore(){const d=$("#mored");if(!d)return;
-    d.innerHTML='<div class="mebox"><h2>More</h2>'+(shown("#setsbtn")?row("sets","Sets","Checklists for every set we hold a slab from"):"")+(shown("#statsbtn")?row("stats","Stats","Grades, sources and how the gallery is growing"):"")
+    d.innerHTML='<div class="mebox"><h2>More</h2>'+(shown("#setsbtn")?row("me","My profile","Saved, owned, alerts and account")+row("sets","Sets","Checklists for every set we hold a slab from"):"")+(shown("#statsbtn")?row("stats","Stats","Grades, sources and how the gallery is growing"):"")
       +row("sl","Send to ACE shortlist","Cards you are thinking of grading, by set code")+row("lead","Send a cert","Tell the scanner about a cert we are missing")+row("theme","Theme","Choose ACE, Duel Monsters, GX, 5D’s or Vault",THN[document.documentElement.dataset.theme]||"ACE")
       +(href("#igbtn")?row("ig","Instagram","Highlights and new finds"):"")+(href("#coffee")?row("cof","Buy me a coffee","Helps keep the scanner running"):"")+(shown("#installbtn")?row("inst","Install app","Add the gallery to your home screen"):"")+'</div>';
     d.showModal()}
   const flt=(id)=>{closeAll();const b=$(id);if(b&&b.getAttribute("aria-pressed")!=="true")b.click();top()};
-  const MA={fav:()=>flt("#favbtn"),own:()=>flt("#ownbtn"),bell:()=>{closeAll();click("#bell")},pend:()=>{closeAll();window.__pendOpen=1;click("#acct")},acct:()=>{closeAll();click("#acct")},
+  const MA={me:()=>{closeAll();openMe()},fav:()=>flt("#favbtn"),own:()=>flt("#ownbtn"),bell:()=>{closeAll();click("#bell")},pend:()=>{closeAll();window.__pendOpen=1;click("#acct")},acct:()=>{closeAll();click("#acct")},
     sets:()=>{closeAll();click("#setsbtn")},sl:()=>{closeAll();click("#slbtn")},stats:()=>{closeAll();click("#statsbtn")},lead:()=>{closeAll();top();click("#leadbtn")},theme:()=>{closeAll();click("#theme")},
     ig:()=>{const h=href("#igbtn");if(h)window.open(h,"_blank","noopener")},cof:()=>{const h=href("#coffee");if(h)window.open(h,"_blank","noopener")},inst:()=>{closeAll();click("#installbtn")}};
+  let NB=null;const mktClose=()=>document.querySelectorAll(".mktsheet").forEach(e=>e.remove());
+  function mkt(nb){const had=document.querySelector(".mktsheet");mktClose();if(had)return;
+    const host=nb&&nb.closest(".appnav")&&nb.closest(".appnav").parentElement;if(!host)return;
+    const o=[["#listbtn","For sale","Slabs listed right now","sale"],["#salesbtn","Sales","Recently sold","sales"]].filter(x=>shown(x[0]));if(!o.length)return;
+    const d=document.createElement("div");d.className="mktsheet";d.setAttribute("role","menu");
+    d.innerHTML=o.map(x=>'<button type="button" role="menuitem" data-id="'+x[0]+'">'+IC[x[3]]+'<span><b>'+x[1]+'</b><small>'+x[2]+'</small></span></button>').join("");
+    d.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;e.stopPropagation();mktClose();closeAll();click(b.dataset.id);paint()});
+    host.appendChild(d);setTimeout(()=>{const off=e=>{if(!e.target.closest(".mktsheet,.appnav button[data-tab=sale]")){mktClose();document.removeEventListener("click",off,true)}};document.addEventListener("click",off,true)},0)}
   function go(k){
     if(k==="gal"){closeAll();try{const d=history.state&&history.state.t&&history.state.d;if(d){quiet=true;history.go(-d);setTimeout(()=>{quiet=false},300)}}catch(e){}top()}
-    else{closeAll();if(k==="sale")click("#listbtn");else if(k==="sales")click("#salesbtn");else if(k==="me")openMe();else if(k==="more")openMore()}
+    else if(k==="sale"){mkt(NB);return}
+    else{closeAll();mktClose();if(k==="sl")click("#slbtn");else if(k==="sets")click("#setsbtn");else if(k==="me")openMe();else if(k==="more")openMore()}
     paint()}
   document.addEventListener("click",e=>{if(e.target.closest("#galnav,.brand h1")&&DMQ.matches){toGal();return}
-    const b=e.target.closest(".appnav button");if(b){go(b.dataset.tab);return}
+    const b=e.target.closest(".appnav button");if(b){NB=b;go(b.dataset.tab);return}
     const m=e.target.closest(".mrow");if(m&&MA[m.dataset.m])MA[m.dataset.m]()});
   paint();
   const bootView=v=>{syncOn=true;if(v==="me")openMe();else{const b=$(VIEWS[v][0]);if(b&&!b.hidden)b.click()}setTimeout(()=>{unhide();paint()},120)};
@@ -959,7 +976,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=b054614f9e"></script>
+<script src="data.js?v=577e039e0d"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
