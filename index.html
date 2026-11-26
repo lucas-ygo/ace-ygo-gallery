@@ -959,7 +959,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=bf9874d5ea"></script>
+<script src="data.js?v=b054614f9e"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1807,13 +1807,29 @@ function slPidFor(pid,name,code){pid=String(pid||"");code=String(code||"").toUpp
   return SLNM.get(String(name||"").toLowerCase())||""}
 const slImg=(pid,name,code)=>{const[a,b]=slPics(slPidFor(pid,name,code));return a?`<img alt="" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
 /* price: from our own price check of an ACE slab of the same card number. ok=1 when it matches the chosen rarity (or none chosen) */
+/* upd355: market prices (TCGplayer market x 0.78, built by the scanner per set in sl/p/<PREFIX>.json) for cards with no slab on the gallery */
+const SLP={};
+function slMk(it){
+  const m=/^([A-Z0-9]+)-([A-Z]{0,3})(\d+)$/.exec(String(it.code||"").toUpperCase());if(!m||(m[2]&&m[2][0]!=="E"))return null;
+  const pre=m[1];if(!(pre in SLP)){SLP[pre]=null;fetch("sl/p/"+pre+".json").then(r=>r.ok?r.json():null).then(j=>{SLP[pre]=j||false;try{if($("#slistd")&&$("#slistd").open){drawList()}}catch(e){}}).catch(()=>{SLP[pre]=false});return null}
+  const f=SLP[pre];if(!f||!f.c)return null;const c=f.c[pre+"-"+(+m[3])];if(!c)return null;
+  const E=/^1st/i.test(it.ed||"")?"1":/^unl/i.test(it.ed||"")?"U":/^lim/i.test(it.ed||"")?"L":"";
+  const pick=o=>E?o[E]:(o.U!=null?o.U:o["1"]!=null?o["1"]:o.L!=null?o.L:o.N);
+  const w=String(it.rar||"").toLowerCase();
+  if(w){const k=Object.keys(c).find(x=>x.toLowerCase()===w)||Object.keys(c).find(x=>x.toLowerCase().startsWith(w.replace(/ rare$/,"")));
+    if(k){const p=pick(c[k]);if(p>0)return{p,v:k,ok:1,mk:1}}return null}
+  const all=Object.keys(c).map(k=>({k,p:pick(c[k])})).filter(x=>x.p>0).sort((a,b)=>a.p-b.p);
+  return all.length?{p:all[0].p,hi:all[all.length-1].p,v:all[0].k,ok:0,mk:1}:null}
 function slPx(it){
-  const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return null;
+  const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return slMk(it);
   const w=(it.rar||"").toLowerCase().replace(/ rare$/,""),V=x=>String(x.v||"").toLowerCase();
   const ex=w&&(m.find(x=>V(x)===(it.rar||"").toLowerCase())||m.find(x=>V(x).startsWith(w))||m.find(x=>V(x).includes(w)));
   if(ex)return{p:ex.p,v:ex.v,ok:1};
+  const mk=w?slMk(it):null;if(mk&&mk.ok)return mk;
   const o=m.slice().sort((x,y)=>y.p-x.p)[0];return{p:o.p,v:o.v,ok:w?0:1}}
 function slPrice(it){const x=slPx(it);if(!x)return"";
+  if(x.mk&&x.ok)return`<small>Raw about ${esc(money(x.p))}${it.q>1?" each":""} <span title="TCGplayer market price, converted to pounds. An estimate for a typical copy, not a quote.">(market estimate, ${esc(x.v)})</span></small>`;
+  if(x.mk)return`<small>Raw ${esc(money(x.p))}${x.hi>x.p?" to "+esc(money(x.hi)):""} depending on rarity <span title="TCGplayer market prices, converted to pounds. Pick a rarity for one price.">(market estimate)</span></small>`;
   if(x.ok)return`<small>Raw about ${esc(money(x.p))}${it.q>1?" each":""} <span title="From our price check of an ACE slab of this card. An estimate, not a quote.">(estimate${x.v?", "+esc(x.v):""})</span></small>`;
   return`<small>No price for this rarity yet. The same card as ${esc(x.v||"another rarity")} is about ${esc(money(x.p))} raw.</small>`}
 function slSlabs(it){const m=DATA.filter(x=>skn(x)===it.code);if(!m.length)return"";const top=Math.max(...m.map(gnum));
