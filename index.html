@@ -935,7 +935,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=1e09739c1b"></script>
+<script src="data.js?v=a8c02b6ce3"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1765,7 +1765,12 @@ function slPics(pid){pid=String(pid||"");
 /* one handler for every picture in the shortlist (form, list and submissions): first failure -> the other source, second -> a plain placeholder */
 document.addEventListener("error",ev=>{const im=ev.target;if(!im||im.tagName!=="IMG"||!im.matches("#slistd img[data-fb]"))return;
   if(im.dataset.fb&&im.getAttribute("src")!==im.dataset.fb){im.dataset.t=im.getAttribute("src");im.setAttribute("referrerpolicy","no-referrer");im.src=im.dataset.fb}else im.style.visibility="hidden"},true);
-const slImg=pid=>{const[a,b]=slPics(pid);return a?`<img alt="" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
+/* upd327: some set-list rows have no art id (e.g. YGLD-ENB02 Dark Magician); look the art up by exact card name in sl/names.json */
+let SLNM=null;
+function slPidFor(pid,name){pid=String(pid||"");if(pid)return pid;if(!SLN)return"";
+  if(!SLNM){SLNM=new Map();SLN.n.forEach((x,i)=>{const k=String(x).toLowerCase();if(!SLNM.has(k)&&SLN.d[i])SLNM.set(k,String(SLN.d[i][0]))})}
+  return SLNM.get(String(name||"").toLowerCase())||""}
+const slImg=(pid,name)=>{const[a,b]=slPics(slPidFor(pid,name));return a?`<img alt="" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
 /* price: from our own price check of an ACE slab of the same card number. ok=1 when it matches the chosen rarity (or none chosen) */
 function slPx(it){
   const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return null;
@@ -1869,7 +1874,7 @@ function sorted(){let l=SL.l.slice();const f=S.flt.trim().toLowerCase();
 /* ---- drawing ---- */
 function card(it,edit){
   const ro=[...new Set([...(it.ro||[]),it.rar].filter(Boolean))];
-  return`<div class="sli">${edit?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid)}<div class="tx"><b>${esc(it.name)}${it.q>1?` <span class="slq">×${it.q}</span>`:""}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small>
+  return`<div class="sli">${edit?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid,it.name)}<div class="tx"><b>${esc(it.name)}${it.q>1?` <span class="slq">×${it.q}</span>`:""}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small>
     ${edit?`<div class="r slc"><select data-rar="${esc(it.id)}" aria-label="Rarity"><option value="">Rarity not chosen</option>${ro.map(x=>`<option${x===it.rar?" selected":""}>${esc(x)}</option>`).join("")}</select><select data-ed="${esc(it.id)}" aria-label="Edition">${ED.map(x=>`<option${x===(it.ed||"Not sure")?" selected":""}>${x}</option>`).join("")}</select>
     <span class="slst"><button type="button" data-q="${esc(it.id)}:-1" aria-label="One fewer">−</button><b>${it.q||1}</b><button type="button" data-q="${esc(it.id)}:1" aria-label="One more">+</button></span></div>
     <input class="slnt" data-nt="${esc(it.id)}" maxlength="120" value="${esc(it.note||"")}" placeholder="Note" aria-label="Note">`
@@ -1878,7 +1883,7 @@ function card(it,edit){
 function drawForm(){
   const f=$("#slform");if(!f)return;const r=S.res;
   const keep=f.querySelector("#slq")?f.querySelector("#slq").value:"";
-  const form=r?`<div class="slh">${slImg(r.c[3])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
+  const form=r?`<div class="slh">${slImg(r.c[3],r.c[1])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
     <div class="r"><select id="slrar" aria-label="Rarity">${rarOpts(r).map(x=>`<option>${esc(x)}</option>`).join("")}<option>Not sure</option></select>
     <select id="sled" aria-label="Edition">${ED.map(x=>`<option${x===S.lastEd?" selected":""}>${x}</option>`).join("")}</select>
     <input id="slqty" type="number" min="1" max="99" value="1" aria-label="How many" style="flex:0 1 80px"></div>
@@ -1911,7 +1916,8 @@ function drawSubs(){
 function draw(){const d=$("#slistd");if(!d)return;
   if(!d.querySelector("#slform")){d.innerHTML=`<div class="cmpbox"><h3>Send to ACE shortlist</h3><button class="x" type="button" id="slx" aria-label="Close">&times;</button>
     <p class="note" style="margin:0">Cards you are thinking of sending to ACE for grading. Add them by card name or set code, with card art. Your list stays private: it is saved in this browser, and syncs between your devices if you sign in.</p><div id="slform"></div><div id="sllist"></div><div id="slsubs"></div></div>`}
-  drawForm();drawList();drawSubs()}
+  drawForm();drawList();drawSubs();
+  if(!SLN&&!S.nl){S.nl=1;slNames().then(()=>{try{drawForm();drawList()}catch(e){}})}}
 function copy(text,done){const ok=()=>{S.msg=done||"Copied.";S.undo=null;drawForm()};try{navigator.clipboard.writeText(text).then(ok,()=>{S.msg="Couldn't copy here, select the text by hand.";drawForm()})}catch(e){ok()}}
 function open(){
   const d=$("#slistd");if(!d)return;S.res=null;S.pick=null;S.msg="";S.undo=null;S.hits=S.names=S.sets=S.alt=null;draw();if(!d.open)d.showModal();
