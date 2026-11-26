@@ -1783,8 +1783,8 @@ document.addEventListener("error",ev=>{const im=ev.target;if(!im||im.tagName!=="
 let SLNM=null,SLCM=null;
 /* Arkana-art Dark Magician prints: the name lookup would give the original art */
 const SLARK=/^(YGLD-[A-Z]{2}B02|SBC1-[A-Z]{2}G01)$/;
-function slPidFor(pid,name,code){pid=String(pid||"");if(pid)return pid;code=String(code||"").toUpperCase();
-  if(SLARK.test(code))return"36996508";if(!SLN)return"";
+function slPidFor(pid,name,code){pid=String(pid||"");code=String(code||"").toUpperCase();
+  if(SLARK.test(code))return"36996508";if(pid)return pid;if(!SLN)return"";
   if(!SLCM){SLCM=new Map();SLN.d.forEach(d=>{if(d&&d[1])d[1].forEach(c=>{if(!SLCM.has(c))SLCM.set(c,String(d[0]))})})}
   if(SLCM.has(code))return SLCM.get(code);
   if(!SLNM){SLNM=new Map();SLN.n.forEach((x,i)=>{const k=String(x).toLowerCase();if(!SLNM.has(k)&&SLN.d[i])SLNM.set(k,String(SLN.d[i][0]))})}
