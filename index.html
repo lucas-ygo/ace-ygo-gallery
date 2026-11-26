@@ -959,7 +959,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=d6a6abf15b"></script>
+<script src="data.js?v=cb18a46016"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1901,9 +1901,11 @@ function sorted(){let l=SL.l.slice();const f=S.flt.trim().toLowerCase();
   const cmp={new:(a,b)=>b.t-a.t,name:(a,b)=>a.name.localeCompare(b.name),set:(a,b)=>a.code.localeCompare(b.code),price:(a,b)=>((slPx(b)||{}).p||0)-((slPx(a)||{}).p||0)}[S.sort]||(()=>0);
   return l.sort(cmp)}
 /* ---- drawing ---- */
+/* upd344: grid tiles show ~180px wide, our saved copy is only 100px (blurry), so numeric ids use YGOPRODeck's 177px picture first, our copy second */
+const slImgT=(pid,name,code)=>{const p=slPidFor(pid,name,code);if(/^\d+$/.test(p)){const[l]=slPics(p);return`<img alt="" src="https://images.ygoprodeck.com/images/cards_small/${+p}.jpg" data-fb="${esc(l)}" referrerpolicy="no-referrer">`}return slImg(pid,name,code)};
 function tile(it){
   const ro=[...new Set([...(it.ro||[]),it.rar].filter(Boolean))],id=esc(it.id);
-  return`<div class="slt"><label class="slck"><input type="checkbox" data-sel="${id}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}></label>${slImg(it.pid,it.name,it.code)}${it.q>1?`<span class="slqb">×${it.q}</span>`:""}
+  return`<div class="slt"><label class="slck"><input type="checkbox" data-sel="${id}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}></label>${slImgT(it.pid,it.name,it.code)}${it.q>1?`<span class="slqb">×${it.q}</span>`:""}
     <b class="slnm">${esc(it.name)}</b><small>${esc(it.code)}</small><small>${esc([it.rar,it.ed&&it.ed!=="Not sure"?it.ed:""].filter(Boolean).join(" · ")||"Rarity not chosen")}</small>${slPrice(it)}
     <details data-eo="${id}"${S.eo.has(it.id)?" open":""}><summary>Edit</summary><div class="slc"><select data-rar="${id}" aria-label="Rarity"><option value="">Rarity not chosen</option>${ro.map(x=>`<option${x===it.rar?" selected":""}>${esc(x)}</option>`).join("")}</select><select data-ed="${id}" aria-label="Edition">${ED.map(x=>`<option${x===(it.ed||"Not sure")?" selected":""}>${x}</option>`).join("")}</select>
     <span class="slst"><button type="button" data-q="${id}:-1" aria-label="One fewer">\u2212</button><b>${it.q||1}</b><button type="button" data-q="${id}:1" aria-label="One more">+</button></span>
