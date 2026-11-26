@@ -647,7 +647,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   .slpick{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px}
   .slpick button{display:block;width:100%;text-align:left;padding:8px 12px;border:0;border-top:1px solid var(--line);background:none;color:var(--foil);font:inherit;cursor:pointer}
   .slpick button:first-child{border-top:0}.slpick button:hover{background:var(--raise)}
-  .slbar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px;padding:10px 0;background:var(--abyss);border-top:1px solid var(--gold-dim)}
+  .slbar{position:sticky;bottom:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:8px 0;background:var(--raise);border:1px solid var(--gold-dim);border-radius:12px;box-shadow:0 -6px 18px rgba(0,0,0,.35)}.slbar b{flex:1 1 100%;font-size:13px;color:var(--gold)}.slact{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
   .slbar input{flex:1 1 180px;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit}
   #slistd details{border-top:1px solid var(--line);padding:8px 0}#slistd summary{cursor:pointer}
   #slistd .btn.sm{padding:6px 10px;font-size:13px}
@@ -665,7 +665,7 @@ footer p{margin:0 0 6px;max-width:80ch}
   .slqb{position:absolute;top:10px;right:10px;padding:1px 7px;border-radius:10px;background:var(--gold);color:#111;font-weight:700;font-size:12px}
   .slt details{border-top:1px solid var(--line);margin-top:4px;padding:4px 0 0}.slt summary{font-size:12px;color:var(--gold)}
   .slt .slc{display:grid;gap:6px;margin:6px 0}.slt .slc select{width:100%;flex:none}
-  .slbt{margin:4px 0 6px}.slbt select,.slbt input{flex:1 1 120px;min-width:0;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit}
+  .slbt{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}.slbt .btn{flex:1 1 auto}.slbt select,.slbt input{flex:1 1 120px;min-width:0;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--raise);color:var(--foil);font:inherit}
 </style>
 <script>window.__busy=function(b,t){if(document.documentElement.dataset.theme==="5d"){b.innerHTML='<span class="tuning" aria-hidden="true"></span>Tuning\u2026'}else{b.textContent=t}};try{var t=localStorage.getItem("theme");if(t==="light"){t="5d";try{localStorage.setItem("theme","5d")}catch(e){}}document.documentElement.dataset.theme=t==="duel"||t==="5d"||t==="gx"||t==="vault"?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <script data-goatcounter="https://lucas-ygo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -959,7 +959,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=5b9413c4e9"></script>
+<script src="data.js?v=bf9874d5ea"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1951,7 +1951,7 @@ function drawList(){
     ${items.length?`<p class="note" style="margin:0 0 6px">${priced?`Raw value about ${esc(money(val))} for the ${priced} card${priced===1?"":"s"} we can price${priced<n?` (${n-priced} not priced)`:""}. An estimate from our ACE slab prices, not a quote.`:"We have no raw price for these yet."}</p>
     <div class="r slbt"><select id="slsort" aria-label="Sort">${[["new","Newest first"],["name","Name A to Z"],["set","Set code"],["price","Highest value"]].map(([k,l])=>`<option value="${k}"${S.sort===k?" selected":""}>${l}</option>`).join("")}</select>${items.length>5?`<input id="slflt" placeholder="Filter this list" value="${esc(S.flt)}" aria-label="Filter">`:""}<button class="btn sm" type="button" id="slview">${S.grid?"List view":"Grid view"}</button><button class="btn sm" type="button" id="slall">${vis.length&&vis.every(i=>S.sel.has(i.id))?"Clear ticks":"Tick all"}</button></div>`:""}
     ${vis.length?(S.grid?`<div class="slgrid">${vis.map(tile).join("")}</div>`:vis.map(i=>card(i,true)).join("")):`<p class="note">${items.length?"Nothing matches that filter.":"Nothing on the shortlist yet."}</p>`}
-    ${items.length?`<div class="slbar"><input id="slsn" maxlength="60" placeholder="Submission name, e.g. ACE order number" value="${esc(S.subName)}" aria-label="Submission name"><button class="btn" type="button" id="slsent"${sel?"":" disabled"}>Mark ${sel||""} as sent</button>${pend?`<label class="note" style="flex:1 1 100%;margin:0"><input type="checkbox" id="sltrack"${S.track?" checked":""}> Also track it in My account, Pending at ACE</label>`:""}<button class="btn sm" type="button" id="slcp">Copy list</button><button class="btn sm" type="button" id="slcsv">Download CSV</button></div>`:""}`}
+    ${items.length?(sel?`<div class="slbar"><b>${sel} card${sel===1?"":"s"} ticked</b><input id="slsn" maxlength="60" placeholder="Submission name, e.g. ACE order number" value="${esc(S.subName)}" aria-label="Submission name"><button class="btn" type="button" id="slsent">Mark ${sel} as sent</button>${pend?`<label class="note" style="flex:1 1 100%;margin:0"><input type="checkbox" id="sltrack"${S.track?" checked":""}> Also track it in My account, Pending at ACE</label>`:""}</div>`:`<p class="note" style="margin:8px 0 0">Tick cards to mark them as sent to ACE.</p>`)+`<div class="slact"><button class="btn sm" type="button" id="slcp">Copy list</button><button class="btn sm" type="button" id="slcsv">Download CSV</button></div>`:""}`}
 function drawSubs(){
   const box=$("#slsubs");if(!box)return;
   box.innerHTML=`${SL.s.length?`<h4 style="margin:14px 0 4px">Sent to ACE</h4>${SL.s.map(s=>`<details data-sub="${esc(s.id)}"${S.open===s.id?" open":""}><summary><b>${esc(s.name)}</b> &middot; ${s.items.reduce((a,i)=>a+(i.q||1),0)} card${s.items.reduce((a,i)=>a+(i.q||1),0)===1?"":"s"} &middot; ${esc(new Date(s.t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))}</summary>${s.items.map(i=>card(i,false)).join("")}<div class="r" style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" type="button" data-cps="${esc(s.id)}">Copy list</button><button class="btn sm" type="button" data-csvs="${esc(s.id)}">CSV</button><button class="btn sm" type="button" data-back="${esc(s.id)}">Move back to shortlist</button><button class="btn sm" type="button" data-del="${esc(s.id)}">${S.del===s.id?"Tap again to delete":"Delete"}</button></div></details>`).join("")}`:""}
@@ -2001,7 +2001,7 @@ function open(){
     if(t.id==="slrest"){try{let v=($("#slrestore").value||"").trim().replace(/^YGOSL1:/,"");const j=JSON.parse(decodeURIComponent(escape(atob(v))));if(!j||!Array.isArray(j.l)||!Array.isArray(j.s))throw 0;
       const have=new Set([...SL.l,...SL.s].map(x=>x.id));let n=0;j.l.forEach(x=>{if(x&&x.id&&x.code&&!have.has(x.id)){SL.l.push(x);have.add(x.id);n++}});j.s.forEach(x=>{if(x&&x.id&&Array.isArray(x.items)&&!have.has(x.id)){SL.s.push(x);have.add(x.id);n++}});slSave();S.msg=n?"Restored "+n+" item"+(n===1?"":"s")+".":"Nothing new in that backup.";draw()}catch(x){S.msg="That doesn't look like a backup from this page.";drawForm()}return}};
   d.onchange=e=>{const t=e.target;
-    if(t.dataset.sel){t.checked?S.sel.add(t.dataset.sel):S.sel.delete(t.dataset.sel);const b=$("#slsent");if(b){const n=SL.l.filter(i=>S.sel.has(i.id)).length;b.disabled=!n;b.textContent="Mark "+(n||"")+" as sent"}return}
+    if(t.dataset.sel){t.checked?S.sel.add(t.dataset.sel):S.sel.delete(t.dataset.sel);const n=SL.l.filter(i=>S.sel.has(i.id)).length,b=$("#slsent");if(b&&n){b.textContent="Mark "+n+" as sent";const h=b.parentNode.querySelector("b");if(h)h.textContent=n+" card"+(n===1?"":"s")+" ticked"}else drawList();return}
     if(t.dataset.rar){const it=SL.l.find(x=>x.id===t.dataset.rar);if(it){it.rar=t.value;slSave();drawList()}return}
     if(t.dataset.ed){const it=SL.l.find(x=>x.id===t.dataset.ed);if(it){it.ed=t.value;slSave();drawList()}return}
     if(t.dataset.nt){const it=SL.l.find(x=>x.id===t.dataset.nt);if(it){it.note=t.value.trim();slSave()}return}
