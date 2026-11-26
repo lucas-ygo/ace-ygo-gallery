@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>/* upd329: the page can be shown at clean addresses (/for-sale/ ...): pin every relative link to the site folder */(function(){var p=location.pathname.replace(/index\.html$/,"");if(!/\/$/.test(p))p=p.replace(/[^\/]*$/,"");document.write('<base href="'+p+'">')})()</script>
 <title>ACE Yu-Gi-Oh! slab gallery (unofficial)</title>
 <meta name="description" content="Browse the art on ACE-graded Yu-Gi-Oh! slabs found so far. Work in progress. Filter by grade, era, rarity and set. Unofficial fan project. ACE Grading affiliate: code LUCAS5 = 5% off.">
 <meta name="theme-color" content="#06172c">
@@ -820,6 +821,7 @@ html.restoring{background:#06172c}
 <dialog id="med" aria-label="Me"></dialog>
 <dialog id="mored" aria-label="More"></dialog>
 <script>
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a");if(a&&a.getAttribute("href")==="#")e.preventDefault()},true);
 (function(){
   const $=s=>document.querySelector(s),nav=$("#appnav");if(!nav)return;
   const SV=p=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';
@@ -852,13 +854,24 @@ html.restoring{background:#06172c}
   const rootEl=document.documentElement,unhide=()=>rootEl.classList.remove("restoring");
   const PAGES=["listd","saled","statd","setd"],DMQ=matchMedia("(min-width:861px)");
   let RESD=null;try{RESD=sessionStorage.getItem("apptabd")}catch(e){}
+  /* upd329: clean addresses. /for-sale/ etc. are tiny pages that send visitors here as ?view=for-sale; the address bar then follows whichever view is open */
+  const VIEWS={"for-sale":["#listbtn","listd"],"sales":["#salesbtn","saled"],"stats":["#statsbtn","statd"],"sets":["#setsbtn","setd"],"shortlist":["#slbtn","slistd"],"me":[null,"med"]};
+  let VIEWQ="";try{VIEWQ=new URLSearchParams(location.search).get("view")||""}catch(e){}
+  if(!VIEWS[VIEWQ])VIEWQ="";
+  if(VIEWQ){RES=null;RESD=null}
+  let syncOn=!VIEWQ;const ROOTP=(()=>{try{return new URL(document.baseURI).pathname}catch(e){return location.pathname}})();
+  const slugNow=()=>{for(const k in VIEWS){const d=document.getElementById(VIEWS[k][1]);if(d&&d.open)return k}const a=document.getElementById("acctd");return a&&a.open?"me":""};
+  const syncURL=()=>{if(!syncOn)return;try{const s=slugNow(),want=ROOTP+(s?s+"/":"");
+    const q=new URLSearchParams(location.search);q.delete("view");const qs=q.toString();
+    const url=want+(qs?"?"+qs:"")+location.hash;if(location.pathname+location.search+location.hash!==url)history.replaceState(history.state,"",url);
+    document.title=s?({"for-sale":"For sale","sales":"Sales","stats":"Stats","sets":"Sets","shortlist":"ACE shortlist","me":"My profile"}[s]+" | ACE Yu-Gi-Oh! slab gallery"):"ACE Yu-Gi-Oh! slab gallery (unofficial)"}catch(e){}};
   if(RES&&RES!=="gal"&&matchMedia("(max-width:860px)").matches){rootEl.classList.add("restoring");setTimeout(unhide,2500)}
   if(RESD&&DMQ.matches&&PAGES.indexOf(RESD)>=0){rootEl.classList.add("restoring");setTimeout(unhide,2500)}
   const HB={listd:"#listbtn",saled:"#salesbtn",statd:"#statsbtn",setd:"#setsbtn"};
   const paint=()=>{const a=active();const pg=PAGES.find(id=>{const d=document.getElementById(id);return d&&d.open&&d.classList.contains("tabp")});
     document.querySelectorAll("header.top [aria-current]").forEach(b=>b.removeAttribute("aria-current"));const hb=document.querySelector(pg?HB[pg]:"#galnav");if(hb)hb.setAttribute("aria-current","page");
     if(armed&&DMQ.matches){try{pg?sessionStorage.setItem("apptabd",pg):sessionStorage.removeItem("apptabd")}catch(e){}}
-    if(armed&&!DMQ.matches){try{a==="gal"?sessionStorage.removeItem("apptab"):sessionStorage.setItem("apptab",a)}catch(e){}}document.querySelectorAll(".appnav button").forEach(b=>{if(b.dataset.tab===a)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")})};
+    if(armed&&!DMQ.matches){try{a==="gal"?sessionStorage.removeItem("apptab"):sessionStorage.setItem("apptab",a)}catch(e){}}document.querySelectorAll(".appnav button").forEach(b=>{if(b.dataset.tab===a)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});syncURL()};
   const ensure=d=>{d.classList.add("tabd");if(!d.querySelector(":scope>.appnav")){const n=document.createElement("nav");n.className="appnav";n.setAttribute("aria-label","Main");n.innerHTML=navHTML();d.appendChild(n);paint()}};
   const watched=new WeakSet();
   const watch=d=>{if(watched.has(d))return;watched.add(d);new MutationObserver(()=>{if(d.open)ensure(d)}).observe(d,{childList:true})};
@@ -919,7 +932,8 @@ html.restoring{background:#06172c}
     const b=e.target.closest(".appnav button");if(b){go(b.dataset.tab);return}
     const m=e.target.closest(".mrow");if(m&&MA[m.dataset.m])MA[m.dataset.m]()});
   paint();
-  const restore=()=>{armed=true;if(DMQ.matches){const bb=RESD&&BTN[RESD]&&$(BTN[RESD]);if(bb&&!bb.hidden&&!document.querySelector("dialog[open]")){bb.click();setTimeout(unhide,120)}else{paint();unhide()}return}
+  const bootView=v=>{syncOn=true;if(v==="me")openMe();else{const b=$(VIEWS[v][0]);if(b&&!b.hidden)b.click()}setTimeout(()=>{unhide();paint()},120)};
+  const restore=()=>{armed=true;if(VIEWQ){bootView(VIEWQ);return}if(DMQ.matches){const bb=RESD&&BTN[RESD]&&$(BTN[RESD]);if(bb&&!bb.hidden&&!document.querySelector("dialog[open]")){bb.click();setTimeout(unhide,120)}else{paint();unhide()}return}
     if(RES&&RES!=="gal"&&!document.querySelector("dialog[open]")&&TABS.some(t=>t[0]===RES)){go(RES);setTimeout(unhide,120)}else{paint();unhide()}};
   if(document.readyState==="complete")setTimeout(restore,150);else addEventListener("load",()=>setTimeout(restore,150));
 })();
@@ -935,7 +949,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=32785fe523"></script>
+<script src="data.js?v=e9915164fe"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1130,7 +1144,7 @@ $("#actv").addEventListener("click",e=>{const b=e.target.closest("button");if(!b
   if(b.dataset.pending){window.__pendOpen=1;const a=$("#acct");a&&a.click();return}
   if(b.dataset.shareown){shareCollection(b);return}
   if(b.dataset.sharefav){shareGrid(b,DATA.filter(i=>fav.has(i.c)),"MY SAVED SLABS",null,"my-saved-ace-slabs.png");return}
-  if(b.dataset.share){const u=location.href.split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
+  if(b.dataset.share){const u=(document.baseURI||location.href).split("#")[0]+"#list="+[...fav].filter(c=>BYC.has(c)).join(".");
     copyText(u).then(()=>{b.textContent="Link copied \u2713"},()=>{b.textContent="Copy failed"});setTimeout(()=>{b.textContent="Copy link to my list"},1800);return}
   const k=b.dataset.k;if(k==="q"){st.q="";$("#q").value=""}else if(k==="s")st.s="";else if(k==="fav")st.fav=false;else if(k==="own")st.own=false;else if(k==="notes")st.notes=false;else if(k==="only")st.only=null;else st[k].delete(b.dataset.v);apply(true)});
 function ownSum(){const m=DATA.filter(i=>own.has(i.c)),v=m.reduce((a,i)=>a+(i.p||0),0);return '<span class="ownsum">'+fmt(m.length)+" owned"+(v?" \u00b7 about "+moneyWhole(v)+" raw value":"")+'</span><button type="button" class="acl" data-shareown="1">Share image</button><button type="button" class="acl" data-pending="1">Track my ACE submission</button>'}
@@ -1221,7 +1235,7 @@ function copyText(txt){
   return new Promise((ok,no)=>{try{const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
     const r=document.execCommand("copy");ta.remove();r?ok():no()}catch(e){no()}});
 }
-const shareURL=c=>{const base=location.href.split("#")[0];
+const shareURL=c=>{const base=(document.baseURI||location.href).split("#")[0];
   try{if(window.GALLERY&&window.GALLERY.share&&/^https?:/.test(location.protocol))return new URL("c/"+c+"/",base).href}catch(e){}
   return base+"#cert="+c};
 function affStrip(x,W,y,lt){
@@ -1271,7 +1285,7 @@ function drawDuel(x,img,i,W,H){const c=H<1700;
   affStrip(x,W,c?H-175:H-215,false);
   frieze(c?H-130:H-150);
   x.fillStyle=MIST;x.font="600 24px "+U;try{x.letterSpacing="3px"}catch(e){}
-  const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+  const host=(location.host+new URL(document.baseURI).pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
   x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,c?H-36:H-52);
   x.fillStyle="#8a7048";x.font="500 20px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not run or endorsed by ACE Grading or Konami.",W/2,c?H-10:H-20);try{x.letterSpacing="0px"}catch(e){}
 }
@@ -1317,7 +1331,7 @@ function drawTheme(x,img,i,W,H,t){const cp=H<1700;
   affStrip(x,W,cp?H-178:H-225,t==="5d");
   deco(x,W,cp?H-128:H-170,t);
   x.fillStyle=C.foot;x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
-  const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+  const host=(location.host+new URL(document.baseURI).pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
   x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,cp?H-66:H-100);
   x.fillStyle=C.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not run or endorsed by ACE Grading or Konami.",W/2,cp?H-26:H-56);try{x.letterSpacing="0px"}catch(e){}
 }
@@ -1356,7 +1370,7 @@ function gridCard(list,title,thm){
       affStrip(x,W,H-182,th==="5d");
       deco(x,W,H-128,th);
       x.fillStyle=P.host;x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
-      const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+      const host=(location.host+new URL(document.baseURI).pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
       x.fillText(host.toUpperCase(),W/2,H-66);
       x.fillStyle=P.legal;x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not run or endorsed by ACE Grading or Konami.",W/2,H-26);try{x.letterSpacing="0px"}catch(e){}
       }).toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
@@ -1403,7 +1417,7 @@ function shareCard(i,style){
       if(i.p&&i.p>=20){x.fillStyle="#a9b8d3";x.font="500 34px "+U;x.fillText("Raw about £"+Math.round(i.p).toLocaleString("en-GB"),W/2,y+86)}
       affStrip(x,W,H-122,false);
       x.fillStyle="#6f86ad";x.font="600 26px "+U;try{x.letterSpacing="3px"}catch(e){}
-      const host=(location.host+location.pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
+      const host=(location.host+new URL(document.baseURI).pathname).replace(/\/c\/\d+\/?.*$/,"").replace(/index\.html$/,"").replace(/\/$/,"")||"ACE YU-GI-OH! SLAB GALLERY";
       x.fillText("CERT "+i.c+"  ·  "+host.toUpperCase(),W/2,H-64);
       x.fillStyle="#52698f";x.font="500 22px "+U;try{x.letterSpacing="1px"}catch(e){}x.fillText("Unofficial fan project. Not run or endorsed by ACE Grading or Konami.",W/2,H-22);
       }).toBlob(b=>b?res(b):rej(new Error("blob")),"image/png")
