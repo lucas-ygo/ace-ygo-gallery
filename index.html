@@ -935,7 +935,7 @@ html.restoring{background:#06172c}
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=a8c02b6ce3"></script>
+<script src="data.js?v=32785fe523"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1766,11 +1766,16 @@ function slPics(pid){pid=String(pid||"");
 document.addEventListener("error",ev=>{const im=ev.target;if(!im||im.tagName!=="IMG"||!im.matches("#slistd img[data-fb]"))return;
   if(im.dataset.fb&&im.getAttribute("src")!==im.dataset.fb){im.dataset.t=im.getAttribute("src");im.setAttribute("referrerpolicy","no-referrer");im.src=im.dataset.fb}else im.style.visibility="hidden"},true);
 /* upd327: some set-list rows have no art id (e.g. YGLD-ENB02 Dark Magician); look the art up by exact card name in sl/names.json */
-let SLNM=null;
-function slPidFor(pid,name){pid=String(pid||"");if(pid)return pid;if(!SLN)return"";
+let SLNM=null,SLCM=null;
+/* Arkana-art Dark Magician prints: the name lookup would give the original art */
+const SLARK=/^(YGLD-[A-Z]{2}B02|SBC1-[A-Z]{2}G01)$/;
+function slPidFor(pid,name,code){pid=String(pid||"");if(pid)return pid;code=String(code||"").toUpperCase();
+  if(SLARK.test(code))return"36996508";if(!SLN)return"";
+  if(!SLCM){SLCM=new Map();SLN.d.forEach(d=>{if(d&&d[1])d[1].forEach(c=>{if(!SLCM.has(c))SLCM.set(c,String(d[0]))})})}
+  if(SLCM.has(code))return SLCM.get(code);
   if(!SLNM){SLNM=new Map();SLN.n.forEach((x,i)=>{const k=String(x).toLowerCase();if(!SLNM.has(k)&&SLN.d[i])SLNM.set(k,String(SLN.d[i][0]))})}
   return SLNM.get(String(name||"").toLowerCase())||""}
-const slImg=(pid,name)=>{const[a,b]=slPics(slPidFor(pid,name));return a?`<img alt="" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
+const slImg=(pid,name,code)=>{const[a,b]=slPics(slPidFor(pid,name,code));return a?`<img alt="" src="${esc(a)}" data-fb="${esc(b)}">`:`<span style="width:64px;flex:none"></span>`};
 /* price: from our own price check of an ACE slab of the same card number. ok=1 when it matches the chosen rarity (or none chosen) */
 function slPx(it){
   const m=DATA.filter(x=>skn(x)===it.code&&x.p>0);if(!m.length)return null;
@@ -1874,7 +1879,7 @@ function sorted(){let l=SL.l.slice();const f=S.flt.trim().toLowerCase();
 /* ---- drawing ---- */
 function card(it,edit){
   const ro=[...new Set([...(it.ro||[]),it.rar].filter(Boolean))];
-  return`<div class="sli">${edit?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid,it.name)}<div class="tx"><b>${esc(it.name)}${it.q>1?` <span class="slq">×${it.q}</span>`:""}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small>
+  return`<div class="sli">${edit?`<input type="checkbox" data-sel="${esc(it.id)}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}>`:""}${slImg(it.pid,it.name,it.code)}<div class="tx"><b>${esc(it.name)}${it.q>1?` <span class="slq">×${it.q}</span>`:""}</b><small>${esc(it.code)}${it.set?" · "+esc(it.set):""}</small>
     ${edit?`<div class="r slc"><select data-rar="${esc(it.id)}" aria-label="Rarity"><option value="">Rarity not chosen</option>${ro.map(x=>`<option${x===it.rar?" selected":""}>${esc(x)}</option>`).join("")}</select><select data-ed="${esc(it.id)}" aria-label="Edition">${ED.map(x=>`<option${x===(it.ed||"Not sure")?" selected":""}>${x}</option>`).join("")}</select>
     <span class="slst"><button type="button" data-q="${esc(it.id)}:-1" aria-label="One fewer">−</button><b>${it.q||1}</b><button type="button" data-q="${esc(it.id)}:1" aria-label="One more">+</button></span></div>
     <input class="slnt" data-nt="${esc(it.id)}" maxlength="120" value="${esc(it.note||"")}" placeholder="Note" aria-label="Note">`
@@ -1883,7 +1888,7 @@ function card(it,edit){
 function drawForm(){
   const f=$("#slform");if(!f)return;const r=S.res;
   const keep=f.querySelector("#slq")?f.querySelector("#slq").value:"";
-  const form=r?`<div class="slh">${slImg(r.c[3],r.c[1])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
+  const form=r?`<div class="slh">${slImg(r.c[3],r.c[1],r.c[0])}<div><b>${esc(r.c[1])}</b><small>${esc(r.c[0])} &middot; ${esc(r.j.n)}</small></div></div>
     <div class="r"><select id="slrar" aria-label="Rarity">${rarOpts(r).map(x=>`<option>${esc(x)}</option>`).join("")}<option>Not sure</option></select>
     <select id="sled" aria-label="Edition">${ED.map(x=>`<option${x===S.lastEd?" selected":""}>${x}</option>`).join("")}</select>
     <input id="slqty" type="number" min="1" max="99" value="1" aria-label="How many" style="flex:0 1 80px"></div>
