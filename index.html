@@ -809,6 +809,7 @@ html.restoring{background:#06172c}
   dialog.tabp .cmpbox{max-width:1200px;max-height:none;margin:0 auto;border:0;border-radius:0;background:transparent;padding:26px 20px 80px;overflow:visible}
   dialog.tabp .cmpbox>.x{display:none}
   #setd.tabp .cmpbox{max-width:1100px}
+  #slistd.tabp .cmpbox{max-width:920px}
   .bar{top:var(--navh,56px)}
   aside#filters{top:calc(var(--navh,56px) + 76px);max-height:calc(100vh - var(--navh,56px) - 92px)}
   .layout{padding-top:16px}
@@ -847,12 +848,12 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
   const TABS=[["gal","Gallery"],["sale","For sale"],["sales","Sales"],["me","Me"],["more","More"]];
   const navHTML=()=>TABS.map(t=>'<button type="button" data-tab="'+t[0]+'" aria-label="'+t[1]+'">'+IC[t[0]]+'<span>'+t[1]+'</span></button>').join("");
   nav.innerHTML=navHTML();
-  const TABD=["listd","saled","med","mored","statd","setd","acctd"],OWN={listd:"sale",saled:"sales",med:"me",mored:"more",statd:"more",setd:"more",acctd:"me"};
+  const TABD=["listd","saled","med","mored","statd","setd","acctd","slistd"],OWN={listd:"sale",saled:"sales",med:"me",mored:"more",statd:"more",setd:"more",acctd:"me",slistd:"more"};
   const active=()=>{for(const id of TABD){const d=document.getElementById(id);if(d&&d.open)return OWN[id]}return"gal"};
   let RES=null;try{RES=sessionStorage.getItem("apptab")}catch(e){}
   let armed=false;
   const rootEl=document.documentElement,unhide=()=>rootEl.classList.remove("restoring");
-  const PAGES=["listd","saled","statd","setd"],DMQ=matchMedia("(min-width:861px)");
+  const PAGES=["listd","saled","statd","setd","slistd"],DMQ=matchMedia("(min-width:861px)");
   let RESD=null;try{RESD=sessionStorage.getItem("apptabd")}catch(e){}
   /* upd329: clean addresses. /for-sale/ etc. are tiny pages that send visitors here as ?view=for-sale; the address bar then follows whichever view is open */
   const VIEWS={"for-sale":["#listbtn","listd"],"sales":["#salesbtn","saled"],"stats":["#statsbtn","statd"],"sets":["#setsbtn","setd"],"shortlist":["#slbtn","slistd"],"me":[null,"med"]};
@@ -867,7 +868,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
     document.title=s?({"for-sale":"For sale","sales":"Sales","stats":"Stats","sets":"Sets","shortlist":"ACE shortlist","me":"My profile"}[s]+" | ACE Yu-Gi-Oh! slab gallery"):"ACE Yu-Gi-Oh! slab gallery (unofficial)"}catch(e){}};
   if(RES&&RES!=="gal"&&matchMedia("(max-width:860px)").matches){rootEl.classList.add("restoring");setTimeout(unhide,2500)}
   if(RESD&&DMQ.matches&&PAGES.indexOf(RESD)>=0){rootEl.classList.add("restoring");setTimeout(unhide,2500)}
-  const HB={listd:"#listbtn",saled:"#salesbtn",statd:"#statsbtn",setd:"#setsbtn"};
+  const HB={listd:"#listbtn",saled:"#salesbtn",statd:"#statsbtn",setd:"#setsbtn",slistd:"#slbtn"};
   const paint=()=>{const a=active();const pg=PAGES.find(id=>{const d=document.getElementById(id);return d&&d.open&&d.classList.contains("tabp")});
     document.querySelectorAll("header.top [aria-current]").forEach(b=>b.removeAttribute("aria-current"));const hb=document.querySelector(pg?HB[pg]:"#galnav");if(hb)hb.setAttribute("aria-current","page");
     if(armed&&DMQ.matches){try{pg?sessionStorage.setItem("apptabd",pg):sessionStorage.removeItem("apptabd")}catch(e){}}
@@ -893,7 +894,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
     closeTabs();paint()};
   addEventListener("keydown",e=>{if(e.key==="Escape"&&document.querySelector("dialog.tabp[open]")&&!document.querySelector("dialog[open]:modal")&&!(e.target.matches&&e.target.matches("select")))toGal()});
   if(DMQ.addEventListener)DMQ.addEventListener("change",()=>{if(!DMQ.matches){closeTabs();rootEl.classList.remove("tabopen")}});
-  const BTN={listd:"#listbtn",saled:"#salesbtn",statd:"#statsbtn",setd:"#setsbtn",acctd:"#acct"};
+  const BTN={listd:"#listbtn",saled:"#salesbtn",statd:"#statsbtn",setd:"#setsbtn",acctd:"#acct",slistd:"#slbtn"};
   addEventListener("popstate",()=>{const s=history.state;if(!(s&&s.t)){closeTabs();paint();return}
     const dlg=s.id&&document.getElementById(s.id);if(!dlg||dlg.open)return;
     quiet=true;try{closeTabs();if(s.id==="med")openMe();else if(s.id==="mored")openMore();else if(BTN[s.id])click(BTN[s.id])}finally{setTimeout(()=>{quiet=false},50)}paint()});
@@ -949,7 +950,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=e9915164fe"></script>
+<script src="data.js?v=4ea6907ece"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1750,7 +1751,7 @@ async function openSet(p){
     if(e.target.id==="setback"){openSetIndex();return}
     const f=e.target.closest(".scflt button");if(f){mode=f.dataset.m;sd.querySelectorAll(".scflt button").forEach(b=>b.setAttribute("aria-pressed",String(b===f)));draw();return}
     const m=e.target.closest(".sci:not(.got)");if(m){const cc=j.c.find(x=>x[0]===m.dataset.no);if(cc)cardPop(sd,j,cc);return}
-    const c=e.target.closest(".sci.got");if(c){sd.close();const n=+c.dataset.c,k=view.findIndex(x=>x.c===n);openLB(k,k<0?BYC.get(n):undefined)}}}
+    const c=e.target.closest(".sci.got");if(c){const n=+c.dataset.c,k=view.findIndex(x=>x.c===n);openLB(k,k<0?BYC.get(n):undefined)}}}
 dlg.addEventListener("click",e=>{const b=e.target.closest("#lbset");if(b){dlg.close();openSet(b.dataset.p)}});
 
 
@@ -1958,7 +1959,7 @@ function open(){
     const rm=t.closest("[data-rm]");if(rm){e.preventDefault();const i=SL.l.findIndex(x=>x.id===rm.dataset.rm);if(i>=0){S.undo={it:SL.l[i],i};SL.l.splice(i,1);S.sel.delete(rm.dataset.rm);slSave();S.msg="Removed "+S.undo.it.name+".";drawForm();drawList()}return}
     if(t.id==="slundo"&&S.undo){SL.l.splice(Math.min(S.undo.i,SL.l.length),0,S.undo.it);S.undo=null;S.msg="Put back.";slSave();drawForm();drawList();return}
     const qb=t.closest("[data-q]");if(qb){const[id,dv]=qb.dataset.q.split(":"),it=SL.l.find(x=>x.id===id);if(it){it.q=Math.max(1,Math.min(99,(it.q||1)+ +dv));slSave();drawList()}return}
-    const sb=t.closest("[data-slab]");if(sb){const code=sb.dataset.slab,it=DATA.filter(x=>skn(x)===code).sort((a,b)=>gnum(b)-gnum(a))[0];if(it){d.close();const k=view.findIndex(x=>x.c===it.c);openLB(k,k<0?BYC.get(it.c):undefined)}return}
+    const sb=t.closest("[data-slab]");if(sb){const code=sb.dataset.slab,it=DATA.filter(x=>skn(x)===code).sort((a,b)=>gnum(b)-gnum(a))[0];if(it){const k=view.findIndex(x=>x.c===it.c);openLB(k,k<0?BYC.get(it.c):undefined)}return}
     if(t.id==="slall"){const vis=sorted(),all=vis.every(i=>S.sel.has(i.id));vis.forEach(i=>all?S.sel.delete(i.id):S.sel.add(i.id));drawList();return}
     if(t.id==="slsent"){const ids=SL.l.filter(i=>S.sel.has(i.id));if(!ids.length)return;const nm=($("#slsn").value||"").trim()||("Submission "+new Date().toLocaleDateString("en-GB"));
       const sid=uid();SL.s.unshift({id:sid,name:nm,t:Date.now(),items:ids});SL.l=SL.l.filter(i=>!S.sel.has(i.id));S.sel.clear();S.subName="";S.open=sid;S.undo=null;
@@ -2181,7 +2182,7 @@ dlg.addEventListener("input",e=>{if(e.target.id!=="lbnote")return;const c=+($("#
     const go=e.target.closest("[data-go]");if(go){const k=go.dataset.go;ad.close();st.fav=k==="fav";st.own=k==="own";st.notes=k==="notes";apply();const g=$("#grid");g&&g.scrollIntoView({block:"start"});return}
     if(e.target.id==="acctshare"){shareCollection(e.target);return}
     if(e.target.id==="acctout"){ad.close();try{await fb.au.signOut(fb.auth)}catch(x){}return}
-    const b=e.target.closest(".subrow button,.subnb button");if(b){ad.close();const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
+    const b=e.target.closest(".subrow button,.subnb button");if(b){const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
   btn.addEventListener("click",async()=>{if(busy)return;busy=true;
     try{const f=await load();
       if(user)await openAcct();
@@ -2235,7 +2236,7 @@ paintFav();
   sd.addEventListener("change",e=>{const t=e.target;if(t.id==="ss"){ss=t.value;sgrid()}else if(t.id==="sg"){sg=t.value;sgrid()}else if(t.id==="sp"){sp=t.value;sgrid()}else if(t.id==="st"){st=t.value;sgrid()}else if(t.id==="sw"){sw=t.value;sgrid()}else if(t.id==="sb"){sb=t.value;sgrid()}});
   sd.addEventListener("click",e=>{if(e.target.id==="salex"||e.target===sd){sd.close();return}
     const b=e.target.closest(".lper button");if(b){sper=+b.dataset.n;try{localStorage.setItem("ygoLper",sper)}catch(x){}sd.querySelectorAll(".lper button").forEach(y=>y.setAttribute("aria-pressed",String(+y.dataset.n===sper)));sgrid();return}
-    const o=e.target.closest("[data-c]");if(o&&!e.target.closest("a")){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
+    const o=e.target.closest("[data-c]");if(o&&!e.target.closest("a")){const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
   sd.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".lim[data-c]")){e.preventDefault();e.target.click()}});
 })();
 
@@ -2298,7 +2299,7 @@ paintFav();
   ld.addEventListener("change",e=>{const t=e.target;if(t.id==="ls"){sort=t.value;grid()}else if(t.id==="lfg"){fg=t.value;grid()}else if(t.id==="lfp"){fp=t.value;grid()}else if(t.id==="lfs"){fs=t.value;grid()}else if(t.id==="lft"){ft=t.value;grid()}else if(t.id==="lfh"){fh=t.checked;grid()}else if(t.id==="lfd"){fd=t.checked;grid()}});
   ld.addEventListener("click",e=>{if(e.target.id==="listx"||e.target===ld){ld.close();return}
     const hb=e.target.closest(".lhist");if(hb){histOpen(+hb.dataset.c);return}
-    const o=e.target.closest(".lgal");if(o){ld.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
+    const o=e.target.closest(".lgal");if(o){const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)}});
 })();
 
 /* ---------- stats ---------- */
@@ -2358,7 +2359,7 @@ paintFav();
     if(tb){sd.querySelectorAll(".stabs button").forEach(x=>x.setAttribute("aria-selected",String(x===tb)));
       sd.querySelectorAll(".spane").forEach(p=>{p.hidden=p.dataset.pane!==tb.dataset.tab});return}
     const sb=e.target.closest(".setb");if(sb){sd.close();openSet(sb.dataset.p);return}
-    const o=e.target.closest(".oth,.unpr");if(o){sd.close();const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
+    const o=e.target.closest(".oth,.unpr");if(o){const c=+o.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined);return}
     const b=e.target.closest(".sbar");if(!b)return;
     st.q="";st.s="";st.fav=false;st.own=false;st.notes=false;st.only=null;$("#q").value="";GROUPS.forEach(g=>st[g.k].clear());
     if(b.dataset.k==="s")st.s=b.dataset.v;else st[b.dataset.k].add(b.dataset.v);
