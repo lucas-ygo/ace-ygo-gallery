@@ -978,7 +978,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=ac95081d25"></script>
+<script src="data.js?v=0f5978708d"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1944,7 +1944,7 @@ function sorted(){let l=SL.l.slice();const f=S.flt.trim().toLowerCase();
   return l.sort(cmp)}
 /* ---- drawing ---- */
 /* upd344: grid tiles show ~180px wide, our saved copy is only 100px (blurry), so numeric ids use YGOPRODeck's 177px picture first, our copy second */
-const slImgT=(pid,name,code)=>{const p=slPidFor(pid,name,code);if(/^\d+$/.test(p)){const[l]=slPics(p);return`<img alt="" src="https://images.ygoprodeck.com/images/cards_small/${+p}.jpg" data-fb="${esc(l)}" referrerpolicy="no-referrer">`}return slImg(pid,name,code)};
+const slImgT=(pid,name,code)=>{const p=slPidFor(pid,name,code);if(/^\d+$/.test(p)){const[l]=slPics(p);return`<img alt="" src="https://images.ygoprodeck.com/images/cards/${+p}.jpg" data-fb="${esc(l)}" referrerpolicy="no-referrer" loading="lazy" decoding="async">`}if(/^yt~/.test(p))return`<img alt="" src="cardsm/${esc(p)}.webp" data-fb="${esc(slPics(p)[0])}" loading="lazy" decoding="async">`;return slImg(pid,name,code)};
 function tile(it){
   const ro=[...new Set([...(it.ro||[]),it.rar].filter(Boolean))],id=esc(it.id);
   return`<div class="slt"><label class="slck"><input type="checkbox" data-sel="${id}" aria-label="Select ${esc(it.name)}"${S.sel.has(it.id)?" checked":""}></label>${slImgT(it.pid,it.name,it.code)}${it.q>1?`<span class="slqb">×${it.q}</span>`:""}
