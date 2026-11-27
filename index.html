@@ -976,7 +976,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=ff1bad55cc"></script>
+<script src="data.js?v=21b14361df"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
@@ -1655,6 +1655,7 @@ $("#trayitems").addEventListener("click",e=>{const b=e.target.closest(".tt");if(
       else if(rc.fin){w=100;lab="Re-check finished";const dl=Math.max(0,Math.ceil((rc.fin+7*86400-Date.now()/1000)/86400));
         lab="Watching for new slabs";const t=Date.now()/1000,n24=DATA.filter(x=>x.sd&&x.sd>t-86400).length;
         msg=`<b>Scanning live.</b> The newest certs are checked again every few minutes${d.scan_ts?" (last check "+ago(d.scan_ts)+")":""}, read up to ${fmt(d.scan_cert)}. ${n24} new slab${n24===1?"":"s"} found in the last 24 hours. Old empty numbers were re-checked (${ys(rc.y)} found); next re-check ${dl?"in about "+dl+" day"+(dl===1?"":"s"):"starts soon"}.`}}
+    if(d.p1_pct>=99.9&&pc>=99.9&&d.back_to)document.querySelectorAll(".wipnote").forEach(n=>{n.innerHTML="<b>Work in progress.</b> Every cert from "+fmt(d.back_to)+" up to the newest has now been read, and new ones are checked every few minutes. A few slabs may still be missing."});
     pb.innerHTML=(caps?end(a,"Phase 2 starts",0):"")+`<div class="pm"><div class="pt" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(w)}" aria-label="${lab}"><i style="width:${w}%"></i></div><p class="pl">${msg}</p></div>`+(caps?end(z,"Newest slab found",1):"");
     pb.hidden=false}
   const pbEl=$("#pbar");if(pbEl)pbEl.addEventListener("click",e=>{const b=e.target.closest(".pe");if(!b)return;const c=+b.dataset.c,k=view.findIndex(x=>x.c===c);openLB(k,k<0?BYC.get(c):undefined)});
