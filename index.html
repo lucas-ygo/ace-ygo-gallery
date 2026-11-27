@@ -808,7 +808,9 @@ html.restoring{background:#06172c}
   header.top .mtile .ms{font-size:0;line-height:0;display:inline-flex;align-items:center}
   header.top .mtile .ms b{font:700 11px/1 var(--ui);padding:3px 7px;border-radius:999px;background:var(--raise);border:1px solid var(--gold-dim);color:var(--gold)}
   header.top .mtile .ms .dot{display:none}
-  header.top .gbtn{position:static;padding:6px 12px 6px 8px;font-size:13px;gap:8px;margin-left:6px}
+  header.top .gbtn{position:absolute;top:10px;right:max(20px,env(safe-area-inset-right));padding:6px 12px 6px 8px;font-size:13px;gap:8px;margin:0}
+  header.top .wrap{padding-right:max(250px,calc(210px + env(safe-area-inset-right)))}
+  header.top .coffee,header.top .mtile,header.top .hlinks.hmain .mtile{padding:8px 9px}
   #leads{position:absolute;top:100%;right:max(20px,env(safe-area-inset-right));width:min(580px,calc(100% - 40px));z-index:35;margin:6px 0 0;padding:14px 16px;background:var(--raise);border:1px solid var(--gold-dim);border-radius:12px;box-shadow:0 14px 34px rgba(0,0,0,.45)}
   .strip .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;padding-top:9px;padding-bottom:9px}
   .strip .lede{display:none}
@@ -976,7 +978,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 <dialog id="setd" aria-label="Set checklist"></dialog>
 <dialog id="slistd" aria-label="Send to ACE shortlist"></dialog>
 
-<script src="data.js?v=21b14361df"></script>
+<script src="data.js?v=b466aed57e"></script>
 <script src="sales.js"></script>
 <script src="listings.js"></script>
 <script>
